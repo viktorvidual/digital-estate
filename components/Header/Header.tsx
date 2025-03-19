@@ -4,6 +4,7 @@ import { XStack, SizableText, useMedia, Text, Button } from 'tamagui';
 import { Ionicons } from '@expo/vector-icons';
 import { SideBar } from '@/components/SideBar/SideBar';
 import { Href } from 'expo-router';
+import { MyXStack } from '@/components/shared';
 
 const Routes = [
   {
@@ -27,42 +28,35 @@ export const Header = () => {
 
   return (
     <>
-      <XStack
-        justify="space-between"
-        items="center"
-        self="center"
-        padding="$4"
-        width="100%"
-        $lg={{
-          width: '80%',
-        }}
-      >
-        <SizableText size="$9" fontWeight="bold">
-          Digital Estate
-        </SizableText>
+      <MyXStack justify="space-between" items="center" self="center">
+        <Link href="/">
+          <SizableText size="$9" fontWeight="bold">
+            Digital Estate
+          </SizableText>
+        </Link>
 
         {media.lg && (
           <>
             <XStack gap="$4">
               <Link href="/">
-                <Text fontWeight="bold">Home</Text>
+                <Text fontWeight="bold">Начало</Text>
               </Link>
 
               <Link href="/gallery">
-                <Text fontWeight="bold">Gallery</Text>
+                <Text fontWeight="bold">Галерия</Text>
               </Link>
 
               <Link href="/pricing">
-                <Text fontWeight="bold">Pricing</Text>
+                <Text fontWeight="bold">Цени</Text>
               </Link>
             </XStack>
 
             <XStack gap="$2">
               <Button>
-                <Text>Login</Text>
+                <Text>Вход</Text>
               </Button>
               <Button bg="$blue10">
-                <Text color="white">Sign Up</Text>
+                <Text color="white">Регистрация</Text>
               </Button>
             </XStack>
           </>
@@ -76,7 +70,7 @@ export const Header = () => {
             onPress={() => setIsSideBarOpen(!isSideBarOpen)}
           />
         )}
-      </XStack>
+      </MyXStack>
 
       <SideBar isSideBarOpen={isSideBarOpen} setIsSideBarOpen={setIsSideBarOpen} routes={Routes} />
     </>

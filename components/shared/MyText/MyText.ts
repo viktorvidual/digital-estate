@@ -1,0 +1,2 @@
+import { SizableText } from 'tamagui';
+

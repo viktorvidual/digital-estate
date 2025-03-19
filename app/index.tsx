@@ -1,6 +1,11 @@
 import React from 'react';
-import { YStack, useMedia } from 'tamagui';
-import { Header } from '@/components/Header/Header';
+
+import { Hero } from '@/components/Hero/Hero';
+import { ScrollView } from 'tamagui';
 export default function HomeScreen() {
-  return <></>;
+  return (
+    <ScrollView>
+      <Hero />
+    </ScrollView>
+  );
 }
