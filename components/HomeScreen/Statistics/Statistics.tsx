@@ -1,6 +1,6 @@
 import React from 'react';
 import { MyXStack, MyText } from '@/components/shared';
-import { styled, YStack, XStack, View } from 'tamagui';
+import { styled, XStack, View } from 'tamagui';
 import { ArrowBigUp } from '@tamagui/lucide-icons';
 
 const STATISTICS = [
@@ -26,14 +26,17 @@ const STATISTICS = [
 
 const ElementContainer = styled(View, {
   gap: '$4',
-  borderLeftWidth: 1,
-  borderLeftColor: '#E0E0E0',
   padding: '$6',
   width: '100%',
   items: 'center',
+  borderBottomWidth: 1,
+  borderBottomColor: '#E0E0E0',
   $md: {
     items: 'flex-start',
     width: '33%',
+    borderBottomWidth: 0,
+    borderLeftWidth: 1,
+    borderLeftColor: '#E0E0E0',
   },
 });
 
