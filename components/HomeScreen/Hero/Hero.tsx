@@ -1,6 +1,6 @@
 import React from 'react';
 import { YStack, XStack, Image, useMedia } from 'tamagui';
-import { MyYStack } from '../shared';
+import { MyYStack } from '../../shared';
 import { CallToAction } from './CallToAction';
 import { Benefits } from './Benefits';
 

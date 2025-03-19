@@ -39,7 +39,7 @@ export const Header = () => {
           <>
             <XStack gap="$4">
               {HEADER_ROUTES.map(route => (
-                <Link key={route.href} href={route.href}>
+                <Link key={route.name} href={route.href}>
                   <MyText fw="bold" color="white">
                     {route.name}
                   </MyText>

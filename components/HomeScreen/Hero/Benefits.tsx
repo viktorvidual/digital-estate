@@ -1,5 +1,5 @@
 import React from 'react';
-import { MyText } from '../shared';
+import { MyText } from '../../shared';
 import { XStack } from 'tamagui';
 import { Check } from '@tamagui/lucide-icons';
 

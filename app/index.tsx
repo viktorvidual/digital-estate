@@ -1,11 +1,17 @@
 import React from 'react';
 
-import { Hero } from '@/components/Hero/Hero';
+import { Hero, Statistics } from '@/components/HomeScreen';
 import { ScrollView } from 'tamagui';
 export default function HomeScreen() {
   return (
-    <ScrollView>
+    <ScrollView
+      pb={'$4'}
+      contentContainerStyle={{
+        rowGap: 32,
+      }}
+    >
       <Hero />
+      <Statistics />
     </ScrollView>
   );
 }

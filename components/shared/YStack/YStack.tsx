@@ -15,7 +15,7 @@ export const MyYStack = ({ children, bg, ...props }: MyYStackProps) => {
       alignSelf="center"
       bg={bg}
       $lg={{
-        px: '10%',
+        px: '15%',
       }}
       {...props}
     >
