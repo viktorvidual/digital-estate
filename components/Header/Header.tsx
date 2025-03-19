@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'expo-router';
-import { XStack, SizableText, useMedia, Text, Button } from 'tamagui';
-import { Ionicons } from '@expo/vector-icons';
+import { XStack, SizableText, useMedia, Button } from 'tamagui';
 import { SideBar } from '@/components/SideBar/SideBar';
 import { Href } from 'expo-router';
-import { MyXStack } from '@/components/shared';
+import { MyXStack, MyText } from '@/components/shared';
+import { Menu } from '@tamagui/lucide-icons';
 
-const Routes = [
+const HEADER_ROUTES = [
   {
     name: 'Home',
     href: '/' as Href,
@@ -28,9 +28,9 @@ export const Header = () => {
 
   return (
     <>
-      <MyXStack justify="space-between" items="center" self="center">
+      <MyXStack justify="space-between" items="center" self="center" bg="$blue12">
         <Link href="/">
-          <SizableText size="$9" fontWeight="bold">
+          <SizableText size="$9" fontWeight="bold" color="white">
             Digital Estate
           </SizableText>
         </Link>
@@ -39,40 +39,53 @@ export const Header = () => {
           <>
             <XStack gap="$4">
               <Link href="/">
-                <Text fontWeight="bold">Начало</Text>
+                <MyText fw="bold" color="white">
+                  Начало
+                </MyText>
               </Link>
 
               <Link href="/gallery">
-                <Text fontWeight="bold">Галерия</Text>
+                <MyText fw="bold" color="white">
+                  Галерия
+                </MyText>
               </Link>
 
               <Link href="/pricing">
-                <Text fontWeight="bold">Цени</Text>
+                <MyText fw="bold" color="white">
+                  Цени
+                </MyText>
               </Link>
             </XStack>
 
             <XStack gap="$2">
               <Button>
-                <Text>Вход</Text>
+                <MyText fw="bold" color="black">
+                  Вход
+                </MyText>
               </Button>
               <Button bg="$blue10">
-                <Text color="white">Регистрация</Text>
+                <MyText fw="bold" color="white">
+                  Регистрация
+                </MyText>
               </Button>
             </XStack>
           </>
         )}
 
         {!media.lg && (
-          <Ionicons
-            name="menu"
+          <Menu
             size={24}
-            color="black"
+            color="white"
             onPress={() => setIsSideBarOpen(!isSideBarOpen)}
           />
         )}
       </MyXStack>
 
-      <SideBar isSideBarOpen={isSideBarOpen} setIsSideBarOpen={setIsSideBarOpen} routes={Routes} />
+      <SideBar
+        isSideBarOpen={isSideBarOpen}
+        setIsSideBarOpen={setIsSideBarOpen}
+        routes={HEADER_ROUTES}
+      />
     </>
   );
 };

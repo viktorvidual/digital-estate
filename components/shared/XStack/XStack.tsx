@@ -8,7 +8,7 @@ export const MyXStack = ({ children, ...props }: XStackProps) => {
       padding="$4"
       width="100%"
       $lg={{
-        width: '80%',
+        px: '10%',
       }}
       {...props}
     >
