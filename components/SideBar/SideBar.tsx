@@ -53,12 +53,12 @@ export const SideBar = ({ isSideBarOpen, setIsSideBarOpen, routes }: SideBarProp
           <YStack gap="$4" mt="$4" position="absolute" bottom="$10" left="$4" right="$4">
             <Button width="100%">
               <SizableText size="$6" fontWeight="bold">
-                Login
+                Вход
               </SizableText>
             </Button>
             <Button width="100%" bg="$blue10">
               <SizableText size="$6" fontWeight="bold" color="white">
-                Sign Up
+                Регистрация
               </SizableText>
             </Button>
           </YStack>

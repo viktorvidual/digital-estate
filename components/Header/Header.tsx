@@ -8,15 +8,15 @@ import { Menu } from '@tamagui/lucide-icons';
 
 const HEADER_ROUTES = [
   {
-    name: 'Home',
+    name: 'Начало',
     href: '/' as Href,
   },
   {
-    name: 'Gallery',
+    name: 'Галерия',
     href: '/gallery' as Href,
   },
   {
-    name: 'Pricing',
+    name: 'Цени',
     href: '/pricing' as Href,
   },
 ];
@@ -38,23 +38,13 @@ export const Header = () => {
         {media.lg && (
           <>
             <XStack gap="$4">
-              <Link href="/">
-                <MyText fw="bold" color="white">
-                  Начало
-                </MyText>
-              </Link>
-
-              <Link href="/gallery">
-                <MyText fw="bold" color="white">
-                  Галерия
-                </MyText>
-              </Link>
-
-              <Link href="/pricing">
-                <MyText fw="bold" color="white">
-                  Цени
-                </MyText>
-              </Link>
+              {HEADER_ROUTES.map(route => (
+                <Link key={route.href} href={route.href}>
+                  <MyText fw="bold" color="white">
+                    {route.name}
+                  </MyText>
+                </Link>
+              ))}
             </XStack>
 
             <XStack gap="$2">
@@ -73,11 +63,7 @@ export const Header = () => {
         )}
 
         {!media.lg && (
-          <Menu
-            size={24}
-            color="white"
-            onPress={() => setIsSideBarOpen(!isSideBarOpen)}
-          />
+          <Menu size={24} color="white" onPress={() => setIsSideBarOpen(!isSideBarOpen)} />
         )}
       </MyXStack>
 

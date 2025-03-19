@@ -1,6 +1,6 @@
 import React from 'react';
 import { MyText } from '../shared';
-import { XStack, YStack, useMedia } from 'tamagui';
+import { XStack } from 'tamagui';
 import { Check } from '@tamagui/lucide-icons';
 
 const BENEFITS = [
@@ -13,8 +13,6 @@ const BENEFITS = [
 ];
 
 const Item = ({ benefit }: { benefit: string }) => {
-  const media = useMedia();
-
   return (
     <XStack
       key={benefit}
@@ -26,7 +24,7 @@ const Item = ({ benefit }: { benefit: string }) => {
         width: '15%',
       }}
     >
-      <MyText size="$3" color="white" key={benefit} fw="bold">
+      <MyText color="white" key={benefit} fw="bold">
         {benefit}
       </MyText>
       <Check size={22} color="$green8" />
