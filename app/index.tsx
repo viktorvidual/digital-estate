@@ -1,10 +1,11 @@
 import React from 'react';
 import { ScrollView } from 'tamagui';
-import { Hero, Statistics, HowItWorks, SecondCTA } from '@/components/HomeScreen';
+import { Hero, Statistics, HowItWorks, SecondCTA, FAQ } from '@/components/HomeScreen';
+
 export default function HomeScreen() {
   return (
     <ScrollView
-      pb={'$4'}
+      pb={32}
       contentContainerStyle={{
         rowGap: 32,
       }}
@@ -13,6 +14,7 @@ export default function HomeScreen() {
       <Statistics />
       <HowItWorks />
       <SecondCTA />
+      <FAQ />
     </ScrollView>
   );
 }

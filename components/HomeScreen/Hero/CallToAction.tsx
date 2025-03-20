@@ -10,7 +10,7 @@ export const CallToAction = ({ componentWidth }: { componentWidth: number }) => 
     <YStack justify="center" width={'100%'} $lg={{ width: localComponentWidth, pr: '$8' }}>
       <YStack gap="$4">
         <MyText type="title" fontWeight="bold" color="white">
-          Виртуално Обзавеждане {media.lg && '\n'}с Един Клик
+          Виртуално Обзавеждане {!media.md && '\n'}с Един Клик
         </MyText>
         <SizableText size="$6" color="white">
           Качете снимка и нашият AI ще добави мебели за секунди.

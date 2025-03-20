@@ -40,7 +40,7 @@ const Elements = () => {
     >
       {ELEMENTS.map(el => {
         return (
-          <ElementContainer>
+          <ElementContainer key={el.title}>
             {el.icon()}
             <MyText color="white" fw="bold" size="$6">
               {el.title}
@@ -61,7 +61,7 @@ const CTA = ({ showButton }: { showButton?: boolean }) => {
           <BedDouble size={12} />
         </IconContainer>
         <MyText color="white" size="#2" fw="bold">
-          Улеснено обзавежданде
+          Бързо обзавеждане
         </MyText>
       </XStack>
       <MyText color="white" size="$9" fw="bold">
@@ -81,7 +81,7 @@ const CTA = ({ showButton }: { showButton?: boolean }) => {
   );
 };
 
-const IconContainer = styled(View, {
+export const IconContainer = styled(View, {
   width: '$2',
   height: '$2',
   justifyContent: 'center',
