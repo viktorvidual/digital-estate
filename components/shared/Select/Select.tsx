@@ -53,7 +53,7 @@ function DropDownSelectItem(
 
   return (
     <Select value={value} onValueChange={onValueChange} disablePreventBodyScroll {...props}>
-      <Select.Trigger width={165} iconAfter={ChevronsUpDown} rounded={'$6'}>
+      <Select.Trigger iconAfter={ChevronsUpDown} rounded={'$6'}>
         <Select.Value placeholder="pLaceholder">{value}</Select.Value>
       </Select.Trigger>
 

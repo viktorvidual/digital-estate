@@ -1,11 +1,11 @@
 import React from 'react';
-import {} from 'tamagui';
 import { XStack as TamaguiXStack, XStackProps } from 'tamagui';
+import { smallScreenPaddingX } from '@/constants';
 
 export const MyXStack = ({ children, ...props }: XStackProps) => {
   return (
     <TamaguiXStack
-      padding="$4"
+      padding={smallScreenPaddingX}
       width="100%"
       $lg={{
         px: '15%',

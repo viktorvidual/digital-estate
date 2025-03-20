@@ -33,7 +33,7 @@ const Elements = () => {
     <XStack
       width="100%"
       flexWrap="wrap"
-      $md={{
+      $lg={{
         width: '60%',
       }}
       gap="$2"
@@ -55,7 +55,7 @@ const Elements = () => {
 
 const CTA = ({ showButton }: { showButton?: boolean }) => {
   return (
-    <YStack width="100%" $md={{ width: '40%' }} gap="$4" p="$2" justify={'center'}>
+    <YStack width="100%" $lg={{ width: '40%' }} gap="$4" p="$2" justify={'center'}>
       <XStack items="center" gap="$2">
         <IconContainer>
           <BedDouble size={12} />
