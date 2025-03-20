@@ -1,15 +1,15 @@
 import React from 'react';
-import { YStack, SizableText, Button } from 'tamagui';
+import { YStack, SizableText, Button, useMedia } from 'tamagui';
 
 export const CallToAction = () => {
+  const media = useMedia();
+
+  const width = media['2xl'] ? '50%' : media.lg ? '40%' : '100%';
+
+  console.log(width);
+
   return (
-    <YStack
-      justify="center"
-      items="center"
-      width="100%"
-      pr="$0"
-      $lg={{ height: '60vh', width: '40%', pr: '$8' }}
-    >
+    <YStack justify="center" width={width} $lg={{ height: '60vh', pr: '$8', maxHeight: 600 }}>
       <YStack gap="$4">
         <SizableText size="$10" fontWeight="bold" color="white">
           Виртуално Обзавеждане{'\n'}с Един Клик

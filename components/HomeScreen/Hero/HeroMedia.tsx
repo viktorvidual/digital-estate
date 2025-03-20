@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Image, YStack, styled, View } from 'tamagui';
+import React, { useEffect, useState } from 'react';
+import { Image, YStack, styled, View, useMedia } from 'tamagui';
 import { DropDownSelect } from '@/components/shared';
 
 // Define types for better type safety
@@ -14,7 +14,11 @@ export const HeroMedia = () => {
   const imageSource = getImageSource(furnitureType, roomType);
 
   return (
-    <YStack width="100%" height={'50vh'} $lg={{ width: '60%', height: '60vh' }}>
+    <YStack
+      width="100%"
+      height={'50vh'}
+      $lg={{ width: '60%', height: '60vh', maxWidth: 800, maxHeight: 600, alignSelf: 'center' }}
+    >
       <Image source={imageSource} maxWidth="100%" maxHeight="100%" rounded="$6" />
       <RoomsContainer>
         <DropDownSelect

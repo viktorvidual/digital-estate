@@ -1,6 +1,6 @@
 import React from 'react';
 import { ImageSourcePropType } from 'react-native';
-import { Image, XStack, styled, View } from 'tamagui';
+import { Image, XStack, styled, View, useMedia } from 'tamagui';
 import { MyText, MyXStack, MyYStack } from '@/components/shared';
 import { Settings } from '@tamagui/lucide-icons';
 
@@ -48,8 +48,12 @@ const Element = ({
 }: {
   el: { title: string; value: string; description: string; media: ImageSourcePropType; id: string };
 }) => {
+  const media = useMedia();
+
+  const width = media['2xl'] ? '32%' : media.md ? '31%' : '100%';
+
   return (
-    <IconContainer width="100%">
+    <ElementContainer width={width}>
       <XStack gap="$2" items="center" justify="space-between" width="100%">
         <MyText size="$8" fw="bold">
           {el.title}
@@ -61,20 +65,17 @@ const Element = ({
 
       <MyText>{el.description}</MyText>
       <Image source={el.media} maxWidth={'100%'} maxHeight={200} rounded="$6" />
-    </IconContainer>
+    </ElementContainer>
   );
 };
 
-const IconContainer = styled(View, {
+const ElementContainer = styled(View, {
   gap: '$4',
   padding: '$5',
-  width: '100%',
+
   items: 'flex-start',
   bg: '$blue4',
   rounded: '$6',
-  $md: {
-    width: '32%',
-  },
 });
 
 const NumberContainer = styled(View, {

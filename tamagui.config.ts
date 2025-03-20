@@ -7,6 +7,13 @@ export const tamaguiConfig = createTamagui({
     ...defaultConfig.settings,
     onlyAllowShorthands: false,
   },
+  media: {
+    ...defaultConfig.media,
+    lg: { minWidth: 1024 },
+
+    xl: { minWidth: 1280 },
+    '2xl': { minWidth: 2000 },
+  },
 });
 
 export default tamaguiConfig;

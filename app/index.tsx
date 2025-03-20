@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView } from 'tamagui';
-import { Hero, Statistics, HowItWorks } from '@/components/HomeScreen';
+import { Hero, Statistics, HowItWorks, SecondCTA } from '@/components/HomeScreen';
 export default function HomeScreen() {
   return (
     <ScrollView
@@ -12,6 +12,7 @@ export default function HomeScreen() {
       <Hero />
       <Statistics />
       <HowItWorks />
+      <SecondCTA />
     </ScrollView>
   );
 }

@@ -28,13 +28,10 @@ export const Header = () => {
 
   return (
     <>
-      <MyXStack justify="space-between" items="center" self="center" bg="$blue12">
+      <MyXStack justify="space-between" items="center" self="center">
         <Link href="/">
-          <SizableText size="$9" fontWeight="bold" color="white">
-            Digital Estate{' '}
-            <SizableText size="$9" color="white">
-              AI
-            </SizableText>
+          <SizableText size="$9" fontWeight="bold">
+            Digital Estate <SizableText size="$9">AI</SizableText>
           </SizableText>
         </Link>
 
@@ -43,9 +40,7 @@ export const Header = () => {
             <XStack gap="$4">
               {HEADER_ROUTES.map(route => (
                 <Link key={route.name} href={route.href}>
-                  <MyText fw="bold" color="white">
-                    {route.name}
-                  </MyText>
+                  <MyText fw="bold">{route.name}</MyText>
                 </Link>
               ))}
             </XStack>
@@ -65,9 +60,7 @@ export const Header = () => {
           </>
         )}
 
-        {!media.lg && (
-          <Menu size={24} color="white" onPress={() => setIsSideBarOpen(!isSideBarOpen)} />
-        )}
+        {!media.lg && <Menu size={24} onPress={() => setIsSideBarOpen(!isSideBarOpen)} />}
       </MyXStack>
 
       <SideBar
