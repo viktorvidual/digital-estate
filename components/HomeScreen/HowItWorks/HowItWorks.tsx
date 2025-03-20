@@ -14,9 +14,9 @@ export const HowItWorks = () => {
           </View>
           <MyText>Как работи</MyText>
         </XStack>
-        <MyText size="$10">
+        <MyText type="title">
           Получете готови за обява{' '}
-          <MyText fw="bold" size="$10">
+          <MyText fw="bold" type="title">
             резултати за секунди
           </MyText>
         </MyText>
