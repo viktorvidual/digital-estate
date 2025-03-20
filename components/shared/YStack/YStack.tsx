@@ -1,6 +1,6 @@
 import React from 'react';
 import { YStack as TamaguiYStack, YStackProps } from 'tamagui';
-
+import { smallScreenPaddingX } from '@/constants';
 type MyYStackProps = {
   children: React.ReactNode;
   bg?: string;
@@ -10,7 +10,7 @@ type MyYStackProps = {
 export const MyYStack = ({ children, bg, ...props }: MyYStackProps) => {
   return (
     <TamaguiYStack
-      padding="$4"
+      padding={smallScreenPaddingX}
       width="100%"
       alignSelf="center"
       bg={bg}

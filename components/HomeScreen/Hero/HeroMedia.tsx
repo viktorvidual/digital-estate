@@ -1,25 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Image, YStack, styled, View, useMedia } from 'tamagui';
 import { DropDownSelect } from '@/components/shared';
-
+import { smallScreenPaddingX } from '@/constants';
 // Define types for better type safety
 type RoomType = 'Спалня' | 'Хол';
 type FurnitureType = 'Оригинален' | 'Скандинавски' | 'Модерен';
 
-export const HeroMedia = () => {
+export const HeroMedia = ({ componentWidth }: { componentWidth: number }) => {
   const [roomType, setRoomType] = useState<RoomType>('Спалня');
   const [furnitureType, setFurnitureType] = useState<FurnitureType>('Оригинален');
 
   // Get image source based on selected types
   const imageSource = getImageSource(furnitureType, roomType);
 
+  const media = useMedia();
+
+  const imageRatio = 800 / 600;
+  const mediaComponentWidth = media.lg ? componentWidth * 0.6 : componentWidth - 32;
+  const mediaComponentHeight = mediaComponentWidth / imageRatio;
+
   return (
     <YStack
-      width="100%"
-      height={'50vh'}
-      $lg={{ width: '60%', height: '60vh', maxWidth: 800, maxHeight: 600, alignSelf: 'center' }}
+      $lg={{
+        alignSelf: 'center',
+      }}
     >
-      <Image source={imageSource} maxWidth="100%" maxHeight="100%" rounded="$6" />
+      <Image
+        source={imageSource}
+        width={mediaComponentWidth}
+        height={mediaComponentHeight}
+        rounded="$6"
+        aspectRatio={imageRatio}
+      />
       <RoomsContainer>
         <DropDownSelect
           items={FURNITURE_TYPES}
