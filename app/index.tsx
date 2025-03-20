@@ -4,17 +4,12 @@ import { Hero, Statistics, HowItWorks, SecondCTA, FAQ } from '@/components/HomeS
 
 export default function HomeScreen() {
   return (
-    <ScrollView
-      pb={32}
-      contentContainerStyle={{
-        rowGap: 32,
-      }}
-    >
+    <>
       <Hero />
       <Statistics />
       <HowItWorks />
       <SecondCTA />
       <FAQ />
-    </ScrollView>
+    </>
   );
 }
