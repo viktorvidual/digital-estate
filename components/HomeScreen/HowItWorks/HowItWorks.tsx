@@ -2,7 +2,7 @@ import React from 'react';
 import { ImageSourcePropType } from 'react-native';
 import { Image, XStack, styled, View, useMedia } from 'tamagui';
 import { MyText, MyXStack, MyYStack } from '@/components/shared';
-import { Settings } from '@tamagui/lucide-icons';
+import { Settings, Sparkles } from '@tamagui/lucide-icons';
 
 export const HowItWorks = () => {
   return (
@@ -35,8 +35,8 @@ export const HowItWorks = () => {
       </MyYStack>
 
       <MyXStack justify={'space-between'} flexWrap="wrap" gap="$4">
-        {STEPS.map(el => {
-          return <Element el={el} key={el.title} />;
+        {STEPS.map((el, index) => {
+          return <Element el={el} key={el.title} isSeconStep={index === 1} />;
         })}
       </MyXStack>
     </>
@@ -45,8 +45,10 @@ export const HowItWorks = () => {
 
 const Element = ({
   el,
+  isSeconStep,
 }: {
   el: { title: string; value: string; description: string; media: ImageSourcePropType; id: string };
+  isSeconStep: boolean;
 }) => {
   const media = useMedia();
 
@@ -64,7 +66,26 @@ const Element = ({
       </XStack>
 
       <MyText>{el.description}</MyText>
-      <Image source={el.media} maxWidth={'100%'} maxHeight={200} rounded="$6" />
+      <View maxWidth={'100%'} maxHeight={200}>
+        {isSeconStep && (
+          <ImageIconContainer>
+            <XStack
+              p="$3" 
+              bg="$black3"
+              rounded="$6"
+              justifyContent="center"
+              alignItems="center"
+              gap="$3"
+              opacity={0.8}
+            >
+              <Sparkles size={16} color="white" />
+              <MyText color="white" fw="bold" size="$3">Добавяне на мебели...</MyText>
+            </XStack>
+          </ImageIconContainer>
+        )}
+
+        <Image maxWidth={'100%'} maxHeight={'100%'} source={el.media} rounded="$6" />
+      </View>
     </ElementContainer>
   );
 };
@@ -88,6 +109,19 @@ const NumberContainer = styled(View, {
   alignItems: 'center',
 });
 
+const ImageIconContainer = styled(View, {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+
+  rounded: '$6',
+  justifyContent: 'center',
+  alignItems: 'center',
+  zIndex: 100,
+});
+
 const STEPS = [
   {
     title: 'Качете снимка',
@@ -98,7 +132,7 @@ const STEPS = [
   {
     title: 'AI Магия',
     description: 'Нашият AI ще преработи вашата снимка за около 15 секунди.',
-    media: require('@/assets/samples/2_Furnished-Troshevo-Living-Room-Living Room-Modern.jpg'),
+    media: require('@/assets/samples/1 _Furnished_Troshevo Living Room.jpg'),
     id: '2',
   },
   {
