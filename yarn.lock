@@ -2670,6 +2670,26 @@
   resolved "https://registry.yarnpkg.com/@tamagui/timer/-/timer-1.125.26.tgz#d09fe8e77725461e4b24182d297eea37ea044b0d"
   integrity sha512-spo3FrRBdIVtPV7vo3Z7hKcEjw/bKWEUug38IlaNsG9TqCfWgmiQgoha2e7dKxGhWMuroVoUcNXlvJ+ulLp6nw==
 
+"@tamagui/toast@^1.125.26":
+  version "1.125.26"
+  resolved "https://registry.yarnpkg.com/@tamagui/toast/-/toast-1.125.26.tgz#b1fc1ad3a0edd7ec9375f41390e594c438fec6a8"
+  integrity sha512-oKSIzCvlnJD8RId4b9oUVjoC3RQVxzA8GL6a4DGzFnZRNb96MtwHni/Cs4/SnvLHjw+w7dfpNmZx6cefokr6jA==
+  dependencies:
+    "@tamagui/animate-presence" "1.125.26"
+    "@tamagui/compose-refs" "1.125.26"
+    "@tamagui/constants" "1.125.26"
+    "@tamagui/core" "1.125.26"
+    "@tamagui/create-context" "1.125.26"
+    "@tamagui/dismissable" "1.125.26"
+    "@tamagui/helpers" "1.125.26"
+    "@tamagui/polyfill-dev" "1.125.26"
+    "@tamagui/portal" "1.125.26"
+    "@tamagui/stacks" "1.125.26"
+    "@tamagui/start-transition" "1.125.26"
+    "@tamagui/text" "1.125.26"
+    "@tamagui/use-controllable-state" "1.125.26"
+    "@tamagui/visually-hidden" "1.125.26"
+
 "@tamagui/toggle-group@1.125.26":
   version "1.125.26"
   resolved "https://registry.yarnpkg.com/@tamagui/toggle-group/-/toggle-group-1.125.26.tgz#1d7af50446f7f6d742715993270fbbe33bbad4f8"

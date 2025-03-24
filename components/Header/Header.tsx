@@ -5,6 +5,7 @@ import { SideBar } from '@/components/SideBar/SideBar';
 import { Href } from 'expo-router';
 import { MyXStack, MyText } from '@/components/shared';
 import { Menu } from '@tamagui/lucide-icons';
+import { router } from 'expo-router';
 
 const HEADER_ROUTES = [
   {
@@ -47,11 +48,11 @@ export const Header = () => {
 
             <XStack gap="$2">
               <Button>
-                <MyText fw="bold" color="black">
+                <MyText fw="bold" color="black" onPress={() => router.navigate('/login')}>
                   Вход
                 </MyText>
               </Button>
-              <Button bg="$blue10">
+              <Button bg="$blue10" onPress={() => router.navigate('/register')}>
                 <MyText fw="bold" color="white">
                   Регистрация
                 </MyText>

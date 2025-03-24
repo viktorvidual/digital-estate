@@ -1,5 +1,6 @@
 import { TamaguiProvider, YStack } from 'tamagui';
 import { tamaguiConfig } from '../tamagui.config';
+import { ToastViewport, ToastProvider } from '@tamagui/toast';
 import { Header } from '@/components/Header/Header';
 // import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
@@ -9,6 +10,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Footer } from '@/components/Footer/Footer';
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
@@ -31,20 +33,20 @@ export default function RootLayout() {
   return (
     <TamaguiProvider config={tamaguiConfig}>
       {/* <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}> */}
-      <YStack flex={1} overflow="scroll" bg="$white2">
-        <Header />
-
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <Stack.Screen name="index" />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-      </YStack>
-
-      {/* </ThemeProvider> */}
+      <ToastProvider>
+        <YStack flex={1} overflow="scroll" bg="$white2">
+          <Header />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+            }}
+          >
+            <Stack.Screen name="index" />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+        </YStack>
+        {/* </ThemeProvider> */}
+      </ToastProvider>
     </TamaguiProvider>
   );
 }

@@ -70,7 +70,7 @@ const Element = ({
         {isSeconStep && (
           <ImageIconContainer>
             <XStack
-              p="$3" 
+              p="$3"
               bg="$black3"
               rounded="$6"
               justifyContent="center"
@@ -79,7 +79,9 @@ const Element = ({
               opacity={0.8}
             >
               <Sparkles size={16} color="white" />
-              <MyText color="white" fw="bold" size="$3">Добавяне на мебели...</MyText>
+              <MyText color="white" fw="bold" size="$3">
+                Добавяне на мебели...
+              </MyText>
             </XStack>
           </ImageIconContainer>
         )}
