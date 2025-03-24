@@ -13,8 +13,6 @@ export const Hero = () => {
   const viewPortWidth = useWindowDimensions().width;
   const componentWidth = media.lg ? viewPortWidth - viewPortWidth * 0.3 : viewPortWidth;
 
-  console.log(componentWidth);
-
   return (
     <MyYStack bg="$blue12" gap="$5" py="$5">
       <XStack>

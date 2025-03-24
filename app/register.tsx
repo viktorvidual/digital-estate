@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Input, Button, YStack, XStack } from 'tamagui';
 import { MyText, MyYStack } from '@/components/shared';
 import { useToastController } from '@tamagui/toast';
 import { Link } from 'expo-router';
+import { supabase } from '@/lib/supabase';
 
 export default function RegistrationScreen() {
   const toast = useToastController();
@@ -10,14 +11,41 @@ export default function RegistrationScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const onConfirm = () => {
-    console.log('email', email);
-    console.log('password', password);
-    console.log('confirm password', confirmPassword);
+  const onConfirm = async () => {
+    console.log(supabase.auth);
 
-    toast.show('Welcome');
+    if (!email || !password || !confirmPassword) {
+      return setError('Всички полета са задължителни');
+    }
+
+    if (password !== confirmPassword) {
+      return setError('Паролите не съвпадат');
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      console.log('error', error);
+      return setError(error.message);
+    }
+
+    if (data) {
+      toast.show('Успешна регистрация');
+    }
+
+    console.log('data', data);
   };
+
+  useEffect(() => {
+    if (error) {
+      setError('');
+    }
+  }, [email, password, confirmPassword]);
 
   return (
     <MyYStack justify="center" items="center" gap="$4">
@@ -48,6 +76,14 @@ export default function RegistrationScreen() {
           secureTextEntry
         />
       </YStack>
+
+      <>
+        {error && (
+          <MyText fw="bold" color="$red10">
+            {error}
+          </MyText>
+        )}
+      </>
 
       <Button width={'100%'} $lg={{ width: 500 }} bg="$blue10" onPress={onConfirm}>
         <MyText color="white" fw="bold">

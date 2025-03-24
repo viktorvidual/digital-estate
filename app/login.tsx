@@ -3,20 +3,36 @@ import { MyText, MyYStack } from '@/components/shared';
 import { YStack, Input, Button, XStack } from 'tamagui';
 import { Link } from 'expo-router';
 import { useToastController } from '@tamagui/toast';
+import { supabase } from '@/lib/supabase';
 
 export default function LoginScreen() {
   const toast = useToastController();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const onConfirm = () => {
-    console.log('email', email);
-    console.log('password', password);
-    console.log('confirm password', confirmPassword);
+  const onConfirm = async () => {
+    if (!email || !password) {
+      return setError('Всички полета са задължителни');
+    }
 
-    toast.show('Welcome');
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      if (error.message.includes('not confirmed')) {
+        setError('Вашият имейл не е потвърден');
+      } else {
+        setError(error.message);
+      }
+    }
+
+    if (data) {
+      toast.show('Успешен вход');
+    }
   };
 
   return (
@@ -44,6 +60,14 @@ export default function LoginScreen() {
           Вход
         </MyText>
       </Button>
+
+      <>
+        {error && (
+          <MyText fw="bold" color="$red10">
+            {error}
+          </MyText>
+        )}
+      </>
 
       <XStack>
         <MyText>Нямаш профил? </MyText>
