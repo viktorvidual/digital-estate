@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { YStack, XStack, SizableText, Button } from 'tamagui';
 import { router, Href } from 'expo-router';
 import { useMedia } from 'tamagui';
+import { useAuthStore } from '@/stores';
+import { supabase } from '@/lib/supabase';
 
 type SideBarProps = {
   isSideBarOpen: boolean;
@@ -12,9 +14,17 @@ type SideBarProps = {
 };
 
 export const SideBar = ({ isSideBarOpen, setIsSideBarOpen, routes }: SideBarProps) => {
-  const onPress = (route: Href) => {
+  const { session } = useAuthStore();
+
+  const onNavigate = (route: Href) => {
     router.navigate(route);
     setIsSideBarOpen(false);
+  };
+
+  const onSignOut = () => {
+    supabase.auth.signOut();
+    setIsSideBarOpen(false);
+    router.navigate('/login');
   };
 
   const isDesktop = useMedia().lg;
@@ -42,7 +52,7 @@ export const SideBar = ({ isSideBarOpen, setIsSideBarOpen, routes }: SideBarProp
           </XStack>
           <YStack gap="$4" mt="$4">
             {routes.map(route => (
-              <Pressable key={route.name} onPress={() => onPress(route.href)}>
+              <Pressable key={route.name} onPress={() => onNavigate(route.href)}>
                 <SizableText size="$6" fontWeight="bold">
                   {route.name}
                 </SizableText>
@@ -51,16 +61,26 @@ export const SideBar = ({ isSideBarOpen, setIsSideBarOpen, routes }: SideBarProp
           </YStack>
 
           <YStack gap="$4" mt="$4" position="absolute" bottom="$10" left="$4" right="$4">
-            <Button width="100%" onPress={() => onPress('/login')}>
-              <SizableText size="$6" fontWeight="bold">
-                Вход
-              </SizableText>
-            </Button>
-            <Button width="100%" bg="$blue10" onPress={() => onPress('/register')}>
-              <SizableText size="$6" fontWeight="bold" color="white">
-                Регистрация
-              </SizableText>
-            </Button>
+            {!session ? (
+              <>
+                <Button width="100%" onPress={() => onNavigate('/login')}>
+                  <SizableText size="$6" fontWeight="bold">
+                    Вход
+                  </SizableText>
+                </Button>
+                <Button width="100%" bg="$blue10" onPress={() => onNavigate('/register')}>
+                  <SizableText size="$6" fontWeight="bold" color="white">
+                    Регистрация
+                  </SizableText>
+                </Button>
+              </>
+            ) : (
+              <Button width="100%" onPress={onSignOut}>
+                <SizableText size="$6" fontWeight="bold">
+                  Изход
+                </SizableText>
+              </Button>
+            )}
           </YStack>
         </YStack>
       )}

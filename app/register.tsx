@@ -4,20 +4,54 @@ import { MyText, MyYStack } from '@/components/shared';
 import { useToastController } from '@tamagui/toast';
 import { Link } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { CircleMinus, CheckCircle } from '@tamagui/lucide-icons';
 
 export default function RegistrationScreen() {
   const toast = useToastController();
 
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
+
   const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+  //password validation
+  const [passwordIsEightChars, setPasswordIsEightChars] = useState(false);
+  const [passwordHasUppercase, setPasswordHasUppercase] = useState(false);
+  const [passwordHasLowercase, setPasswordHasLowercase] = useState(false);
+  const [passwordHasNumber, setPasswordHasNumber] = useState(false);
+  const [passwordHasSpecialChar, setPasswordHasSpecialChar] = useState(false);
+
   const [error, setError] = useState('');
 
   const onConfirm = async () => {
     console.log(supabase.auth);
 
-    if (!email || !password || !confirmPassword) {
-      return setError('Всички полета са задължителни');
+    if (!email) {
+      return setEmailError('Моля въведете email');
+    }
+
+    if (!password) {
+      return setPasswordError('Моля въведете парола');
+    }
+
+    if (
+      !passwordIsEightChars ||
+      !passwordHasUppercase ||
+      !passwordHasLowercase ||
+      !passwordHasNumber ||
+      !passwordHasSpecialChar
+    ) {
+      return setPasswordError(
+        'Паролата трябва да бъде поне 8 символа, да съдържа главна и малка буква, цифра и специален символ'
+      );
+    }
+
+    if (!confirmPassword) {
+      return setConfirmPasswordError('Моля потвърдете паролата');
     }
 
     if (password !== confirmPassword) {
@@ -45,7 +79,33 @@ export default function RegistrationScreen() {
     if (error) {
       setError('');
     }
+
+    if (emailError) {
+      setEmailError('');
+    }
+
+    if (passwordError) {
+      setPasswordError('');
+    }
+
+    if (confirmPasswordError) {
+      setConfirmPasswordError('');
+    }
   }, [email, password, confirmPassword]);
+
+  useEffect(() => {
+    password.length >= 8 ? setPasswordIsEightChars(true) : setPasswordIsEightChars(false);
+
+    password.match(/[A-Z]/) ? setPasswordHasUppercase(true) : setPasswordHasUppercase(false);
+
+    password.match(/[a-z]/) ? setPasswordHasLowercase(true) : setPasswordHasLowercase(false);
+
+    password.match(/\d/) ? setPasswordHasNumber(true) : setPasswordHasNumber(false);
+
+    password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/)
+      ? setPasswordHasSpecialChar(true)
+      : setPasswordHasSpecialChar(false);
+  }, [password]);
 
   return (
     <MyYStack justify="center" items="center" gap="$4">
@@ -55,6 +115,11 @@ export default function RegistrationScreen() {
       <YStack width={'100%'} gap="$2" $lg={{ width: 500 }}>
         <MyText fw="bold">Email</MyText>
         <Input value={email} onChangeText={setEmail} placeholder="Въведете email" />
+        {emailError && (
+          <MyText fw="bold" color="$red10">
+            {emailError}
+          </MyText>
+        )}
       </YStack>
 
       <YStack width={'100%'} gap="$2" $lg={{ width: 500 }}>
@@ -65,6 +130,11 @@ export default function RegistrationScreen() {
           placeholder="Изберете парола"
           secureTextEntry
         />
+        {passwordError && (
+          <MyText fw="bold" color="$red10">
+            {passwordError}
+          </MyText>
+        )}
       </YStack>
 
       <YStack width={'100%'} gap="$2" $lg={{ width: 500 }}>
@@ -75,6 +145,93 @@ export default function RegistrationScreen() {
           placeholder="Потвърдете паролата"
           secureTextEntry
         />
+        {confirmPasswordError && (
+          <MyText fw="bold" color="$red10">
+            {confirmPasswordError}
+          </MyText>
+        )}
+      </YStack>
+
+      <YStack width={'100%'} $lg={{ width: 500 }}>
+        <MyText fw="bold" size="$2" mb="$1">
+          Парола трябва да съдържа:
+        </MyText>
+        <XStack flexWrap="wrap" gap="$2">
+          <XStack alignItems="center" gap="$2">
+            {passwordIsEightChars ? (
+              <CheckCircle size={16} color="$green10" />
+            ) : (
+              <CircleMinus size={16} color="black" />
+            )}
+            <MyText
+              size="$2"
+              color={passwordIsEightChars ? '$green10' : 'black'}
+              opacity={password.length > 0 || passwordIsEightChars ? 1 : 0.7}
+            >
+              поне 8 символа
+            </MyText>
+          </XStack>
+
+          <XStack alignItems="center" gap="$2">
+            {passwordHasUppercase ? (
+              <CheckCircle size={16} color="$green10" />
+            ) : (
+              <CircleMinus size={16} color="black" />
+            )}
+            <MyText
+              size="$2"
+              color={passwordHasUppercase ? '$green10' : 'black'}
+              opacity={password.length > 0 || passwordHasUppercase ? 1 : 0.7}
+            >
+              главна буква
+            </MyText>
+          </XStack>
+
+          <XStack alignItems="center" gap="$2">
+            {passwordHasLowercase ? (
+              <CheckCircle size={16} color="$green10" />
+            ) : (
+              <CircleMinus size={16} color="black" />
+            )}
+            <MyText
+              size="$2"
+              color={passwordHasLowercase ? '$green10' : 'black'}
+              opacity={password.length > 0 || passwordHasLowercase ? 1 : 0.7}
+            >
+              малка буква
+            </MyText>
+          </XStack>
+
+          <XStack alignItems="center" gap="$2">
+            {passwordHasNumber ? (
+              <CheckCircle size={16} color="$green10" />
+            ) : (
+              <CircleMinus size={16} color="black" />
+            )}
+            <MyText
+              size="$2"
+              color={passwordHasNumber ? '$green10' : 'black'}
+              opacity={password.length > 0 || passwordHasNumber ? 1 : 0.7}
+            >
+              цифра
+            </MyText>
+          </XStack>
+
+          <XStack alignItems="center" gap="$2">
+            {passwordHasSpecialChar ? (
+              <CheckCircle size={16} color="$green10" />
+            ) : (
+              <CircleMinus size={16} color="black" />
+            )}
+            <MyText
+              size="$2"
+              color={passwordHasSpecialChar ? '$green10' : 'black'}
+              opacity={password.length > 0 || passwordHasSpecialChar ? 1 : 0.7}
+            >
+              специален символ
+            </MyText>
+          </XStack>
+        </XStack>
       </YStack>
 
       <>

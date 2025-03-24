@@ -4,6 +4,7 @@ import { YStack, Input, Button, XStack } from 'tamagui';
 import { Link } from 'expo-router';
 import { useToastController } from '@tamagui/toast';
 import { supabase } from '@/lib/supabase';
+import { router } from 'expo-router';
 
 export default function LoginScreen() {
   const toast = useToastController();
@@ -31,6 +32,7 @@ export default function LoginScreen() {
     }
 
     if (data) {
+      router.navigate('/');
       toast.show('Успешен вход');
     }
   };

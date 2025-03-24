@@ -6,6 +6,8 @@ import { Href } from 'expo-router';
 import { MyXStack, MyText } from '@/components/shared';
 import { Menu } from '@tamagui/lucide-icons';
 import { router } from 'expo-router';
+import { useAuthStore } from '@/stores';
+import { supabase } from '@/lib/supabase';
 
 const HEADER_ROUTES = [
   {
@@ -23,6 +25,7 @@ const HEADER_ROUTES = [
 ];
 
 export const Header = () => {
+  const { session } = useAuthStore();
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
   const media = useMedia();
@@ -45,19 +48,26 @@ export const Header = () => {
                 </Link>
               ))}
             </XStack>
-
-            <XStack gap="$2">
-              <Button>
-                <MyText fw="bold" color="black" onPress={() => router.navigate('/login')}>
-                  Вход
-                </MyText>
+            {session ? (
+              <Button bg="$blue10" onPress={() => supabase.auth.signOut()}>
+                <MyText color="white" fw="bold">Излез</MyText>
               </Button>
-              <Button bg="$blue10" onPress={() => router.navigate('/register')}>
-                <MyText fw="bold" color="white">
-                  Регистрация
-                </MyText>
-              </Button>
-            </XStack>
+            ) : (
+              <>
+                <XStack gap="$2">
+                  <Button>
+                    <MyText fw="bold" color="black" onPress={() => router.navigate('/login')}>
+                      Вход
+                    </MyText>
+                  </Button>
+                  <Button bg="$blue10" onPress={() => router.navigate('/register')}>
+                    <MyText fw="bold" color="white">
+                      Регистрация
+                    </MyText>
+                  </Button>
+                </XStack>
+              </>
+            )}
           </>
         )}
 
