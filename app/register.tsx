@@ -4,7 +4,7 @@ import { MyText, MyYStack } from '@/components/shared';
 import { useToastController } from '@tamagui/toast';
 import { Link } from 'expo-router';
 import { supabase } from '@/lib/supabase';
-import { CircleMinus, CheckCircle } from '@tamagui/lucide-icons';
+import { CircleMinus, CheckCircle, Square, SquareCheckBig } from '@tamagui/lucide-icons';
 
 export default function RegistrationScreen() {
   const toast = useToastController();
@@ -15,7 +15,6 @@ export default function RegistrationScreen() {
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
 
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
   //password validation
@@ -24,6 +23,8 @@ export default function RegistrationScreen() {
   const [passwordHasLowercase, setPasswordHasLowercase] = useState(false);
   const [passwordHasNumber, setPasswordHasNumber] = useState(false);
   const [passwordHasSpecialChar, setPasswordHasSpecialChar] = useState(false);
+
+  const [confirmConditions, setConfirmConditions] = useState(false);
 
   const [error, setError] = useState('');
 
@@ -48,14 +49,6 @@ export default function RegistrationScreen() {
       return setPasswordError(
         'Паролата трябва да бъде поне 8 символа, да съдържа главна и малка буква, цифра и специален символ'
       );
-    }
-
-    if (!confirmPassword) {
-      return setConfirmPasswordError('Моля потвърдете паролата');
-    }
-
-    if (password !== confirmPassword) {
-      return setError('Паролите не съвпадат');
     }
 
     const { data, error } = await supabase.auth.signUp({
@@ -91,7 +84,7 @@ export default function RegistrationScreen() {
     if (confirmPasswordError) {
       setConfirmPasswordError('');
     }
-  }, [email, password, confirmPassword]);
+  }, [email, password]);
 
   useEffect(() => {
     password.length >= 8 ? setPasswordIsEightChars(true) : setPasswordIsEightChars(false);
@@ -137,22 +130,23 @@ export default function RegistrationScreen() {
         )}
       </YStack>
 
-      <YStack width={'100%'} gap="$2" $lg={{ width: 500 }}>
-        <MyText fw="bold">Потвърди Парола</MyText>
-        <Input
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          placeholder="Потвърдете паролата"
-          secureTextEntry
-        />
-        {confirmPasswordError && (
-          <MyText fw="bold" color="$red10">
-            {confirmPasswordError}
-          </MyText>
+      <XStack
+        width={'100%'}
+        $lg={{ width: 500 }}
+        alignItems="center"
+        gap="$2"
+        onPress={() => setConfirmConditions(!confirmConditions)}
+        cursor="pointer"
+      >
+        {confirmConditions ? (
+          <SquareCheckBig size={16} color="$green10" />
+        ) : (
+          <Square size={16} color="black" />
         )}
-      </YStack>
+        <MyText size="$4">Прочетох и съм съгласен с Общите условия</MyText>
+      </XStack>
 
-      <YStack width={'100%'} $lg={{ width: 500 }}>
+      <YStack width={'100%'} $lg={{ width: 500 }} my="$1">
         <MyText fw="bold" size="$2" mb="$1">
           Парола трябва да съдържа:
         </MyText>
@@ -242,7 +236,13 @@ export default function RegistrationScreen() {
         )}
       </>
 
-      <Button width={'100%'} $lg={{ width: 500 }} bg="$blue10" onPress={onConfirm}>
+      <Button
+        width={'100%'}
+        $lg={{ width: 500 }}
+        bg={confirmConditions ? '$blue10' : '$blue6'}
+        onPress={onConfirm}
+        disabled={!confirmConditions}
+      >
         <MyText color="white" fw="bold">
           Регистрирай се
         </MyText>

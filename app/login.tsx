@@ -1,21 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MyText, MyYStack } from '@/components/shared';
 import { YStack, Input, Button, XStack } from 'tamagui';
 import { Link } from 'expo-router';
-import { useToastController } from '@tamagui/toast';
 import { supabase } from '@/lib/supabase';
 import { router } from 'expo-router';
 
 export default function LoginScreen() {
-  const toast = useToastController();
-
   const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
+
   const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+
   const [error, setError] = useState('');
 
   const onConfirm = async () => {
-    if (!email || !password) {
-      return setError('Всички полета са задължителни');
+    if (!email) {
+      return setEmailError('Въведете email');
+    }
+
+    if (!password) {
+      return setPasswordError('Въведете парола');
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -24,18 +29,33 @@ export default function LoginScreen() {
     });
 
     if (error) {
-      if (error.message.includes('not confirmed')) {
-        setError('Вашият имейл не е потвърден');
+      if (error.message.toLowerCase().includes('not confirmed')) {
+        return setError('Вашият имейл не е потвърден');
+      } else if (error.message.toLowerCase().includes('invalid login credentials')) {
+        return setError('Невалидни данни');
       } else {
-        setError(error.message);
+        return setError(error.message);
       }
     }
 
     if (data) {
       router.navigate('/');
-      toast.show('Успешен вход');
     }
   };
+
+  useEffect(() => {
+    if (emailError) {
+      setEmailError('');
+    }
+
+    if (passwordError) {
+      setPasswordError('');
+    }
+
+    if (error) {
+      setError('');
+    }
+  }, [email, password]);
 
   return (
     <MyYStack justify="center" items="center" gap="$4">
@@ -45,6 +65,11 @@ export default function LoginScreen() {
       <YStack width={'100%'} gap="$2" $lg={{ width: 500 }}>
         <MyText fw="bold">Email</MyText>
         <Input value={email} onChangeText={setEmail} placeholder="Въведете email" />
+        {emailError && (
+          <MyText fw="bold" color="$red10">
+            {emailError}
+          </MyText>
+        )}
       </YStack>
 
       <YStack width={'100%'} gap="$2" $lg={{ width: 500 }}>
@@ -55,7 +80,18 @@ export default function LoginScreen() {
           placeholder="Изберете парола"
           secureTextEntry
         />
+        {passwordError && (
+          <MyText fw="bold" color="$red10">
+            {passwordError}
+          </MyText>
+        )}
       </YStack>
+
+      <XStack width={'100%'} $lg={{ width: 500 }} alignItems="center" gap="$2">
+        <Link href="/">
+          <MyText>Забравена парола?</MyText>
+        </Link>
+      </XStack>
 
       <Button width={'100%'} $lg={{ width: 500 }} bg="$blue10" onPress={onConfirm}>
         <MyText color="white" fw="bold">
