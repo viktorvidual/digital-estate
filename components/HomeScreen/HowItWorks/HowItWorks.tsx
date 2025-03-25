@@ -7,7 +7,7 @@ import { Settings, Sparkles } from '@tamagui/lucide-icons';
 export const HowItWorks = () => {
   return (
     <>
-      <MyYStack items="center" gap="$4">
+      <MyYStack items="center">
         <XStack items="center" gap="$2">
           <View bg="$green8" rounded="$4" p="$2">
             <Settings size={16} />

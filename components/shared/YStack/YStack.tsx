@@ -14,6 +14,7 @@ export const MyYStack = ({ children, bg, ...props }: MyYStackProps) => {
       width="100%"
       alignSelf="center"
       bg={bg}
+      gap="$4"
       $lg={{
         px: '15%',
       }}

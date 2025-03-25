@@ -2,6 +2,7 @@ import React from 'react';
 import { YStack, Button, XStack, View, styled, useMedia } from 'tamagui';
 import { MyXStack, MyText } from '@/components/shared';
 import { BedDouble, MousePointerClick, Clock, Wallet, RefreshCcw } from '@tamagui/lucide-icons';
+import { IconContainer } from '@/components/ui';
 
 export const SecondCTA = () => {
   const media = useMedia();
@@ -80,15 +81,6 @@ const CTA = ({ showButton }: { showButton?: boolean }) => {
     </YStack>
   );
 };
-
-export const IconContainer = styled(View, {
-  width: '$2',
-  height: '$2',
-  justifyContent: 'center',
-  alignItems: 'center',
-  bg: '$green8',
-  rounded: '$4',
-});
 
 export const ElementContainer = styled(View, {
   bg: '#001B3A',

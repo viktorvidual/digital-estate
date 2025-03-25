@@ -1,9 +1,12 @@
-import { YStack, XStack, SizableText, Button, Text } from 'tamagui';
+import React from 'react';
+import { PricingHeader } from '@/components/PricingScreen';
+import { BlueBackground } from '@/components/ui';
 
 export default function AboutScreen() {
   return (
-    <YStack flex={1} alignItems="center" padding={'$4'}>
-      <Text>Pricing</Text>
-    </YStack>
+    <>
+      <BlueBackground />
+      <PricingHeader />
+    </>
   );
 }

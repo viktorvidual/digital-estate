@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Input, Button, YStack, XStack } from 'tamagui';
+import { Input, Button, YStack, XStack, styled } from 'tamagui';
 import { MyText, MyYStack } from '@/components/shared';
 import { useToastController } from '@tamagui/toast';
 import { Link } from 'expo-router';
@@ -101,7 +101,7 @@ export default function RegistrationScreen() {
   }, [password]);
 
   return (
-    <MyYStack justify="center" items="center" gap="$4">
+    <MyYStack justify="center" items="center">
       <MyText type="title" fw="bold">
         Регистрация
       </MyText>
@@ -151,7 +151,7 @@ export default function RegistrationScreen() {
           Парола трябва да съдържа:
         </MyText>
         <XStack flexWrap="wrap" gap="$2">
-          <XStack alignItems="center" gap="$2">
+          <PasswordRequirementContainer>
             {passwordIsEightChars ? (
               <CheckCircle size={16} color="$green10" />
             ) : (
@@ -164,9 +164,9 @@ export default function RegistrationScreen() {
             >
               поне 8 символа
             </MyText>
-          </XStack>
+          </PasswordRequirementContainer>
 
-          <XStack alignItems="center" gap="$2">
+          <PasswordRequirementContainer>
             {passwordHasUppercase ? (
               <CheckCircle size={16} color="$green10" />
             ) : (
@@ -179,9 +179,9 @@ export default function RegistrationScreen() {
             >
               главна буква
             </MyText>
-          </XStack>
+          </PasswordRequirementContainer>
 
-          <XStack alignItems="center" gap="$2">
+          <PasswordRequirementContainer>
             {passwordHasLowercase ? (
               <CheckCircle size={16} color="$green10" />
             ) : (
@@ -194,7 +194,7 @@ export default function RegistrationScreen() {
             >
               малка буква
             </MyText>
-          </XStack>
+          </PasswordRequirementContainer>
 
           <XStack alignItems="center" gap="$2">
             {passwordHasNumber ? (
@@ -211,7 +211,7 @@ export default function RegistrationScreen() {
             </MyText>
           </XStack>
 
-          <XStack alignItems="center" gap="$2">
+          <PasswordRequirementContainer>
             {passwordHasSpecialChar ? (
               <CheckCircle size={16} color="$green10" />
             ) : (
@@ -224,7 +224,7 @@ export default function RegistrationScreen() {
             >
               специален символ
             </MyText>
-          </XStack>
+          </PasswordRequirementContainer>
         </XStack>
       </YStack>
 
@@ -257,3 +257,8 @@ export default function RegistrationScreen() {
     </MyYStack>
   );
 }
+
+const PasswordRequirementContainer = styled(XStack, {
+  gap: '$2',
+  alignItems: 'center',
+});

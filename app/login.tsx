@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MyText, MyYStack } from '@/components/shared';
-import { YStack, Input, Button, XStack } from 'tamagui';
+import { YStack, Input, Button, XStack, styled } from 'tamagui';
 import { Link } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { router } from 'expo-router';
@@ -58,11 +58,12 @@ export default function LoginScreen() {
   }, [email, password]);
 
   return (
-    <MyYStack justify="center" items="center" gap="$4">
+    <MyYStack justify="center" items="center">
       <MyText type="title" fw="bold">
         Вход
       </MyText>
-      <YStack width={'100%'} gap="$2" $lg={{ width: 500 }}>
+
+      <InputContainer>
         <MyText fw="bold">Email</MyText>
         <Input value={email} onChangeText={setEmail} placeholder="Въведете email" />
         {emailError && (
@@ -70,9 +71,9 @@ export default function LoginScreen() {
             {emailError}
           </MyText>
         )}
-      </YStack>
+      </InputContainer>
 
-      <YStack width={'100%'} gap="$2" $lg={{ width: 500 }}>
+      <InputContainer>
         <MyText fw="bold">Парола</MyText>
         <Input
           value={password}
@@ -85,7 +86,7 @@ export default function LoginScreen() {
             {passwordError}
           </MyText>
         )}
-      </YStack>
+      </InputContainer>
 
       <XStack width={'100%'} $lg={{ width: 500 }} alignItems="center" gap="$2">
         <Link href="/">
@@ -116,3 +117,11 @@ export default function LoginScreen() {
     </MyYStack>
   );
 }
+
+const InputContainer = styled(YStack, {
+  width: '100%',
+  gap: '$2',
+  $lg: {
+    width: 500,
+  },
+});

@@ -14,7 +14,7 @@ export const Hero = () => {
   const componentWidth = media.lg ? viewPortWidth - viewPortWidth * 0.3 : viewPortWidth;
 
   return (
-    <MyYStack bg="$blue12" gap="$5" py="$5">
+    <MyYStack bg="$blue12" py="$5">
       <XStack>
         {media.lg && <CallToAction componentWidth={componentWidth} />}
         <HeroMedia componentWidth={componentWidth} />

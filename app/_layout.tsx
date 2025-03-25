@@ -9,6 +9,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import 'react-native-reanimated';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores';
+import "@tamagui/core/reset.css";
 
 const UNAUTHORIZED_ROUTES = ['login', 'register'];
 
