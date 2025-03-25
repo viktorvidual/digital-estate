@@ -1,6 +1,6 @@
 import React from 'react';
 import { YStack, XStack, useMedia } from 'tamagui';
-import { MyText, MyXStack, Accordion, MyYStack } from '@/components/shared';
+import { MyText, Accordion, MyYStack } from '@/components/shared';
 import { MessageCircle } from '@tamagui/lucide-icons';
 import { IconContainer } from '@/components/ui';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { PricingHeader, PriceCategories } from '@/components/PricingScreen';
+import { PricingHeader, PriceCategories, PricingFAQ } from '@/components/PricingScreen';
 import { BlueBackground } from '@/components/ui';
 
 export default function PricingScreen() {
@@ -8,8 +8,7 @@ export default function PricingScreen() {
       <BlueBackground />
       <PricingHeader />
       <PriceCategories />
+      <PricingFAQ />
     </>
   );
 }
-
-

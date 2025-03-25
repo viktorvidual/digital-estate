@@ -48,19 +48,50 @@ const Category = ({
           <MyText fw="medium">снимки / месец</MyText>
         </XStack>
 
-        <XStack mt="$3" gap="$2" alignItems="center">
-          <MyText fw="bold" size="$8">
-            {price}
-          </MyText>
-          <MyText fw="medium">лв. / месец</MyText>
+        <XStack width={'100%'} justify={'space-between'}>
+          <YStack>
+            <XStack mt="$3" gap="$2" alignItems="center">
+              <MyText fw="bold" size="$8">
+                {price}лв
+              </MyText>
+              <MyText fw="medium">/ месец</MyText>
+            </XStack>
+
+            <XStack mt="$3" gap="$2" alignItems="center">
+              <MyText size="$4">{(price / category.photos).toFixed(2)}лв</MyText>
+              <MyText size="$4">/ снимка</MyText>
+            </XStack>
+          </YStack>
+
+          {!media.lg && (
+            <YStack mt="$3" alignSelf="center" bg="$blue12" p="$2" rounded="$6" items={'center'}>
+              <MyText size="$3" color="$green7">
+                Само{' '}
+                <MyText fw="bold" color="$green7">
+                  {category.price.yearly}лв
+                </MyText>{' '}
+              </MyText>
+              <MyText size="$3" color="$green7">
+                {' '}
+                (м. с год. план)
+              </MyText>
+            </YStack>
+          )}
         </XStack>
 
-        <XStack mt="$3" gap="$2" alignItems="center">
-          <MyText size="$4">{(price / category.photos).toFixed(2)}</MyText>
-          <MyText size="$4">лв. / снимка</MyText>
-        </XStack>
+        {selectedPricing === 'monthly' && media.lg && (
+          <XStack mt="$3" alignSelf="center" bg="$blue12" p="$1" px={12} rounded="$6">
+            <MyText size="$3" color="$green7">
+              Само{' '}
+              <MyText fw="bold" color="$green7">
+                {category.price.yearly}лв
+              </MyText>{' '}
+              (м. с год. план)
+            </MyText>
+          </XStack>
+        )}
 
-        <Button mt="$3" bg="$blue10" borderRadius="$10">
+        <Button mt="$3" bg="$blue10" borderRadius="$10" width={'100%'} rounded="$6">
           <MyText fw="bold" color="white">
             Избери
           </MyText>
@@ -87,17 +118,17 @@ const Benefits = () => {
 };
 
 const CategoryContainer = styled(YStack, {
-  borderRadius: '$10',
+  rounded: '$6',
   backgroundColor: 'white',
   padding: 8,
   width: '100%',
   $lg: {
-    width: '23%',
+    width: '24%',
   },
 });
 
 const CategoryInnerContainer = styled(YStack, {
-  borderRadius: '$9',
+  rounded: '$5',
   backgroundColor: 'white',
   padding: '$4',
   width: '100%',
