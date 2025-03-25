@@ -1,18 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { MyYStack, MyText } from '@/components/shared';
 import { Wallet } from '@tamagui/lucide-icons';
 import { IconContainer } from '@/components/ui';
 import { styled, View, XStack, YStack, useMedia } from 'tamagui';
+import { usePricingStore } from '@/stores';
 
 export const PricingHeader = () => {
-  const [selected, setSelected] = useState<string>('monthly');
-
   const media = useMedia();
 
-  useEffect(() => {
-    console.log(selected);
-  }, [selected]);
-
+  const { selectedPricing, setSelectedPricing } = usePricingStore();
   return (
     <MyYStack zIndex={'$2'} py="$6">
       <XStack
@@ -33,11 +29,11 @@ export const PricingHeader = () => {
 
       {!media.lg ? (
         <YStack width="100%" items="center" gap="$3">
-          <Content selected={selected} setSelected={setSelected} />
+          <Content selected={selectedPricing} setSelected={setSelectedPricing} />
         </YStack>
       ) : (
         <XStack width="100%" items="center" justify="space-between">
-          <Content selected={selected} setSelected={setSelected} />
+          <Content selected={selectedPricing} setSelected={setSelectedPricing} />
         </XStack>
       )}
 
@@ -50,11 +46,9 @@ const Content = ({
   selected,
   setSelected,
 }: {
-  selected: string;
-  setSelected: (selected: string) => void;
+  selected: 'monthly' | 'yearly';
+  setSelected: (selected: 'monthly' | 'yearly') => void;
 }) => {
-  const media = useMedia();
-
   return (
     <>
       <YStack gap="$3">

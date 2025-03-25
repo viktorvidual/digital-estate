@@ -2,6 +2,7 @@ import { SizableText, SizableTextProps, useMedia } from 'tamagui';
 
 type MyTextProps = SizableTextProps & {
   type?: 'title';
+  fw?: 'bold' | 'medium' | 'regular';
 };
 
 export const MyText = ({ children, type, ...props }: MyTextProps) => {
