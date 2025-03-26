@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Image, YStack, styled, View, useMedia } from 'tamagui';
 import { DropDownSelect } from '@/components/shared';
-import { smallScreenPaddingX } from '@/constants';
+
 // Define types for better type safety
 type RoomType = 'Спалня' | 'Хол';
 type FurnitureType = 'Оригинален' | 'Скандинавски' | 'Модерен';
@@ -67,16 +67,16 @@ const FURNITURE_TYPES = [
 
 const imagePaths = {
   Оригинален: {
-    Хол: require('@/assets/samples/1 _Furnished_Troshevo Living Room.jpg'),
-    Спалня: require('@/assets/samples/5 _Furnished_Troshevo_Bedroom.jpg'),
+    Хол: require('@/assets/samples/living-room/unfurnished.jpg'),
+    Спалня: require('@/assets/samples/bedroom/unfurnished.jpg'),
   },
   Модерен: {
-    Хол: require('@/assets/samples/2_Furnished-Troshevo-Living-Room-Living Room-Modern.jpg'),
-    Спалня: require('@/assets/samples/6_Furnished-Troshevo_Bedroom_Bedroom_Modern.jpg'),
+    Хол: require('@/assets/samples/living-room/modern.jpg'),
+    Спалня: require('@/assets/samples/bedroom/modern.jpg'),
   },
   Скандинавски: {
-    Хол: require('@/assets/samples/3 _Furnished-Troshevo-Living-Room_Living Room _Scandinavian.jpg'),
-    Спалня: require('@/assets/samples/5-Furnished-Troshevo-Bedroom_Bedroom_Scandinavian.jpg'),
+    Хол: require('@/assets/samples/living-room/scandinavian.jpg'),
+    Спалня: require('@/assets/samples/bedroom/scandinavian.jpg'),
   },
 };
 

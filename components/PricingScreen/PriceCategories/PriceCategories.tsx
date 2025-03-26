@@ -63,7 +63,7 @@ const Category = ({
             </XStack>
           </YStack>
 
-          {!media.lg && (
+          {!media.lg && selectedPricing === 'monthly' && (
             <YStack mt="$3" alignSelf="center" bg="$blue12" p="$2" rounded="$6" items={'center'}>
               <MyText size="$3" color="$green7">
                 Само{' '}

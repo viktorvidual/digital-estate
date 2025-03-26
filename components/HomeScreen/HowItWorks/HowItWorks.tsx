@@ -128,19 +128,19 @@ const STEPS = [
   {
     title: 'Качете снимка',
     description: 'Може да качите снимка на обзавена, както и не необзавена стая',
-    media: require('@/assets/samples/1 _Furnished_Troshevo Living Room.jpg'),
+    media: require('@/assets/samples/living-room/unfurnished.jpg'),
     id: '1',
   },
   {
     title: 'AI Магия',
     description: 'Нашият AI ще преработи вашата снимка за около 15 секунди.',
-    media: require('@/assets/samples/1 _Furnished_Troshevo Living Room.jpg'),
+    media: require('@/assets/samples/living-room/unfurnished.jpg'),
     id: '2',
   },
   {
     title: 'Изтеглете резултата',
     description: 'Изтеглете обзаведената снимка и я използвайте за успешна продажба.',
-    media: require('@/assets/samples/3 _Furnished-Troshevo-Living-Room_Living Room _Scandinavian.jpg'),
+    media: require('@/assets/samples/living-room/scandinavian.jpg'),
     id: '3',
   },
 ];
