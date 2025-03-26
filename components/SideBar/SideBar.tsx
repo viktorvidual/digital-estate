@@ -4,18 +4,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { YStack, XStack, SizableText, Button } from 'tamagui';
 import { router, Href } from 'expo-router';
 import { useMedia } from 'tamagui';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useSideBarStore } from '@/stores';
 import { supabase } from '@/lib/supabase';
+import { ROUTES } from '@/constants';
 
-type SideBarProps = {
-  isSideBarOpen: boolean;
-  setIsSideBarOpen: (isSideBarOpen: boolean) => void;
-  routes: { name: string; href: Href }[];
-};
-
-export const SideBar = ({ isSideBarOpen, setIsSideBarOpen, routes }: SideBarProps) => {
+export const SideBar = () => {
   const { session } = useAuthStore();
-
+  const { isSideBarOpen, setIsSideBarOpen } = useSideBarStore();
   const onNavigate = (route: Href) => {
     router.navigate(route);
     setIsSideBarOpen(false);
@@ -51,7 +46,7 @@ export const SideBar = ({ isSideBarOpen, setIsSideBarOpen, routes }: SideBarProp
             />
           </XStack>
           <YStack gap="$4" mt="$4">
-            {routes.map(route => (
+            {ROUTES.map(route => (
               <Pressable key={route.name} onPress={() => onNavigate(route.href)}>
                 <SizableText size="$6" fontWeight="bold">
                   {route.name}
@@ -60,7 +55,7 @@ export const SideBar = ({ isSideBarOpen, setIsSideBarOpen, routes }: SideBarProp
             ))}
           </YStack>
 
-          <YStack gap="$4" mt="$4" position="absolute" bottom="$10" left="$4" right="$4">
+          <YStack gap="$4" mt="$4" position="absolute" bottom={100} left="$4" right="$4">
             {!session ? (
               <>
                 <Button width="100%" onPress={() => onNavigate('/login')}>

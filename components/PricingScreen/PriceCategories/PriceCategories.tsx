@@ -22,8 +22,14 @@ const Category = ({
     subtitle: string;
     photos: number;
     price: {
-      monthly: number;
-      yearly: number;
+      monthly: {
+        amount: number;
+        priceId: string;
+      };
+      yearly: {
+        amount: number;
+        priceId: string;
+      };
     };
   };
 }) => {
@@ -31,6 +37,26 @@ const Category = ({
 
   const { selectedPricing } = usePricingStore();
   const price = selectedPricing === 'monthly' ? category.price.monthly : category.price.yearly;
+
+  const onPress = async (stripeId: string) => {
+    const response = await fetch('/create-checkout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ priceId: stripeId }),
+    });
+
+    const data = await response.json();
+
+    if (data.sessionId) {
+      window.location.href = data.url;
+    }
+
+    if (data.error) {
+      console.error(data.error);
+    }
+  };
 
   return (
     <CategoryContainer>
@@ -52,13 +78,13 @@ const Category = ({
           <YStack>
             <XStack mt="$3" gap="$2" alignItems="center">
               <MyText fw="bold" size="$8">
-                {price}лв
+                {price.amount}лв
               </MyText>
               <MyText fw="medium">/ месец</MyText>
             </XStack>
 
             <XStack mt="$3" gap="$2" alignItems="center">
-              <MyText size="$4">{(price / category.photos).toFixed(2)}лв</MyText>
+              <MyText size="$4">{(price.amount / category.photos).toFixed(2)}лв</MyText>
               <MyText size="$4">/ снимка</MyText>
             </XStack>
           </YStack>
@@ -68,7 +94,7 @@ const Category = ({
               <MyText size="$3" color="$green7">
                 Само{' '}
                 <MyText fw="bold" color="$green7">
-                  {category.price.yearly}лв
+                  {category.price.yearly.amount}лв
                 </MyText>{' '}
               </MyText>
               <MyText size="$3" color="$green7">
@@ -84,14 +110,21 @@ const Category = ({
             <MyText size="$3" color="$green7">
               Само{' '}
               <MyText fw="bold" color="$green7">
-                {category.price.yearly}лв
+                {category.price.yearly.amount}лв
               </MyText>{' '}
               (м. с год. план)
             </MyText>
           </XStack>
         )}
 
-        <Button mt="$3" bg="$blue10" borderRadius="$10" width={'100%'} rounded="$6">
+        <Button
+          mt="$3"
+          bg="$blue10"
+          borderRadius="$10"
+          width={'100%'}
+          rounded="$6"
+          onPress={() => onPress(price.priceId)}
+        >
           <MyText fw="bold" color="white">
             Избери
           </MyText>
@@ -141,8 +174,14 @@ const CATEGORIES = [
     subtitle: 'За да опитате',
     photos: 6,
     price: {
-      monthly: 40,
-      yearly: 26,
+      monthly: {
+        amount: 40,
+        priceId: 'price_1R6sl4G2OXqPrYSSvazdo4gk',
+      },
+      yearly: {
+        amount: 26,
+        priceId: 'price_1R6vbhG2OXqPrYSSAr9s6jWP',
+      },
     },
   },
   {
@@ -150,8 +189,14 @@ const CATEGORIES = [
     subtitle: 'За агенти',
     photos: 20,
     price: {
-      monthly: 56,
-      yearly: 32,
+      monthly: {
+        amount: 56,
+        priceId: 'price_1R6v52G2OXqPrYSSrRPCqvqD',
+      },
+      yearly: {
+        amount: 32,
+        priceId: 'price_1R6v64G2OXqPrYSSg67QbnUA',
+      },
     },
   },
   {
@@ -159,8 +204,14 @@ const CATEGORIES = [
     subtitle: 'За топ брокери',
     photos: 60,
     price: {
-      monthly: 128,
-      yearly: 63,
+      monthly: {
+        amount: 128,
+        priceId: 'price_1R6v6tG2OXqPrYSSmPgFZiJl',
+      },
+      yearly: {
+        amount: 63,
+        priceId: 'price_1R6v8SG2OXqPrYSSo9Y82HQT',
+      },
     },
   },
   {
@@ -168,8 +219,14 @@ const CATEGORIES = [
     subtitle: 'За екипи, брокерски къщи и фотографи',
     photos: 100,
     price: {
-      monthly: 0,
-      yearly: 0,
+      monthly: {
+        amount: 0,
+        priceId: '',
+      },
+      yearly: {
+        amount: 0,
+        priceId: '',
+      },
     },
   },
 ];

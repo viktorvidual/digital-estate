@@ -59,9 +59,12 @@ const storage: SupportedStorage = {
   },
 };
 
-const supabaseUrl = 'https://skuuzyjqzwtnufyszhwo.supabase.co';
-const supabaseAnonKey =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNrdXV6eWpxend0bnVmeXN6aHdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MTA2NTgsImV4cCI6MjA1ODM4NjY1OH0.sRVAoTDlSB5tS92VJsjEW9XtcP30P-xHHD8AwQU1o70';
+const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables');
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {

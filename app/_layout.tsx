@@ -3,13 +3,14 @@ import { TamaguiProvider, YStack } from 'tamagui';
 import { tamaguiConfig } from '../tamagui.config';
 import { ToastProvider } from '@tamagui/toast';
 import { Header } from '@/components/Header/Header';
+import { SideBar } from '@/components/SideBar/SideBar';
 import { useFonts } from 'expo-font';
 import { Stack, useSegments, router } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import 'react-native-reanimated';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores';
-import "@tamagui/core/reset.css";
+import '@tamagui/core/reset.css';
 
 const UNAUTHORIZED_ROUTES = ['login', 'register'];
 
@@ -49,7 +50,6 @@ export default function RootLayout() {
   }, [loaded]);
 
   useEffect(() => {
-    console.log('segments', segments);
     if (loaded && !sessionLoading) {
       const isInNonAuthGroup = UNAUTHORIZED_ROUTES.includes(segments[0]);
 
@@ -66,7 +66,8 @@ export default function RootLayout() {
   return (
     <TamaguiProvider config={tamaguiConfig}>
       <ToastProvider>
-        <YStack flex={1} overflow="scroll" bg="$white2">
+        <SideBar />
+        <YStack minHeight="100vh" flex={1} overflow="scroll" bg="$white2">
           <Header />
           <Stack
             screenOptions={{

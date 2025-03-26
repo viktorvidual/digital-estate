@@ -18,6 +18,7 @@
       }
     },
     "web": {
+      "output": "server",
       "bundler": "metro",
       "favicon": "./assets/images/favicon.png"
     },
