@@ -7,6 +7,7 @@ import { useMedia } from 'tamagui';
 import { useAuthStore, useSideBarStore } from '@/stores';
 import { supabase } from '@/lib/supabase';
 import { ROUTES } from '@/constants';
+import { AlertButton } from '../shared';
 
 export const SideBar = () => {
   const { session } = useAuthStore();
@@ -70,11 +71,13 @@ export const SideBar = () => {
                 </Button>
               </>
             ) : (
-              <Button width="100%" onPress={onSignOut}>
-                <SizableText size="$6" fontWeight="bold">
-                  Изход
-                </SizableText>
-              </Button>
+              <AlertButton
+                title="Излез"
+                buttonText="Излез"
+                onConfirm={onSignOut}
+                description="Сигурни ли сте, че искате да излезете?"
+                buttonColor="black"
+              />
             )}
           </YStack>
         </YStack>

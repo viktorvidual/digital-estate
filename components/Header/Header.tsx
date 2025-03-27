@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'expo-router';
 import { XStack, SizableText, useMedia, Button } from 'tamagui';
-import { SideBar } from '@/components/SideBar/SideBar';
-import { Href } from 'expo-router';
-import { MyXStack, MyText } from '@/components/shared';
+import { MyXStack, MyText, AlertButton } from '@/components/shared';
 import { Menu } from '@tamagui/lucide-icons';
 import { router } from 'expo-router';
 import { useAuthStore } from '@/stores';
@@ -36,11 +34,13 @@ export const Header = () => {
               ))}
             </XStack>
             {session ? (
-              <Button bg="$blue10" onPress={() => supabase.auth.signOut()}>
-                <MyText color="white" fw="bold">
-                  Излез
-                </MyText>
-              </Button>
+              <AlertButton
+                title="Излез"
+                buttonText="Излез"
+                onConfirm={() => supabase.auth.signOut()}
+                description="Сигурни ли сте, че искате да излезете?"
+                buttonColor="black"
+              />
             ) : (
               <>
                 <XStack gap="$2">
