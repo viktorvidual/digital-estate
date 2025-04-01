@@ -1,7 +1,11 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import Stripe from 'stripe';
+import { createClient } from '@supabase/supabase-js';
 
 const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY');
+
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
+const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_ANON_KEY') || '';
 
 Deno.serve(async (req: Request) => {
   // Define CORS headers once
@@ -28,32 +32,6 @@ Deno.serve(async (req: Request) => {
     });
   }
 
-  let accessToken;
-
-  // Validate authorization header
-  try {
-    const authorization = req.headers.get('authorization');
-    if (!authorization) {
-      throw new Error('No bearer token in the headers');
-    }
-    // Note: You're not using the accessToken variable anywhere -
-    // Either extract the token from authorization or remove this section
-    accessToken = authorization.split(' ')[1];
-  } catch (e) {
-    const errorMessage = e instanceof Error ? e.message : 'No access token provided';
-    console.error('Error in authentication:', errorMessage);
-    return new Response(
-      JSON.stringify({
-        error: 'Authentication failed',
-        details: errorMessage,
-      }),
-      {
-        status: 401, // Using 401 for auth errors instead of 500
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
-      }
-    );
-  }
-
   // Parse request body
   let body;
   try {
@@ -61,12 +39,17 @@ Deno.serve(async (req: Request) => {
     if (!body.email) {
       throw new Error('Email is required');
     }
+
+    if (!body.userId) {
+      throw new Error('User ID is required');
+    }
   } catch (e) {
-    console.error('Failed to parse request body', e);
+    const errorMessage = e instanceof Error ? e.message : 'Invalid request body';
+    console.error(errorMessage);
     return new Response(
       JSON.stringify({
         error: 'Invalid request',
-        details: e instanceof Error ? e.message : 'Invalid JSON in request body',
+        details: errorMessage,
       }),
       {
         status: 400,
@@ -76,25 +59,40 @@ Deno.serve(async (req: Request) => {
   }
 
   const stripe = new Stripe(STRIPE_SECRET_KEY);
+  const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
   // Process the request
   try {
-    const { email } = body;
+    const { email, userId } = body;
     console.log('User created successfully', email);
 
     // TODO: Create Stripe User
     // This section is missing the actual implementation
-
     const stripeCustomer = await stripe.customers.create({
       email,
     });
 
-    console.log('created stripe customer', stripeCustomer.id);
+    //TODO: Create new user in supabase DB
+    const { data, error } = await supabaseAdmin
+      .from('users')
+      .insert({
+        uuid: userId,
+        email,
+        stripe_customer_id: stripeCustomer.id,
+      })
+      .select()
+      .maybeSingle();
 
-    // Return success response
+    if (error) throw error;
+
+    console.log('Client created successfully', email);
+
+    // Return success response with the created client data
     return new Response(
       JSON.stringify({
-        message: 'User created successfully',
+        success: true,
+        message: 'Client created successfully',
+        client: data,
       }),
       {
         status: 200,

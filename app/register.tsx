@@ -61,14 +61,17 @@ export default function RegistrationScreen() {
     }
 
     if (data) {
-      await fetch(ENDPOINTS.CREATE_USER, {
+      const newUserRes = await fetch(ENDPOINTS.CREATE_USER, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${data.session?.access_token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: data.user?.email ?? '' }),
+        body: JSON.stringify({ email: data.user?.email ?? '', userId: data.user?.id }),
       });
+
+      const message = await newUserRes.json();
+      console.log(message);
 
       toast.show('Успешна регистрация');
     }
@@ -113,14 +116,18 @@ export default function RegistrationScreen() {
       <MyText type="title" fw="bold">
         Регистрация
       </MyText>
+
       <YStack width={'100%'} gap="$2" $lg={{ width: 500 }}>
         <MyText fw="bold">Email</MyText>
+
         <Input value={email} onChangeText={setEmail} placeholder="Въведете email" />
-        {emailError && (
-          <MyText fw="bold" color="$red10">
-            {emailError}
-          </MyText>
-        )}
+        <>
+          {emailError && (
+            <MyText fw="bold" color="$red10">
+              {emailError}
+            </MyText>
+          )}
+        </>
       </YStack>
 
       <YStack width={'100%'} gap="$2" $lg={{ width: 500 }}>
@@ -131,11 +138,13 @@ export default function RegistrationScreen() {
           placeholder="Изберете парола"
           secureTextEntry
         />
-        {passwordError && (
-          <MyText fw="bold" color="$red10">
-            {passwordError}
-          </MyText>
-        )}
+        <>
+          {passwordError && (
+            <MyText fw="bold" color="$red10">
+              {passwordError}
+            </MyText>
+          )}
+        </>
       </YStack>
 
       <XStack

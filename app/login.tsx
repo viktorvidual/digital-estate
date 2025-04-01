@@ -66,11 +66,13 @@ export default function LoginScreen() {
       <InputContainer>
         <MyText fw="bold">Email</MyText>
         <Input value={email} onChangeText={setEmail} placeholder="Въведете email" />
-        {emailError && (
-          <MyText fw="bold" color="$red10">
-            {emailError}
-          </MyText>
-        )}
+        <>
+          {emailError && (
+            <MyText fw="bold" color="$red10">
+              {emailError}
+            </MyText>
+          )}
+        </>
       </InputContainer>
 
       <InputContainer>
@@ -81,11 +83,13 @@ export default function LoginScreen() {
           placeholder="Изберете парола"
           secureTextEntry
         />
-        {passwordError && (
-          <MyText fw="bold" color="$red10">
-            {passwordError}
-          </MyText>
-        )}
+        <>
+          {passwordError && (
+            <MyText fw="bold" color="$red10">
+              {passwordError}
+            </MyText>
+          )}
+        </>
       </InputContainer>
 
       <XStack width={'100%'} $lg={{ width: 500 }} alignItems="center" gap="$2">
