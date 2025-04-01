@@ -3,7 +3,6 @@ import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
 const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY');
-
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 
@@ -64,7 +63,6 @@ Deno.serve(async (req: Request) => {
   // Process the request
   try {
     const { email, userId } = body;
-    console.log('User created successfully', email);
 
     // TODO: Create Stripe User
     // This section is missing the actual implementation
@@ -76,7 +74,7 @@ Deno.serve(async (req: Request) => {
     const { data, error } = await supabaseAdmin
       .from('users')
       .insert({
-        uuid: userId,
+        user_id: userId,
         email,
         stripe_customer_id: stripeCustomer.id,
       })
@@ -85,14 +83,12 @@ Deno.serve(async (req: Request) => {
 
     if (error) throw error;
 
-    console.log('Client created successfully', email);
-
     // Return success response with the created client data
     return new Response(
       JSON.stringify({
         success: true,
         message: 'Client created successfully',
-        client: data,
+        user: data,
       }),
       {
         status: 200,

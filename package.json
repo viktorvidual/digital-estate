@@ -29,6 +29,8 @@
     "@tamagui/core": "^1.125.26",
     "@tamagui/lucide-icons": "^1.125.26",
     "@tamagui/toast": "^1.125.26",
+    "@types/camelize": "^1.0.1",
+    "camelize": "^1.0.1",
     "expo": "~52.0.39",
     "expo-blur": "~14.0.3",
     "expo-constants": "~17.0.8",

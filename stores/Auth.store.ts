@@ -2,19 +2,38 @@ import { create } from 'zustand';
 import { Session, User } from '@supabase/supabase-js';
 // Zustand store to manage user session
 
+export type Customer = {
+  id: number;
+  createdAt: string;
+  uuid: string;
+  email: string;
+  stripeSubscriptionId: null | string;
+  imageCount: number;
+  stripeCustomerId: string;
+};
+
 type SessionStore = {
   session: Session | null;
   user: User | null;
-  setSession: (session: Session | null) => void;
+  customer: Customer | null;
+  setSession: (session: Session | null, customer: Customer | null) => void;
+  setCustomer: (customer: Customer) => void;
 };
 
 export const useAuthStore = create<SessionStore>(set => ({
   session: null,
   user: null,
-  setSession: session => {
+  customer: null,
+  setSession: (session, customer) => {
     set({
       session,
       user: session?.user || null,
+      customer,
+    });
+  },
+  setCustomer: customer => {
+    set({
+      customer,
     });
   },
 }));

@@ -5,9 +5,12 @@ import { useToastController } from '@tamagui/toast';
 import { Link } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { CircleMinus, CheckCircle, Square, SquareCheckBig } from '@tamagui/lucide-icons';
-import { ENDPOINTS } from '@/constants';
+import { createCustomer } from '@/services';
+import { useAuthStore } from '@/stores';
 
 export default function RegistrationScreen() {
+  const { setCustomer } = useAuthStore();
+
   const toast = useToastController();
 
   const [email, setEmail] = useState('');
@@ -50,7 +53,7 @@ export default function RegistrationScreen() {
       );
     }
 
-    const { data, error } = await supabase.auth.signUp({
+    const { data: authData, error } = await supabase.auth.signUp({
       email,
       password,
     });
@@ -60,23 +63,21 @@ export default function RegistrationScreen() {
       return setError(error.message);
     }
 
-    if (data) {
-      const newUserRes = await fetch(ENDPOINTS.CREATE_USER, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${data.session?.access_token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: data.user?.email ?? '', userId: data.user?.id }),
-      });
+    if (authData.user && authData.session) {
+      const { error, data: customerResponse } = await createCustomer(
+        authData.session?.access_token,
+        email,
+        authData.user.id
+      );
 
-      const message = await newUserRes.json();
-      console.log(message);
+      if (error || !customerResponse) {
+        return console.error(error ? error : 'No customer response on register');
+      }
 
-      toast.show('Успешна регистрация');
+      setCustomer(customerResponse);
+    } else {
+      console.log('Auth User Or Auth Session not Available');
     }
-
-    console.log('data', data);
   };
 
   useEffect(() => {

@@ -11,6 +11,7 @@ import 'react-native-reanimated';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores';
 import '@tamagui/core/reset.css';
+import { getCustomer } from '@/services';
 
 const UNAUTHORIZED_ROUTES = ['login', 'register'];
 
@@ -19,7 +20,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const segments = useSegments();
-  const [sessionLoading, setSessionLoading] = useState(true);
+  const [sessionLoading, setSessionLoading] = useState(false);
   const { setSession, session } = useAuthStore();
 
   const [loaded] = useFonts({
@@ -29,16 +30,41 @@ export default function RootLayout() {
   useEffect(() => {
     (async () => {
       setSessionLoading(true);
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        setSession(session);
+      const latestSession = await supabase.auth.getSession();
+
+      if (latestSession.data.session) {
+        const userId = latestSession.data.session?.user.id;
+
+        const { data: customer, error } = await getCustomer(userId);
+
+        if (error || !customer) {
+          console.error(error ? error : 'no customer response on layout load');
+          return setSessionLoading(false);
+        }
+
+        setSession(latestSession.data.session, customer);
         setSessionLoading(false);
-      });
+      } else {
+        setSessionLoading(false);
+      }
 
       const {
         data: { subscription },
-      } = supabase.auth.onAuthStateChange((_event, session) => {
-        setSession(session);
+      } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        console.log('state change listender running');
+
+        if (session) {
+          const { data: customer, error } = await getCustomer(session.user.id);
+          if (error || !customer) {
+            return console.error(error ? error : 'No customer available on Auth State Change');
+          }
+
+          setSession(session, customer);
+        } else {
+          setSession(null, null);
+        }
       });
+
       return () => subscription.unsubscribe();
     })();
   }, []);

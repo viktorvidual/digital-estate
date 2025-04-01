@@ -40,10 +40,10 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    const { priceId } = body;
-    console.log('Received priceId:', priceId);
+    const { stripePriceId } = body;
+    console.log('Received priceId:', stripePriceId);
 
-    if (!priceId) {
+    if (!stripePriceId) {
       return new Response(JSON.stringify({ error: 'Missing priceId' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json', ...corsHeaders },
@@ -57,7 +57,7 @@ Deno.serve(async (req: Request) => {
       payment_method_types: ['card'],
       line_items: [
         {
-          price: priceId,
+          price: stripePriceId,
           quantity: 1,
         },
       ],

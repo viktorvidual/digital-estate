@@ -4,6 +4,8 @@ import { MyText, MyXStack } from '@/components/shared';
 import { styled, useMedia, YStack, XStack, Button } from 'tamagui';
 import { Check } from '@tamagui/lucide-icons';
 import { ENDPOINTS } from '@/constants';
+import { useAuthStore } from '@/stores';
+import { router } from 'expo-router';
 
 export const PriceCategories = () => {
   return (
@@ -34,22 +36,26 @@ const Category = ({
     };
   };
 }) => {
+  const { session } = useAuthStore();
+
   const media = useMedia();
 
   const { selectedPricing } = usePricingStore();
   const price = selectedPricing === 'monthly' ? category.price.monthly : category.price.yearly;
 
-  const onPress = async (stripeId: string) => {
-    console.log(ENDPOINTS.CREATE_CHECKOUT);
+  const onPress = async (stripePriceId: string) => {
+    if (!session) {
+      router.navigate('/login');
+    }
 
     try {
       const response = await fetch(ENDPOINTS.CREATE_CHECKOUT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+          Authorization: `Bearer ${session?.access_token}`,
         },
-        body: JSON.stringify({ priceId: stripeId }),
+        body: JSON.stringify({ stripePriceId }),
       });
 
       const data = await response.json();
