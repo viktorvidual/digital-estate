@@ -4,7 +4,7 @@ import Stripe from 'stripe';
 const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY');
 const devUrl = 'http://localhost:8081';
 
-Deno.serve(async req => {
+Deno.serve(async (req: Request) => {
   // Add CORS headers
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -50,9 +50,7 @@ Deno.serve(async req => {
       });
     }
 
-    const stripe = new Stripe(STRIPE_SECRET_KEY, {
-      apiVersion: '2023-10-16',
-    });
+    const stripe = new Stripe(STRIPE_SECRET_KEY);
 
     const session = await stripe.checkout.sessions.create({
       mode: 'subscription',
