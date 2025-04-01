@@ -31,7 +31,7 @@ export async function POST(request: Request) {
 
     return Response.json({ sessionId: session.id, url: session.url }, { status: 200 });
   } catch (error) {
-    console.error('Error creating checkout session:', error.message);
+    console.error('Error creating checkout session:', error instanceof Error ? error.message : error);
     return Response.json({ error: 'Failed to create checkout session' }, { status: 500 });
   }
 }

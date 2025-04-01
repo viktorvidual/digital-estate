@@ -12,6 +12,7 @@ import { AlertButton } from '../shared';
 export const SideBar = () => {
   const { session } = useAuthStore();
   const { isSideBarOpen, setIsSideBarOpen } = useSideBarStore();
+  
   const onNavigate = (route: Href) => {
     router.navigate(route);
     setIsSideBarOpen(false);

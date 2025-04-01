@@ -3,6 +3,7 @@ import { usePricingStore } from '@/stores';
 import { MyText, MyXStack } from '@/components/shared';
 import { styled, useMedia, YStack, XStack, Button } from 'tamagui';
 import { Check } from '@tamagui/lucide-icons';
+import { ENDPOINTS } from '@/constants';
 
 export const PriceCategories = () => {
   return (
@@ -39,22 +40,27 @@ const Category = ({
   const price = selectedPricing === 'monthly' ? category.price.monthly : category.price.yearly;
 
   const onPress = async (stripeId: string) => {
-    const response = await fetch('/create-checkout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ priceId: stripeId }),
-    });
+    console.log(ENDPOINTS.CREATE_CHECKOUT);
 
-    const data = await response.json();
+    try {
+      const response = await fetch(ENDPOINTS.CREATE_CHECKOUT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ priceId: stripeId }),
+      });
 
-    if (data.sessionId) {
-      window.location.href = data.url;
-    }
+      const data = await response.json();
 
-    if (data.error) {
-      console.error(data.error);
+      if (data.url) {
+        window.location.href = data.url;
+      } else if (data.error) {
+        console.error('Checkout error:', data.error);
+      }
+    } catch (error) {
+      console.error('Failed to create checkout session:', error);
     }
   };
 
