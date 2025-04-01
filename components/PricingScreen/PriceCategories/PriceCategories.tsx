@@ -36,7 +36,7 @@ const Category = ({
     };
   };
 }) => {
-  const { session } = useAuthStore();
+  const { session, customer } = useAuthStore();
 
   const media = useMedia();
 
@@ -49,13 +49,15 @@ const Category = ({
     }
 
     try {
+      console.log(stripePriceId, 'stripe price id');
+
       const response = await fetch(ENDPOINTS.CREATE_CHECKOUT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${session?.access_token}`,
         },
-        body: JSON.stringify({ stripePriceId }),
+        body: JSON.stringify({ stripePriceId, stripeCustomerId: customer?.stripeCustomerId }),
       });
 
       const data = await response.json();

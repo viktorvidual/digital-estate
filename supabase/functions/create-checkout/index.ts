@@ -40,11 +40,15 @@ Deno.serve(async (req: Request) => {
       });
     }
 
-    const { stripePriceId } = body;
-    console.log('Received priceId:', stripePriceId);
+    const { stripePriceId, stripeCustomerId } = body;
 
     if (!stripePriceId) {
       return new Response(JSON.stringify({ error: 'Missing priceId' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    } else if (!stripeCustomerId) {
+      return new Response(JSON.stringify({ error: 'Missing stripe customer id' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
@@ -61,6 +65,7 @@ Deno.serve(async (req: Request) => {
           quantity: 1,
         },
       ],
+      customer: stripeCustomerId,
       success_url: `${devUrl}/payment-success`,
       cancel_url: `${devUrl}/pricing`,
     });

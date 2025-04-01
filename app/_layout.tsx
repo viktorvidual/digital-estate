@@ -34,29 +34,32 @@ export default function RootLayout() {
 
       if (latestSession.data.session) {
         const userId = latestSession.data.session?.user.id;
+        console.log('Fetched session on load:', latestSession.data.session);
 
         const { data: customer, error } = await getCustomer(userId);
 
         if (error || !customer) {
-          console.error(error ? error : 'no customer response on layout load');
-          return setSessionLoading(false);
+          console.error(error ? error : 'No customer response on layout load');
+          setSessionLoading(false);
+          return;
         }
 
         setSession(latestSession.data.session, customer);
-        setSessionLoading(false);
-      } else {
-        setSessionLoading(false);
       }
 
+      setSessionLoading(false);
+
+      // Listen for auth state changes
       const {
         data: { subscription },
       } = supabase.auth.onAuthStateChange(async (_event, session) => {
-        console.log('state change listender running');
+        console.log('Auth State Changed:', session);
 
         if (session) {
           const { data: customer, error } = await getCustomer(session.user.id);
           if (error || !customer) {
-            return console.error(error ? error : 'No customer available on Auth State Change');
+            console.error(error ? error : 'No customer available on Auth State Change');
+            return;
           }
 
           setSession(session, customer);
@@ -69,6 +72,8 @@ export default function RootLayout() {
     })();
   }, []);
 
+  // }, []);
+
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
@@ -76,10 +81,14 @@ export default function RootLayout() {
   }, [loaded]);
 
   useEffect(() => {
+    console.log(segments);
+    
     if (loaded && !sessionLoading) {
       const isInNonAuthGroup = UNAUTHORIZED_ROUTES.includes(segments[0]);
 
       if (isInNonAuthGroup && session) {
+        console.log('redirecting');
+
         router.replace('/');
       }
     }

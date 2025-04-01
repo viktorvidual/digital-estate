@@ -38,9 +38,9 @@ export default function LoginScreen() {
       }
     }
 
-    if (data) {
-      router.navigate('/');
-    }
+    // if (data) {
+    //   router.navigate('/');
+    // }
   };
 
   useEffect(() => {
