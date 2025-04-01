@@ -12,7 +12,6 @@ Deno.serve(async (request: Request) => {
   }
 
   const stripe = new Stripe(STRIPE_SECRET_KEY);
-
   const signature = request.headers.get('stripe-signature');
 
   try {

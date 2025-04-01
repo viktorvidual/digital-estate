@@ -5,6 +5,7 @@ import { useToastController } from '@tamagui/toast';
 import { Link } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { CircleMinus, CheckCircle, Square, SquareCheckBig } from '@tamagui/lucide-icons';
+import { ENDPOINTS } from '@/constants';
 
 export default function RegistrationScreen() {
   const toast = useToastController();
@@ -29,8 +30,6 @@ export default function RegistrationScreen() {
   const [error, setError] = useState('');
 
   const onConfirm = async () => {
-    console.log(supabase.auth);
-
     if (!email) {
       return setEmailError('Моля въведете email');
     }
@@ -62,6 +61,15 @@ export default function RegistrationScreen() {
     }
 
     if (data) {
+      await fetch(ENDPOINTS.CREATE_USER, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${data.session?.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: data.user?.email ?? '' }),
+      });
+
       toast.show('Успешна регистрация');
     }
 
