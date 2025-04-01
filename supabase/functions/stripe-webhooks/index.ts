@@ -2,12 +2,11 @@ import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import Stripe from 'stripe';
 
 const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY');
-const ENDPOINT_SECRET = 'whsec_57e32b33306f6776c3e50d88000c993942a5ad445fe6c0e4212d143aa2d765ef';
+const ENDPOINT_SECRET = Deno.env.get('STRIPE_WEBHOOKS_SECRET');
 
 Deno.serve(async (request: Request) => {
   if (!STRIPE_SECRET_KEY) {
     return new Response(JSON.stringify({ error: 'Missing Stripe secret key' }), {
-      status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
   }
