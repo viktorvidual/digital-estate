@@ -38,6 +38,9 @@ export default function LoginScreen() {
       }
     }
 
+    console.log(data);
+    
+
     // if (data) {
     //   router.navigate('/');
     // }

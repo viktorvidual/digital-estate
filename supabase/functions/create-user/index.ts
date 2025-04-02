@@ -84,6 +84,8 @@ Deno.serve(async (req: Request) => {
 
     if (error) throw error;
 
+    console.log('customer created', data.email, data.id);
+
     // Return success response with the created client data
     return new Response(
       JSON.stringify({

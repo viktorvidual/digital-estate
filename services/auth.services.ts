@@ -55,3 +55,34 @@ export const createCustomer = async (
     data: camelize(customerResponse.user),
   };
 };
+
+export const getStripePoralUrl = async (stripeUserId: string, accessToken: string) => {
+  try {
+    const response = await fetch(ENDPOINTS.STRIPE_PORTAL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ stripeUserId }),
+    });
+
+    if (!response.ok) {
+      const errorResponse = await response.json();
+      
+      throw new Error(errorResponse.detail || 'Error fetching Stripe portal Url');
+    }
+
+    const { url } = await response.json();
+
+    return {
+      data: {
+        url,
+      },
+    };
+  } catch (e) {
+    return {
+      error: e instanceof Error ? e.message : 'General Error Fetching Stripe Portal',
+    };
+  }
+};

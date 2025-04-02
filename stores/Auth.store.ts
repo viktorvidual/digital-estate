@@ -7,9 +7,12 @@ export type Customer = {
   createdAt: string;
   uuid: string;
   email: string;
-  stripeSubscriptionId: null | string;
   imageCount: number;
   stripeCustomerId: string;
+  stripeSubscriptionId: null | string;
+  stripePlanName: string;
+  stripeSubscriptionExpiry: string;
+  stripeSubscriptionStatus: boolean;
 };
 
 type SessionStore = {
