@@ -66,17 +66,32 @@ Deno.serve(async (request: Request) => {
         console.log('Payment succeeded:', paymentIntent.id);
         break;
 
-      case 'checkout.session.completed':
+      case 'checkout.session.completed': {
         const session = event.data.object;
-        const customerStripeId = session.customer;
-        const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+        console.log('check out session with id', session.id);
 
-        const purchase = lineItems.data[0];
+        break;
+      }
 
-        if (purchase.price) {
-          const priceId = purchase.price.id;
-          const purchasedPhotos = prices[priceId]?.photos || 0;
-          const subscriptionId = session.subscription;
+      case 'invoice.payment_succeeded': {
+        const invoice = event.data.object;
+
+        let subscription;
+
+        if (typeof invoice.subscription === 'string') {
+          subscription = await stripe.subscriptions.retrieve(invoice.subscription);
+        } else {
+          subscription = invoice.subscription;
+        }
+
+        const customerStripeId = subscription?.customer;
+
+        if (subscription && customerStripeId) {
+          const currentPlan = subscription.items.data[0];
+          const priceId = currentPlan.price.id;
+          const purchasedPhotos = prices.hasOwnProperty(priceId)
+            ? prices[priceId as keyof typeof prices].photos
+            : 0;
 
           if (purchasedPhotos > 0) {
             const { data: user, error: userError } = await supabase
@@ -95,7 +110,7 @@ Deno.serve(async (request: Request) => {
 
             const { error: updateError } = await supabase
               .from('users')
-              .update({ image_count: newCredits, stripe_subscription_id: subscriptionId })
+              .update({ image_count: newCredits, stripe_subscription_id: subscription.id })
               .eq('id', user.id);
 
             if (updateError) {
@@ -103,9 +118,13 @@ Deno.serve(async (request: Request) => {
               throw new Error('Failed to update user credits');
             }
 
-            console.log(`Updated user ${user.id} credits to ${newCredits}`);
+            console.log(
+              `Updated user ${user.id} credits to ${newCredits} with subscription ${subscription.id}`
+            );
           }
         }
+        console.log(subscription);
+      }
 
       case 'payment_method.attached':
         const paymentMethod = event.data.object;
