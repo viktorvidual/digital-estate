@@ -68,6 +68,7 @@ Deno.serve(async (req: Request) => {
       customer: stripeCustomerId,
       success_url: `${devUrl}/payment-success`,
       cancel_url: `${devUrl}/pricing`,
+      locale: 'bg',
     });
 
     return new Response(JSON.stringify({ sessionId: session.id, url: session.url }), {

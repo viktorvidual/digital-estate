@@ -52,6 +52,7 @@ Deno.serve(async (req: Request) => {
   const portalSession = await stripe.billingPortal.sessions.create({
     customer: stripeUserId,
     return_url: devUrl,
+    locale: 'bg',
   });
 
   return new Response(
