@@ -56,11 +56,10 @@ Deno.serve(async (request: Request) => {
     const event = await stripe.webhooks.constructEventAsync(body, signature, ENDPOINT_SECRET);
 
     switch (event.type) {
-      case 'invoice.payment_succeeded':
+      case 'invoice.payment_succeeded': {
         try {
           const invoice = event.data.object;
-
-          console.log('invoice payment triggered with status', invoice.status);
+          console.log('Invoice payment triggered with status', invoice.status);
 
           let subscription;
 
@@ -76,42 +75,143 @@ Deno.serve(async (request: Request) => {
             const currentPlan = subscription.items.data[0];
             const priceId = currentPlan.price.id;
 
-            const purchasedPhotos = PRICES.hasOwnProperty(priceId)
-              ? PRICES[priceId as keyof typeof PRICES].photos
-              : 0;
+            const { data: user, error: userError } = await supabase
+              .from('users')
+              .select('id, image_count, stripe_subscription_id')
+              .eq('stripe_customer_id', customerStripeId)
+              .single();
 
-            if (purchasedPhotos > 0) {
-              const { data: user, error: userError } = await supabase
-                .from('users')
-                .select('id, image_count')
-                .eq('stripe_customer_id', customerStripeId)
-                .single();
+            if (userError || !user) {
+              console.error('User not found:', userError);
+              throw new Error('User not found in database');
+            }
 
-              if (userError || !user) {
-                console.error('User not found:', userError);
-                throw new Error('User not found in database');
+            const newCredits = PRICES[priceId as keyof typeof PRICES]?.photos || 0;
+            const isUpdatedSubscription =
+              user.stripe_subscription_id && user.stripe_subscription_id !== subscription.id;
+
+            if (isUpdatedSubscription) {
+              // Fetch the previous subscription details
+              const prevSubscription = await stripe.subscriptions.retrieve(
+                user.stripe_subscription_id
+              );
+              const prevPlan = prevSubscription.items.data[0]?.price?.id;
+              const prevCredits = PRICES[prevPlan as keyof typeof PRICES]?.photos || 0;
+
+              console.log(`Previous credits: ${prevCredits}, New credits: ${newCredits}`);
+
+              if (newCredits > prevCredits) {
+                // Upgrade → Give the higher credits immediately
+                const totalCredits = user.image_count + newCredits - prevCredits;
+                await supabase
+                  .from('users')
+                  .update({
+                    image_count: totalCredits,
+                    stripe_subscription_id: subscription.id,
+                  })
+                  .eq('id', user.id);
+
+                console.log(`Upgrade: User ${user.id} now has ${totalCredits} credits`);
+              } else {
+                // Downgrade → Keep previous credits
+                await supabase
+                  .from('users')
+                  .update({ stripe_subscription_id: subscription.id })
+                  .eq('id', user.id);
+
+                console.log(`Downgrade: User ${user.id} keeps ${user.image_count} credits`);
               }
-
-              // Update the user's remaining photo credits
-              const newCredits = (user.image_count || 0) + purchasedPhotos;
-
-              const { error: updateError } = await supabase
+            } else {
+              // Renewal → Reset credits
+              await supabase
                 .from('users')
                 .update({ image_count: newCredits, stripe_subscription_id: subscription.id })
                 .eq('id', user.id);
 
-              if (updateError) {
-                console.error('Error updating credits:', updateError);
-                throw new Error('Failed to update user credits');
-              }
-
-              console.log(
-                `Updated user ${user.id} credits to ${newCredits} with subscription ${subscription.id}`
-              );
+              console.log(`Renewal: User ${user.id} credits reset to ${newCredits}`);
             }
           }
         } catch (e) {
-          console.error('error in invoice.payment_succeed', e instanceof Error && e.message);
+          console.error('Error in invoice.payment_succeeded', e instanceof Error ? e.message : e);
+        }
+        break;
+      }
+
+      case 'invoice.payment_failed': {
+        //update the status in the db to payment failed
+        const invoice = event.data.object;
+        console.log(`The payment for invoice ${invoice.id} has failed`);
+        break;
+      }
+
+      case 'customer.subscription.created':
+        if (event.data.object.object === 'subscription') {
+          try {
+            const subscription = event.data.object;
+            const customerStripeId = subscription.customer;
+
+            console.log('Subscription created event triggered', 'status:', subscription.status);
+
+            if (subscription.status === 'active') {
+              if (subscription && customerStripeId) {
+                const { data: user, error: userError } = await supabase
+                  .from('users')
+                  .select('id')
+                  .eq('stripe_customer_id', customerStripeId)
+                  .single();
+
+                if (userError || !user) {
+                  console.log('User not found', userError);
+                  throw new Error('User not found in the database');
+                }
+
+                const status = subscription.status;
+                const expiry = new Date(subscription.current_period_end * 1000).toISOString();
+
+                let planName = '';
+                let planDescription = '';
+
+                try {
+                  const firstItem = subscription.items?.data?.[0];
+                  if (firstItem?.price?.product) {
+                    const productId = firstItem.price.product;
+                    if (typeof productId === 'string') {
+                      const productDetails = await stripe.products.retrieve(productId);
+                      planName = productDetails?.name || 'Unknown Plan';
+                      planDescription = productDetails?.description || '';
+                    }
+                  }
+                } catch (e) {
+                  console.error('Error fetching plan details:', e);
+                }
+
+                const { error: updateError } = await supabase
+                  .from('users')
+                  .update({
+                    stripe_subscription_status: status,
+                    stripe_subscription_expire_at: expiry,
+                    stripe_plan_name: planName,
+                    stripe_plan_description: planDescription,
+                  })
+                  .eq('stripe_customer_id', customerStripeId);
+
+                if (updateError) {
+                  console.error('Error updating subscription status:', updateError);
+                  throw new Error('Failed to update subscription status');
+                }
+
+                console.log(
+                  `Updated user ${user.id} subscription status to ${status} in subscription create`
+                );
+              }
+              break;
+            }
+          } catch (e) {
+            console.error(
+              'Error handling subscription creation:',
+              e instanceof Error ? e.message : e
+            );
+          }
         }
 
       case 'customer.subscription.updated':
@@ -119,13 +219,7 @@ Deno.serve(async (request: Request) => {
           try {
             const subscription = event.data.object;
             const customerStripeId = subscription.customer;
-            console.log(
-              'subscription triggered',
-              'status',
-              subscription.status,
-              'subscription object',
-              subscription
-            );
+            console.log(' update subscription triggered with status:', subscription.status);
 
             if (subscription && customerStripeId) {
               const { data: user, error: userError } = await supabase
@@ -140,9 +234,29 @@ Deno.serve(async (request: Request) => {
               }
 
               const status = subscription.status;
-              console.log('subscription expiry', subscription, subscription.current_period_end);
-
               const expiry = new Date(subscription.current_period_end * 1000).toISOString();
+
+              if (status === 'canceled') {
+                const { error: updateError } = await supabase
+                  .from('users')
+                  .update({
+                    stripe_subscription_expire_at: new Date().toISOString(),
+                    stripe_plan_name: '',
+                    stripe_plan_description: '',
+                    stripe_subscription_status: subscription.status,
+                    image_count: null,
+                    stripe_subscription_id: null,
+                  })
+                  .eq('stripe_customer_id', customerStripeId);
+
+                console.log('subscription cancelled');
+
+                if (updateError) {
+                  console.error(updateError.code, updateError.cause, updateError.message);
+                }
+
+                break;
+              }
 
               let planName = '';
               let planDescription = '';
@@ -167,7 +281,7 @@ Deno.serve(async (request: Request) => {
                   stripe_subscription_status: status,
                   stripe_subscription_expire_at: expiry,
                   stripe_plan_name: planName,
-                  striple_plan_description: planDescription,
+                  stripe_plan_description: planDescription,
                 })
                 .eq('stripe_customer_id', customerStripeId);
 
@@ -177,20 +291,39 @@ Deno.serve(async (request: Request) => {
               }
 
               console.log(
-                `Updated user ${user.id} subscription status to ${status} (expires: ${expiry})`
+                `Updated user ${user.id} subscription status to ${status} in subscription update`
               );
             }
-            break;
           } catch (e) {
             console.error('Error subscription update', e instanceof Error ? e.message : e);
           }
+
+          break;
         }
 
       case 'customer.subscription.deleted': {
-        //Do I need this? Customer would have
         const subscription = event.data.object;
         const stripeUserId = subscription.customer;
-        console.log(`Subscription for user ${stripeUserId} cancelled`);
+
+        const { error } = await supabase
+          .from('users')
+          .update({
+            stripe_subscription_expire_at: new Date().toISOString(),
+            stripe_plan_name: '',
+            stripe_plan_description: '',
+            stripe_subscription_status: subscription.status,
+            image_count: null,
+            stripe_subscription_id: null,
+          })
+          .eq('stripe_customer_id', stripeUserId);
+
+        if (error) {
+          console.error(error);
+        }
+
+        console.log('subscription deleted');
+
+        break;
       }
 
       // Add other event types as needed
