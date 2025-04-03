@@ -10,9 +10,9 @@ import { ROUTES } from '@/constants';
 import { AlertButton } from '../shared';
 
 export const SideBar = () => {
-  const { session } = useAuthStore();
+  const { session, customer, setCustomer } = useAuthStore();
   const { isSideBarOpen, setIsSideBarOpen } = useSideBarStore();
-  
+
   const onNavigate = (route: Href) => {
     router.navigate(route);
     setIsSideBarOpen(false);
@@ -20,6 +20,7 @@ export const SideBar = () => {
 
   const onSignOut = () => {
     supabase.auth.signOut();
+    setCustomer(null);
     setIsSideBarOpen(false);
     router.navigate('/login');
   };
@@ -51,7 +52,9 @@ export const SideBar = () => {
             {ROUTES.map(route => (
               <Pressable key={route.name} onPress={() => onNavigate(route.href)}>
                 <SizableText size="$6" fontWeight="bold">
-                  {route.name}
+                  {route.name.includes('Цени') && customer?.stripeSubscriptionStatus === 'active'
+                    ? 'Абонамент'
+                    : route.name}
                 </SizableText>
               </Pressable>
             ))}

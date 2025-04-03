@@ -3,14 +3,14 @@ import { MyYStack, MyText } from '@/components/shared';
 import { Wallet } from '@tamagui/lucide-icons';
 import { IconContainer } from '@/components/ui';
 import { styled, View, XStack, YStack, useMedia } from 'tamagui';
-import { usePricingStore } from '@/stores';
+import { useAuthStore, usePricingStore } from '@/stores';
 
 export const PricingHeader = () => {
   const media = useMedia();
 
   const { selectedPricing, setSelectedPricing } = usePricingStore();
   return (
-    <MyYStack zIndex={'$2'} py="$6">
+    <MyYStack zIndex={'$2'} pt="$6">
       <XStack
         gap="$3"
         content="center"
@@ -28,7 +28,7 @@ export const PricingHeader = () => {
       </XStack>
 
       {!media.lg ? (
-        <YStack width="100%" items="center" gap="$3">
+        <YStack width="100%" items="center" gap="$5" mb={-15}>
           <Content selected={selectedPricing} setSelected={setSelectedPricing} />
         </YStack>
       ) : (
@@ -49,6 +49,8 @@ const Content = ({
   selected: 'monthly' | 'yearly';
   setSelected: (selected: 'monthly' | 'yearly') => void;
 }) => {
+  const { customer } = useAuthStore();
+
   return (
     <>
       <YStack gap="$3">
@@ -72,6 +74,23 @@ const Content = ({
         >
           Изберете правилния план за вас и вашият бизнес.
         </MyText>
+
+        {customer?.stripeSubscriptionStatus === 'active' && (
+          <View bg="$green9" p="$3" rounded={'$4'}>
+            <MyText
+              text="center"
+              $lg={{
+                text: 'left',
+              }}
+              color="white"
+              fw="bold"
+              size={'$8'}
+            >
+              Активен План: {customer.stripePlanName} ({customer.stripePlanDescription}){' '}
+              {customer.stripePlanInterval === 'month' ? 'месечен' : 'годишен'}
+            </MyText>
+          </View>
+        )}
       </YStack>
 
       <ToggleContainer>

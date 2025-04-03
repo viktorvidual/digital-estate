@@ -13,7 +13,8 @@ export type Customer = {
   stripePlanName: string;
   stripePlanDescription: string;
   stripeSubscriptionExpiry: string;
-  stripeSubscriptionStatus: boolean;
+  stripeSubscriptionStatus: 'active' | 'canceled';
+  stripePlanInterval: 'year' | 'month';
 };
 
 type SessionStore = {
@@ -21,7 +22,7 @@ type SessionStore = {
   user: User | null;
   customer: Customer | null;
   setSession: (session: Session | null, customer: Customer | null) => void;
-  setCustomer: (customer: Customer) => void;
+  setCustomer: (customer: Customer | null) => void;
 };
 
 export const useAuthStore = create<SessionStore>(set => ({

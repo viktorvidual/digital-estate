@@ -56,7 +56,7 @@ export const createCustomer = async (
   };
 };
 
-export const getStripePoralUrl = async (stripeUserId: string, accessToken: string) => {
+export const getStripePortalUrl = async (stripeUserId: string, accessToken: string) => {
   try {
     const response = await fetch(ENDPOINTS.STRIPE_PORTAL, {
       method: 'POST',
@@ -69,7 +69,7 @@ export const getStripePoralUrl = async (stripeUserId: string, accessToken: strin
 
     if (!response.ok) {
       const errorResponse = await response.json();
-      
+
       throw new Error(errorResponse.detail || 'Error fetching Stripe portal Url');
     }
 

@@ -6,12 +6,35 @@ import { Check } from '@tamagui/lucide-icons';
 import { ENDPOINTS } from '@/constants';
 import { useAuthStore } from '@/stores';
 import { router } from 'expo-router';
+import { getStripePortalUrl } from '@/services';
 
 export const PriceCategories = () => {
+  const { session, customer } = useAuthStore();
+
+  const onChangeSubscription = async () => {
+    const accessToken = session?.access_token;
+    const stripeUserId = customer?.stripeCustomerId;
+
+    if (accessToken && stripeUserId) {
+      const { error, data } = await getStripePortalUrl(stripeUserId, accessToken);
+
+      if (error || !data) {
+        return console.log(error || 'No Url provided from get stripe portal url');
+      }
+
+      window.location.href = data.url;
+    } else {
+      console.error('Stripe userid or access token not availabes');
+    }
+  };
   return (
     <MyXStack justify="space-between" flexWrap="wrap" gap="$3">
       {CATEGORIES.map(category => (
-        <Category key={category.name} category={category} />
+        <Category
+          key={category.name}
+          category={category}
+          onChangeSubscription={onChangeSubscription}
+        />
       ))}
     </MyXStack>
   );
@@ -19,6 +42,7 @@ export const PriceCategories = () => {
 
 const Category = ({
   category,
+  onChangeSubscription,
 }: {
   category: {
     name: string;
@@ -35,6 +59,7 @@ const Category = ({
       };
     };
   };
+  onChangeSubscription: () => Promise<void>;
 }) => {
   const { session, customer } = useAuthStore();
 
@@ -131,18 +156,37 @@ const Category = ({
           </XStack>
         )}
 
-        <Button
-          mt="$3"
-          bg="$blue10"
-          borderRadius="$10"
-          width={'100%'}
-          rounded="$6"
-          onPress={() => onPress(price.priceId)}
-        >
-          <MyText fw="bold" color="white">
-            Избери
-          </MyText>
-        </Button>
+        {customer?.stripeSubscriptionStatus === 'active' ? (
+          <>
+            <Button
+              mt="$3"
+              bg="$blue10"
+              borderRadius="$10"
+              width={'100%'}
+              rounded="$6"
+              onPress={onChangeSubscription}
+            >
+              <MyText fw="bold" color="white">
+                Промени План
+              </MyText>
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              mt="$3"
+              bg="$blue10"
+              borderRadius="$10"
+              width={'100%'}
+              rounded="$6"
+              onPress={() => onPress(price.priceId)}
+            >
+              <MyText fw="bold" color="white">
+                Избери
+              </MyText>
+            </Button>
+          </>
+        )}
       </CategoryInnerContainer>
       {media.lg && <Benefits />}
     </CategoryContainer>
@@ -214,7 +258,7 @@ const CATEGORIES = [
     },
   },
   {
-    name: 'Професионален',
+    name: 'Про',
     subtitle: 'За топ брокери',
     photos: 60,
     price: {

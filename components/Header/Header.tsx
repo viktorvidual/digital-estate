@@ -8,30 +8,12 @@ import { useAuthStore } from '@/stores';
 import { supabase } from '@/lib/supabase';
 import { ROUTES } from '@/constants';
 import { useSideBarStore } from '@/stores';
-import { getStripePoralUrl } from '@/services';
 
 export const Header = () => {
-  const { session, customer } = useAuthStore();
+  const { session, customer, setCustomer } = useAuthStore();
   const { isSideBarOpen, setIsSideBarOpen } = useSideBarStore();
 
   const media = useMedia();
-
-  const onPressProfile = async () => {
-    const accessToken = session?.access_token;
-    const stripeUserId = customer?.stripeCustomerId;
-
-    if (accessToken && stripeUserId) {
-      const { error, data } = await getStripePoralUrl(stripeUserId, accessToken);
-
-      if (error || !data) {
-        return console.log(error || 'No Url provided from get stripe portal url');
-      }
-
-      window.location.href = data.url;
-    } else {
-      console.error('Stripe userid or access token not availabes');
-    }
-  };
 
   return (
     <>
@@ -47,21 +29,23 @@ export const Header = () => {
             <XStack gap="$4">
               {ROUTES.map(route => (
                 <Link key={route.name} href={route.href}>
-                  <MyText fw="bold">{route.name}</MyText>
+                  <MyText fw="bold">
+                    {route.name.includes('Цени') && customer?.stripeSubscriptionStatus === 'active'
+                      ? 'Абонамент'
+                      : route.name}
+                  </MyText>
                 </Link>
               ))}
             </XStack>
             {session ? (
               <XStack gap="$2">
-                <Button>
-                  <MyText fw="bold" color="black" onPress={onPressProfile}>
-                    Профил
-                  </MyText>
-                </Button>
                 <AlertButton
                   title="Излез"
                   buttonText="Излез"
-                  onConfirm={() => supabase.auth.signOut()}
+                  onConfirm={() => {
+                    supabase.auth.signOut();
+                    setCustomer(null);
+                  }}
                   description="Сигурни ли сте, че искате да излезете?"
                   buttonColor="black"
                 />
