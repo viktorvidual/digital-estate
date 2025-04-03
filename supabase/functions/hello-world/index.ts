@@ -5,14 +5,8 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
-console.log('Hello from Functions!');
-
 Deno.serve(async () => {
-  const data = {
-    message: `Hello World'}!`,
-  };
-
-  return new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json' } });
+  console.log('Hello World');
 });
 
 /* To invoke locally:

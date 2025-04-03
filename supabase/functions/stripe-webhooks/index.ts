@@ -36,19 +36,13 @@ const PRICES = {
 };
 
 Deno.serve(async (request: Request) => {
-  if (!STRIPE_SECRET_KEY) {
-    return new Response(JSON.stringify({ error: 'Missing Stripe secret key' }), {
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
+  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
   const stripe = new Stripe(STRIPE_SECRET_KEY);
   const signature = request.headers.get('stripe-signature');
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
   try {
-    if (!signature || !ENDPOINT_SECRET) {
+    if (!signature) {
       throw new Error('No signature or endpoint secret found');
     }
 
@@ -258,41 +252,46 @@ Deno.serve(async (request: Request) => {
                 break;
               }
 
-              let planName = '';
-              let planDescription = '';
+              if (status === 'active') {
+                let planName = '';
+                let planDescription = '';
+                let planInterval = '';
 
-              try {
-                const firstItem = subscription.items?.data?.[0];
-                if (firstItem?.price?.product) {
-                  const productId = firstItem.price.product;
-                  if (typeof productId === 'string') {
-                    const productDetails = await stripe.products.retrieve(productId);
-                    planName = productDetails?.name || 'Unknown Plan';
-                    planDescription = productDetails?.description || '';
+                try {
+                  const firstItem = subscription.items?.data?.[0];
+                  if (firstItem?.price?.product) {
+                    const productId = firstItem.price.product;
+                    if (typeof productId === 'string') {
+                      const productDetails = await stripe.products.retrieve(productId);
+                      planName = productDetails?.name || 'Unknown Plan';
+                      planDescription = productDetails?.description || '';
+                    }
+                    planInterval = firstItem.plan.interval;
                   }
+                } catch (e) {
+                  console.error('Error fetching plan name:', e);
                 }
-              } catch (e) {
-                console.error('Error fetching plan name:', e);
+
+                const { error: updateError } = await supabase
+                  .from('users')
+                  .update({
+                    stripe_subscription_status: status,
+                    stripe_subscription_expire_at: expiry,
+                    stripe_plan_name: planName,
+                    stripe_plan_description: planDescription,
+                    stripe_plan_interval: planInterval,
+                  })
+                  .eq('stripe_customer_id', customerStripeId);
+
+                if (updateError) {
+                  console.error('Error updating subscription status:', updateError);
+                  throw new Error('Failed to update subscription status');
+                }
+
+                console.log(
+                  `Updated user ${user.id} subscription status to ${status} in subscription update`
+                );
               }
-
-              const { error: updateError } = await supabase
-                .from('users')
-                .update({
-                  stripe_subscription_status: status,
-                  stripe_subscription_expire_at: expiry,
-                  stripe_plan_name: planName,
-                  stripe_plan_description: planDescription,
-                })
-                .eq('stripe_customer_id', customerStripeId);
-
-              if (updateError) {
-                console.error('Error updating subscription status:', updateError);
-                throw new Error('Failed to update subscription status');
-              }
-
-              console.log(
-                `Updated user ${user.id} subscription status to ${status} in subscription update`
-              );
             }
           } catch (e) {
             console.error('Error subscription update', e instanceof Error ? e.message : e);
@@ -325,7 +324,6 @@ Deno.serve(async (request: Request) => {
 
         break;
       }
-
       // Add other event types as needed
     }
 

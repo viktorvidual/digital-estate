@@ -11,6 +11,7 @@ export type Customer = {
   stripeCustomerId: string;
   stripeSubscriptionId: null | string;
   stripePlanName: string;
+  stripePlanDescription: string;
   stripeSubscriptionExpiry: string;
   stripeSubscriptionStatus: boolean;
 };
