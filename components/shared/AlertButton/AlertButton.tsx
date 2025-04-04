@@ -74,7 +74,7 @@ export const AlertButton = ({
               </TamaguiAlertDialog.Cancel>
               <TamaguiAlertDialog.Action asChild>
                 <Button theme="accent" onPress={onConfirm}>
-                  <MyText fw="bold" color={buttonTextColor ?? 'white'}>
+                  <MyText fw="bold" color={'white'}>
                     {onConfirmText ?? 'Потвърди'}
                   </MyText>
                 </Button>

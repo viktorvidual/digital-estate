@@ -10,7 +10,7 @@ export const HowItWorks = () => {
       <MyYStack items="center">
         <XStack items="center" gap="$2">
           <View bg="$green8" rounded="$4" p="$2">
-            <Settings size={16} />
+            <Settings size={16} color="white" />
           </View>
           <MyText>Как работи</MyText>
         </XStack>
@@ -66,6 +66,7 @@ const Element = ({
       </XStack>
 
       <MyText>{el.description}</MyText>
+
       <View maxWidth={'100%'} maxHeight={200}>
         {isSeconStep && (
           <ImageIconContainer>

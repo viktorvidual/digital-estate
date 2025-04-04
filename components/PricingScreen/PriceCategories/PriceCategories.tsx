@@ -130,13 +130,13 @@ const Category = ({
 
           {!media.lg && selectedPricing === 'monthly' && (
             <YStack mt="$3" alignSelf="center" bg="$blue12" p="$2" rounded="$6" items={'center'}>
-              <MyText size="$3" color="$green7">
+              <MyText size="$3" color="white">
                 Само{' '}
-                <MyText fw="bold" color="$green7">
+                <MyText fw="bold" color="white">
                   {category.price.yearly.amount}лв
                 </MyText>{' '}
               </MyText>
-              <MyText size="$3" color="$green7">
+              <MyText size="$3" color="white">
                 {' '}
                 (м. с год. план)
               </MyText>
@@ -146,9 +146,9 @@ const Category = ({
 
         {selectedPricing === 'monthly' && media.lg && (
           <XStack mt="$3" alignSelf="center" bg="$blue12" p="$1" px={12} rounded="$6">
-            <MyText size="$3" color="$green7">
+            <MyText size="$3" color="white">
               Само{' '}
-              <MyText fw="bold" color="$green7">
+              <MyText fw="bold" color="white">
                 {category.price.yearly.amount}лв
               </MyText>{' '}
               (м. с год. план)

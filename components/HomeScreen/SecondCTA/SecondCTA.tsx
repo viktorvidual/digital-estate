@@ -59,7 +59,7 @@ const CTA = ({ showButton }: { showButton?: boolean }) => {
     <YStack width="100%" $lg={{ width: '40%' }} gap="$4" p="$2" justify={'center'}>
       <XStack items="center" gap="$2">
         <IconContainer>
-          <BedDouble size={12} />
+          <BedDouble size={16} color="white" />
         </IconContainer>
         <MyText color="white" size="#2" fw="bold">
           Бързо обзавеждане

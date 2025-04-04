@@ -20,7 +20,7 @@ export const PricingHeader = () => {
         }}
       >
         <IconContainer>
-          <Wallet size={16} />
+          <Wallet size={16} color="white" />
         </IconContainer>
         <MyText size="$2" color="white" fw="bold">
           Прекрати по всяко време

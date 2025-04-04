@@ -73,7 +73,7 @@ export const Header = () => {
           </>
         )}
 
-        {!media.lg && <Menu color="white" size={24} onPress={() => setIsSideBarOpen(!isSideBarOpen)} />}
+        {!media.lg && <Menu color="white" siize={24} onPress={() => setIsSideBarOpen(!isSideBarOpen)} />}
       </MyXStack>
     </>
   );

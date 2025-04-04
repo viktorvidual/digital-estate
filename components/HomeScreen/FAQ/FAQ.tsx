@@ -13,7 +13,7 @@ export const FAQ = () => {
         <YStack gap="$2" width="100%" items="center" $lg={{ width: '40%', items: 'flex-start' }}>
           <XStack items="center" gap="$2">
             <IconContainer>
-              <MessageCircle size={16} />
+              <MessageCircle size={16} color="white" />
             </IconContainer>
             <MyText fw="bold">FAQ</MyText>
           </XStack>
