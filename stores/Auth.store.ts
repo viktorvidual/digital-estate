@@ -7,6 +7,7 @@ export type Customer = {
   createdAt: string;
   uuid: string;
   email: string;
+  userId: string;
   imageCount: number;
   stripeCustomerId: string;
   stripeSubscriptionId: null | string;

@@ -17,6 +17,7 @@ export const getCustomer = async (
     .maybeSingle();
 
   if (error) {
+    console.error(error);
     return { error };
   }
 

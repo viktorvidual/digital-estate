@@ -1,7 +1,7 @@
 import React from 'react';
 import { MyYStack, MyText } from '@/components/shared';
-import { XStack, YStack, useMedia } from 'tamagui';
-import { UploadImageButton } from '@/components/MyPhotosScreen';
+import { View, XStack, YStack, useMedia } from 'tamagui';
+import { UploadImageButton, PhotosList } from '@/components/MyPhotosScreen';
 
 export default function MyPhotos() {
   const media = useMedia();
@@ -21,9 +21,11 @@ export default function MyPhotos() {
             <MyText size="$9" fw="bold">
               Моите Снимки
             </MyText>
+
             <UploadImageButton />
           </>
         )}
+        <PhotosList />
       </YStack>
     </MyYStack>
   );

@@ -19,7 +19,7 @@ export const ImageInputContainer = styled(YStack, {
     backgroundColor: '#e0e0e0',
     borderColor: '#666',
   },
-  bg: "white"
+  bg: 'white',
 });
 
 export const DeleteImageContainer = styled(View, {
@@ -41,4 +41,18 @@ export const DeleteImageContainer = styled(View, {
     backgroundColor: '#e0e0e0',
     borderColor: '#666',
   },
+});
+
+export const ImageLoadingContainer = styled(View, {
+  position: 'absolute',
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  justify: 'center',
+  items: 'center',
+  opacity: 0.8,
+  bg: '$black2',
+  zIndex: 10,
+  borderRadius: 10,
 });
