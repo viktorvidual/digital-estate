@@ -13,4 +13,8 @@ export const ROUTES = [
     name: 'Цени',
     href: '/pricing' as Href,
   },
+  {
+    name: 'Снимки',
+    href: '/my-photos' as Href,
+  },
 ];

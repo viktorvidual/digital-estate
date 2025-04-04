@@ -17,10 +17,13 @@ export const Header = () => {
 
   return (
     <>
-      <MyXStack justify="space-between" items="center" self="center">
+      <MyXStack justify="space-between" items="center" self="center" bg="$blue12">
         <Link href="/">
-          <SizableText size="$9" fontWeight="bold">
-            Digital Estate <SizableText size="$9">AI</SizableText>
+          <SizableText size="$9" fontWeight="bold" color="white">
+            Digital Estate{' '}
+            <SizableText color="white" size="$9">
+              AI
+            </SizableText>
           </SizableText>
         </Link>
 
@@ -29,7 +32,7 @@ export const Header = () => {
             <XStack gap="$4">
               {ROUTES.map(route => (
                 <Link key={route.name} href={route.href}>
-                  <MyText fw="bold">
+                  <MyText fw="bold" color="white">
                     {route.name.includes('Цени') && customer?.stripeSubscriptionStatus === 'active'
                       ? 'Абонамент'
                       : route.name}
@@ -47,7 +50,8 @@ export const Header = () => {
                     setCustomer(null);
                   }}
                   description="Сигурни ли сте, че искате да излезете?"
-                  buttonColor="black"
+                  buttonTextColor="black"
+                  buttonColor="white"
                 />
               </XStack>
             ) : (
@@ -69,7 +73,7 @@ export const Header = () => {
           </>
         )}
 
-        {!media.lg && <Menu size={24} onPress={() => setIsSideBarOpen(!isSideBarOpen)} />}
+        {!media.lg && <Menu color="white" size={24} onPress={() => setIsSideBarOpen(!isSideBarOpen)} />}
       </MyXStack>
     </>
   );

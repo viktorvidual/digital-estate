@@ -5,9 +5,10 @@ import { MyText } from '../MyText/MyText';
 type Props = {
   buttonText: string;
   buttonColor?: Variable | string;
-  buttonTextColor?: Variable;
+  buttonTextColor?: Variable | string;
   title: string;
   description?: string;
+  onConfirmText?: string;
   onConfirm: () => void;
 };
 
@@ -17,6 +18,7 @@ export const AlertButton = ({
   buttonColor,
   buttonTextColor,
   description,
+  onConfirmText,
   onConfirm,
 }: Props) => {
   return (
@@ -61,7 +63,9 @@ export const AlertButton = ({
               {title}
             </TamaguiAlertDialog.Title>
             {description && (
-              <TamaguiAlertDialog.Description size="$4">{description}</TamaguiAlertDialog.Description>
+              <TamaguiAlertDialog.Description size="$4">
+                {description}
+              </TamaguiAlertDialog.Description>
             )}
 
             <XStack gap="$3" justifyContent="flex-end">
@@ -71,7 +75,7 @@ export const AlertButton = ({
               <TamaguiAlertDialog.Action asChild>
                 <Button theme="accent" onPress={onConfirm}>
                   <MyText fw="bold" color={buttonTextColor ?? 'white'}>
-                    {buttonText ?? 'Потвърди'}
+                    {onConfirmText ?? 'Потвърди'}
                   </MyText>
                 </Button>
               </TamaguiAlertDialog.Action>
