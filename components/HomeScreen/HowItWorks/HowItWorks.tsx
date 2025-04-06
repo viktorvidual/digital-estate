@@ -12,7 +12,7 @@ export const HowItWorks = () => {
           <View bg="$green8" rounded="$4" p="$2">
             <Settings size={16} color="white" />
           </View>
-          <MyText>Как работи</MyText>
+          <MyText fw="bold">Как работи</MyText>
         </XStack>
         <MyText type="title">
           Получете готови за обява{' '}

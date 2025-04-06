@@ -3,8 +3,11 @@ import { YStack, Button, XStack, View, styled, useMedia } from 'tamagui';
 import { MyXStack, MyText } from '@/components/shared';
 import { BedDouble, MousePointerClick, Clock, Wallet, RefreshCcw } from '@tamagui/lucide-icons';
 import { IconContainer } from '@/components/ui';
+import { useAuthStore } from '@/stores';
+import { router } from 'expo-router';
 
 export const SecondCTA = () => {
+  const { customer } = useAuthStore();
   const media = useMedia();
 
   return (
@@ -14,12 +17,21 @@ export const SecondCTA = () => {
           <CTA showButton={media.lg} />
           {media.lg && <Elements />}
         </XStack>
+        
         {!media.lg && (
           <>
             <Elements />
-            <Button bg="$blue10" rounded="$5" p="$4" width={'100%'}>
+            <Button
+              bg="$blue10"
+              rounded="$5"
+              p="$4"
+              width={'100%'}
+              onPress={() =>
+                router.navigate(customer?.stripeSubscriptionStatus ? '/my-photos' : '/pricing')
+              }
+            >
               <MyText color="white" fw="bold">
-                Използвай Сега
+                {customer?.stripeSubscriptionStatus ? 'Моите Снимки' : 'Изполвай Сега'}
               </MyText>
             </Button>
           </>
@@ -55,6 +67,8 @@ const Elements = () => {
 };
 
 const CTA = ({ showButton }: { showButton?: boolean }) => {
+  const { customer } = useAuthStore();
+  
   return (
     <YStack width="100%" $lg={{ width: '40%' }} gap="$4" p="$2" justify={'center'}>
       <XStack items="center" gap="$2">
@@ -72,11 +86,19 @@ const CTA = ({ showButton }: { showButton?: boolean }) => {
         Вижте защо ние сме най-бързо развиващата се компания за виртуално обзавеждане.
       </MyText>
       {showButton && (
-        <Button bg="$blue10" rounded="$5" p="$4" width={'100%'}>
-          <MyText color="white" fw="bold">
-            Използвай Сега
-          </MyText>
-        </Button>
+        <Button
+        bg="$blue10"
+        rounded="$5"
+        p="$4"
+        width={'100%'}
+        onPress={() =>
+          router.navigate(customer?.stripeSubscriptionStatus ? '/my-photos' : '/pricing')
+        }
+      >
+        <MyText color="white" fw="bold">
+          {customer?.stripeSubscriptionStatus ? 'Моите Снимки' : 'Изполвай Сега'}
+        </MyText>
+      </Button>
       )}
     </YStack>
   );
