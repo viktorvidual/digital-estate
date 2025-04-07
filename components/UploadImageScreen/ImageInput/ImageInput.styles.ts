@@ -1,8 +1,8 @@
-import { styled, View, YStack } from 'tamagui';
+import { styled, View, YStack, XStack } from 'tamagui';
 
 export const ImageInputContainer = styled(YStack, {
   width: '100%',
-  height: 250,
+  height: 400,
   justify: 'center',
   items: 'center',
   cursor: 'pointer',
@@ -12,12 +12,11 @@ export const ImageInputContainer = styled(YStack, {
   rounded: '$4',
   gap: '$2',
   hoverStyle: {
-    bg: '#f0f0f0',
-    borderColor: '#999',
+    bg: '$blue3',
+    borderColor: '$blue10',
   },
   pressStyle: {
-    backgroundColor: '#e0e0e0',
-    borderColor: '#666',
+    backgroundColor: '$blue5',
   },
   bg: 'white',
 });

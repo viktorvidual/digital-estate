@@ -1,12 +1,24 @@
 import React from 'react';
+import { XStack } from 'tamagui';
 import { MyYStack } from '@/components/shared';
-import { ImageInput, ProcessImageButton } from '@/components/UploadImageScreen';
+import { ImageInput, ProcessImageButtons } from '@/components/UploadImageScreen';
+import { useMedia } from 'tamagui';
 
 export default function UploadImageScreen() {
+  const media = useMedia();
   return (
     <MyYStack>
-      <ImageInput />
-      <ProcessImageButton />
+      {!media.lg ? (
+        <>
+          <ImageInput />
+          <ProcessImageButtons />
+        </>
+      ) : (
+        <XStack gap="$3">
+          <ImageInput />
+          <ProcessImageButtons />
+        </XStack>
+      )}
     </MyYStack>
   );
 }

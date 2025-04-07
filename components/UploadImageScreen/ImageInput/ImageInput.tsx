@@ -8,15 +8,14 @@ import {
 import { Trash } from '@tamagui/lucide-icons';
 import { Upload } from '@tamagui/lucide-icons';
 import { MyText } from '@/components/shared';
-import { Spinner, YStack } from 'tamagui';
+import { Spinner, YStack, View } from 'tamagui';
 
 export const ImageInput = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { customer } = useAuthStore();
-  const { uploading, setSelectedFile, setImageDimensions } = useUploadImageStore();
-
-  const [localImage, setLocalImage] = useState('');
+  const { localImage, setLocalImage, uploading, setSelectedFile, setImageDimensions } =
+    useUploadImageStore();
 
   const pickImage = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!customer) {
@@ -40,7 +39,7 @@ export const ImageInput = () => {
   };
 
   return (
-    <>
+    <View width={'100%'} $lg={{ width: '60%' }}>
       {!localImage && (
         <>
           <ImageInputContainer onPress={() => inputRef.current?.click()}>
@@ -86,6 +85,6 @@ export const ImageInput = () => {
           />
         </YStack>
       )}
-    </>
+    </View>
   );
 };

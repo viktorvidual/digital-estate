@@ -76,7 +76,9 @@ const Content = ({
         </MyText>
 
         {customer?.stripeSubscriptionStatus === 'active' && (
+
           <View bg="$green9" p="$3" rounded={'$4'}>
+            <>
             <MyText
               text="center"
               $lg={{
@@ -89,6 +91,7 @@ const Content = ({
               Активен План: {customer.stripePlanName} ({customer.stripePlanDescription}){' '}
               {customer.stripePlanInterval === 'month' ? 'месечен' : 'годишен'}
             </MyText>
+            </>
           </View>
         )}
       </YStack>

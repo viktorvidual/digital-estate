@@ -1,2 +1,2 @@
 export * from './ImageInput/ImageInput';
-export * from './ProcessImageButton/ProcessImageButton';
+export * from './ProcessImageButtons/ProcessImageButtons';
