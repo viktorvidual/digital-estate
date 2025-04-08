@@ -12,6 +12,7 @@ export const ImageSettingsButton = styled(XStack, {
     bg: '$blue3',
     borderColor: '$blue10',
   },
+  cursor: 'pointer',
   variants: {
     selected: {
       true: {

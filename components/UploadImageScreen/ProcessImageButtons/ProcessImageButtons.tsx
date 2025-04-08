@@ -8,6 +8,7 @@ import { CirclePlus } from '@tamagui/lucide-icons';
 import { Square } from '@tamagui/lucide-icons';
 import { ImageSettingsButton } from './ProcessImageButtons.styles';
 import { CheckSquare2 } from '@tamagui/lucide-icons';
+import { v7 as uuidv7 } from 'uuid';
 
 export const ProcessImageButtons = () => {
   const { customer } = useAuthStore();
@@ -28,9 +29,12 @@ export const ProcessImageButtons = () => {
 
     setUploading(true);
 
-    const filePath = `${customer?.userId}/${selectedFile.name}`;
-    const { error } = await supabase.storage.from('images').upload(filePath, selectedFile);
+  
+    const imageUid = uuidv7();
+    const filePath = `${customer?.userId}/${imageUid}`;
 
+    //Save Image To Storage
+    const { error } = await supabase.storage.from('images').upload(filePath, selectedFile);
     if (error) {
       setUploading(false);
       console.error(error.message);
@@ -39,8 +43,9 @@ export const ProcessImageButtons = () => {
 
     const publicUrl = supabase.storage.from('images').getPublicUrl(filePath).data.publicUrl;
 
+    //Save image info to DB
     const { data: dbData, error: dbError } = await supabase
-      .from('images') // Your images table
+      .from('renders') // Your images table
       .insert([
         {
           user_id: customer?.userId, // The ID of the user uploading the image

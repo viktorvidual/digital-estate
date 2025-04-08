@@ -56,16 +56,18 @@ export const PhotosList = () => {
             <>
               <XStack flexWrap="wrap" gap="$2">
                 {photos.map(el => (
-                  <img
-                    src={el.thumbnaiUrl}
-                    style={{
-                      width: media.lg ? '10%' : '31%',
-                      aspectRatio: 1,
-                      height: 'auto;',
-                      borderRadius: 10,
-                      marginBottom: 10,
-                    }}
-                  />
+                  <React.Fragment key={el.id.toString()}>
+                    <img
+                      src={el.thumbnaiUrl}
+                      style={{
+                        width: media.lg ? '10%' : '31%',
+                        aspectRatio: 1,
+                        height: 'auto',
+                        borderRadius: 10,
+                        marginBottom: 10,
+                      }}
+                    />
+                  </React.Fragment>
                 ))}
               </XStack>
             </>
