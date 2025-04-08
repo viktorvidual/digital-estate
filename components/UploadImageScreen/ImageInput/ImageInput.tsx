@@ -11,6 +11,7 @@ import {
 import { saveTemporaryImage, generateMask } from '@/services';
 import { useAuthStore, useUploadImageStore } from '@/stores';
 import { supabase } from '@/lib/supabase';
+import { MaskOverlayCanvas } from '../MaskOverlayCanvas/MaskOverlayCanvas';
 
 export const ImageInput = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -18,6 +19,7 @@ export const ImageInput = () => {
   const { customer } = useAuthStore();
 
   const {
+    imageDimensions,
     localImage,
     setLocalImage,
     maskedImageUrl,
@@ -29,6 +31,7 @@ export const ImageInput = () => {
     selectedFile,
     setSelectedFile,
     setImageDimensions,
+    setUploading,
   } = useUploadImageStore();
 
   const pickImage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,9 +58,10 @@ export const ImageInput = () => {
   };
 
   const onDelete = () => {
-    setMaskedImageUrl('');
     setLocalImage('');
     setSelectedFile(null);
+    setMaskedImageUrl('');
+    setMaskId('');
   };
 
   useEffect(() => {
@@ -70,12 +74,14 @@ export const ImageInput = () => {
         return console.log('Furniter will not be removed, no need to upload temporary image');
       }
 
+      setUploading(true);
       const { error, data: temporaryUrl } = await saveTemporaryImage(
         customer?.userId,
         selectedFile
       );
 
       if (error || !temporaryUrl) {
+        setUploading(false);
         return console.error(error || 'No temporary url response');
       }
 
@@ -86,6 +92,7 @@ export const ImageInput = () => {
       );
 
       if (generateMaskError || !maskId) {
+        setUploading(false);
         return console.error(
           'generate mask error in image input',
           generateMaskError || 'no mask id return'
@@ -114,12 +121,14 @@ export const ImageInput = () => {
           if (newMaskUrl) {
             setMaskedImageUrl(newMaskUrl);
             console.log('Mask updated! New URL:', newMaskUrl);
+            setUploading(false);
           }
         }
       )
       .subscribe();
 
     return () => {
+      setUploading(false);
       supabase.removeChannel(channel);
     };
   }, [maskId]);
@@ -169,6 +178,13 @@ export const ImageInput = () => {
               borderRadius: 10,
             }}
           />
+          {maskedImageUrl && (
+            <MaskOverlayCanvas
+              maskUrl={maskedImageUrl}
+              width={imageDimensions.width}
+              height={imageDimensions.height}
+            />
+          )}
         </YStack>
       )}
     </View>

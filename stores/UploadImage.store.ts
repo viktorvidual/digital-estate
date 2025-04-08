@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-type UploagImageStore = {
+type UploadImageStore = {
   localImage: string;
   setLocalImage: (image: string) => void;
   selectedFile: File | null;
@@ -17,17 +17,22 @@ type UploagImageStore = {
   setMaskedImageUrl: (url: string) => void;
   maskId: string;
   setMaskId: (maskId: string) => void;
+  reset: () => void;
 };
 
-export const useUploadImageStore = create<UploagImageStore>(set => ({
-  addNewFurniture: true,
-  removeFurniture: true,
+const initialState = {
+  addNewFurniture: false,
+  removeFurniture: false,
   localImage: '',
   selectedFile: null,
   imageDimensions: { width: 0, height: 0 },
   uploading: false,
   maskedImageUrl: '',
   maskId: '',
+};
+
+export const useUploadImageStore = create<UploadImageStore>(set => ({
+  ...initialState,
 
   setAddNewFurniture: bool => set({ addNewFurniture: bool }),
   setRemoveFurniure: bool => set({ removeFurniture: bool }),
@@ -37,4 +42,5 @@ export const useUploadImageStore = create<UploagImageStore>(set => ({
   setUploading: status => set({ uploading: status }),
   setMaskedImageUrl: url => set({ maskedImageUrl: url }),
   setMaskId: maskId => set({ maskId }),
+  reset: () => set(initialState),
 }));

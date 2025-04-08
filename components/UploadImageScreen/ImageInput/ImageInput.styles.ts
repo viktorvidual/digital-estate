@@ -40,6 +40,7 @@ export const DeleteImageContainer = styled(View, {
     backgroundColor: '#e0e0e0',
     borderColor: '#666',
   },
+  z: '$3',
 });
 
 export const ImageLoadingContainer = styled(View, {

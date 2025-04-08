@@ -3,9 +3,15 @@ import { useAuthStore } from '@/stores';
 import { Button } from 'tamagui';
 import { MyText, AlertButton } from '@/components/shared';
 import { router } from 'expo-router';
+import { useUploadImageStore } from '@/stores';
 
 export const UploadImageButton = () => {
-  const onUplaodImage = () => router.navigate('/upload-image');
+  const { reset } = useUploadImageStore();
+
+  const onUplaodImage = () => {
+    reset();
+    router.navigate('/upload-image');
+  };
 
   const onSubscribe = () => router.navigate('/pricing');
 

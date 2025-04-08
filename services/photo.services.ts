@@ -19,23 +19,21 @@ export const getAllUserPhotos = async (userId: string) => {
 
 export const saveTemporaryImage = async (userId: string, file: File) => {
   const filePath = `${userId}/${file.name}`;
+  const storage = supabase.storage.from('temporary');
 
-  const { error } = await supabase.storage.from('temporary').upload(filePath, file);
+  const { error } = await storage.upload(filePath, file);
 
   if (error) {
-    const errorMessage = error.message;
-
-    if (errorMessage.includes('already exists')) {
-      const publicUrl = supabase.storage.from('temporary').getPublicUrl(filePath).data.publicUrl;
-      console.log('image already exits, returning ', publicUrl);
-
+    if (error.message.includes('already exists')) {
+      const { publicUrl } = storage.getPublicUrl(filePath).data;
+      console.log('Image already exists, returning', publicUrl);
       return { data: publicUrl };
     }
-    return { error: `${error.message}` };
+
+    return { error: error.message };
   }
 
-  const publicUrl = supabase.storage.from('temporary').getPublicUrl(filePath).data.publicUrl;
-
+  const { publicUrl } = storage.getPublicUrl(filePath).data;
   return { data: publicUrl };
 };
 
