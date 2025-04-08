@@ -8,8 +8,9 @@ import {
   ImageLoadingContainer,
   DeleteImageContainer,
 } from './ImageInput.styles';
-import { saveTemporaryImage } from '@/services';
+import { saveTemporaryImage, generateMask } from '@/services';
 import { useAuthStore, useUploadImageStore } from '@/stores';
+import { supabase } from '@/lib/supabase';
 
 export const ImageInput = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -20,6 +21,8 @@ export const ImageInput = () => {
     localImage,
     setLocalImage,
     maskedImageUrl,
+    maskId,
+    setMaskId,
     removeFurniture,
     setMaskedImageUrl,
     uploading,
@@ -72,23 +75,62 @@ export const ImageInput = () => {
         selectedFile
       );
 
-      if (error) {
-        return console.error(error);
+      if (error || !temporaryUrl) {
+        return console.error(error || 'No temporary url response');
       }
 
-      console.log('temporary image uploaded');
-
       //Get The Masked Image
+      const { error: generateMaskError, data: maskId } = await generateMask(
+        temporaryUrl,
+        customer.userId
+      );
+
+      if (generateMaskError || !maskId) {
+        return console.error(
+          'generate mask error in image input',
+          generateMaskError || 'no mask id return'
+        );
+      }
+
+      setMaskId(maskId);
     })();
   }, [removeFurniture, selectedFile, customer?.userId]);
+
+  useEffect(() => {
+    if (!maskId) return;
+
+    const channel = supabase
+      .channel('mask-updates')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'masks',
+          filter: `mask_id=eq.${maskId}`,
+        },
+        payload => {
+          const newMaskUrl = payload.new.url;
+          if (newMaskUrl) {
+            setMaskedImageUrl(newMaskUrl);
+            console.log('Mask updated! New URL:', newMaskUrl);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [maskId]);
 
   return (
     <View width={'100%'} $lg={{ width: '60%' }}>
       {!localImage && (
         <>
           <ImageInputContainer onPress={() => inputRef.current?.click()}>
+            <Upload size={20} />
             <>
-              <Upload size={20} />
               <MyText fw="medium" size="$5">
                 Kaчи Снимка
               </MyText>

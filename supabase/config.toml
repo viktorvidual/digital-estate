@@ -64,3 +64,25 @@ entrypoint = "./functions/reset-yearly-subscriptions/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/reset-yearly-subscriptions/*.html" ]
+
+[functions.generate-mask]
+enabled = true
+verify_jwt = true
+import_map = "./functions/generate-mask/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/generate-mask/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/generate-mask/*.html" ]
+
+[functions.virtual-staging-webhooks]
+enabled = true
+verify_jwt = true
+import_map = "./functions/virtual-staging-webhooks/deno.json"
+# Uncomment to specify a custom file path to the entrypoint.
+# Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
+entrypoint = "./functions/virtual-staging-webhooks/index.ts"
+# Specifies static files to be bundled with the function. Supports glob patterns.
+# For example, if you want to serve static HTML pages in your function:
+# static_files = [ "./functions/virtual-staging-webhooks/*.html" ]

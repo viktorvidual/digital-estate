@@ -15,6 +15,8 @@ type UploagImageStore = {
   setAddNewFurniture: (bool: boolean) => void;
   maskedImageUrl: string;
   setMaskedImageUrl: (url: string) => void;
+  maskId: string;
+  setMaskId: (maskId: string) => void;
 };
 
 export const useUploadImageStore = create<UploagImageStore>(set => ({
@@ -24,7 +26,8 @@ export const useUploadImageStore = create<UploagImageStore>(set => ({
   selectedFile: null,
   imageDimensions: { width: 0, height: 0 },
   uploading: false,
-  maskedImageUrl: "",
+  maskedImageUrl: '',
+  maskId: '',
 
   setAddNewFurniture: bool => set({ addNewFurniture: bool }),
   setRemoveFurniure: bool => set({ removeFurniture: bool }),
@@ -32,5 +35,6 @@ export const useUploadImageStore = create<UploagImageStore>(set => ({
   setSelectedFile: file => set({ selectedFile: file }),
   setImageDimensions: ({ width, height }) => set({ imageDimensions: { width, height } }),
   setUploading: status => set({ uploading: status }),
-  setMaskedImageUrl: (url) => set({ maskedImageUrl: url})
+  setMaskedImageUrl: url => set({ maskedImageUrl: url }),
+  setMaskId: maskId => set({ maskId }),
 }));

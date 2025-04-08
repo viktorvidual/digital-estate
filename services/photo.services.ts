@@ -38,3 +38,24 @@ export const saveTemporaryImage = async (userId: string, file: File) => {
 
   return { data: publicUrl };
 };
+
+export const generateMask = async (imageUrl: string, userId: string) => {
+  const maskId = uuidv7();
+
+  const { error } = await supabase.functions.invoke('generate-mask', {
+    body: {
+      imageUrl,
+      maskId,
+      userId,
+    },
+  });
+
+  if (error) {
+    console.error('generate mask error', error);
+    return { error };
+  }
+
+  return {
+    data: maskId,
+  };
+};
