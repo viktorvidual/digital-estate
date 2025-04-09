@@ -16,47 +16,52 @@ export const MaskOverlayCanvas = ({ maskUrl, width, height }: Props) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const mask = new Image();
+    let cancelled = false;
 
+    // Clear the canvas before repainting
+    ctx.clearRect(0, 0, width, height);
+
+    const mask = new Image();
     mask.crossOrigin = 'anonymous';
 
-    mask.src = maskUrl;
+    mask.onload = () => {
+      if (cancelled) return;
 
-    Promise.all([new Promise(res => (mask.onload = res))]).then(() => {
-      // Draw original image
-
-      // Create offscreen canvas to get mask pixels
       const maskCanvas = document.createElement('canvas');
       maskCanvas.width = width;
       maskCanvas.height = height;
-      const maskCtx = maskCanvas.getContext('2d');
+      const maskCtx = maskCanvas.getContext('2d', { willReadFrequently: true });
 
-      if (maskCtx) {
-        maskCtx.drawImage(mask, 0, 0, width, height);
+      if (!maskCtx) return;
 
-        const maskData = maskCtx.getImageData(0, 0, width, height);
-        const overlay = ctx.getImageData(0, 0, width, height);
+      maskCtx.drawImage(mask, 0, 0, width, height);
 
-        for (let i = 0; i < maskData.data.length; i += 4) {
-          const r = maskData.data[i];
-          const g = maskData.data[i + 1];
-          const b = maskData.data[i + 2];
+      const maskData = maskCtx.getImageData(0, 0, width, height);
+      const overlay = ctx.getImageData(0, 0, width, height);
 
-          const isWhite = r > 200 && g > 200 && b > 200;
+      for (let i = 0; i < maskData.data.length; i += 4) {
+        const r = maskData.data[i];
+        const g = maskData.data[i + 1];
+        const b = maskData.data[i + 2];
 
-          if (isWhite) {
-            overlay.data[i] = 254; // Red
-            overlay.data[i + 1] = 0; // Green
-            overlay.data[i + 2] = 50; // Blue
-            overlay.data[i + 3] = 100; // Alpha (out of 255) → ~40% opacity
-          } else {
-            // Leave the original image pixel unchanged
-          }
+        const isWhite = r > 200 && g > 200 && b > 200;
+
+        if (isWhite) {
+          overlay.data[i] = 254; // Red
+          overlay.data[i + 1] = 0; // Green
+          overlay.data[i + 2] = 50; // Blue
+          overlay.data[i + 3] = 100; // Alpha
         }
-
-        ctx.putImageData(overlay, 0, 0);
       }
-    });
+
+      ctx.putImageData(overlay, 0, 0);
+    };
+
+    mask.src = maskUrl;
+
+    return () => {
+      cancelled = true;
+    };
   }, [maskUrl, width, height]);
 
   return (
@@ -73,5 +78,3 @@ export const MaskOverlayCanvas = ({ maskUrl, width, height }: Props) => {
     />
   );
 };
-
-export default MaskOverlayCanvas;

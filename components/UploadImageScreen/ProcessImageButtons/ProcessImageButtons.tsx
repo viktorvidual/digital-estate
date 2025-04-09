@@ -29,7 +29,6 @@ export const ProcessImageButtons = () => {
 
     setUploading(true);
 
-  
     const imageUid = uuidv7();
     const filePath = `${customer?.userId}/${imageUid}`;
 

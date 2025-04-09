@@ -9,6 +9,8 @@ type UploadImageStore = {
   setImageDimensions: ({ width, height }: { width: number; height: number }) => void;
   uploading: boolean;
   setUploading: (uploading: boolean) => void;
+  uploadingMessage: string;
+  setUploadingMessage: (uploadingMessage: string) => void;
   removeFurniture: boolean;
   setRemoveFurniure: (bool: boolean) => void;
   addNewFurniture: boolean;
@@ -27,6 +29,7 @@ const initialState = {
   selectedFile: null,
   imageDimensions: { width: 0, height: 0 },
   uploading: false,
+  uploadingMessage: '',
   maskedImageUrl: '',
   maskId: '',
 };
@@ -40,6 +43,7 @@ export const useUploadImageStore = create<UploadImageStore>(set => ({
   setSelectedFile: file => set({ selectedFile: file }),
   setImageDimensions: ({ width, height }) => set({ imageDimensions: { width, height } }),
   setUploading: status => set({ uploading: status }),
+  setUploadingMessage: uploadingMessage => set({ uploadingMessage }),
   setMaskedImageUrl: url => set({ maskedImageUrl: url }),
   setMaskId: maskId => set({ maskId }),
   reset: () => set(initialState),

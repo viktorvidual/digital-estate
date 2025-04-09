@@ -14,6 +14,7 @@ import { supabase } from '@/lib/supabase';
 import { MaskOverlayCanvas } from '../MaskOverlayCanvas/MaskOverlayCanvas';
 
 export const ImageInput = () => {
+  const prevFileSelected = useRef<File | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const { customer } = useAuthStore();
@@ -32,6 +33,8 @@ export const ImageInput = () => {
     setSelectedFile,
     setImageDimensions,
     setUploading,
+    uploadingMessage,
+    setUploadingMessage,
   } = useUploadImageStore();
 
   const pickImage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,8 +63,6 @@ export const ImageInput = () => {
   const onDelete = () => {
     setLocalImage('');
     setSelectedFile(null);
-    setMaskedImageUrl('');
-    setMaskId('');
   };
 
   useEffect(() => {
@@ -74,13 +75,21 @@ export const ImageInput = () => {
         return console.log('Furniter will not be removed, no need to upload temporary image');
       }
 
+      if (prevFileSelected?.current && prevFileSelected?.current.name === selectedFile.name) {
+        console.log('mask for this file has been already generated');
+        return;
+      }
+
       setUploading(true);
+      setUploadingMessage('Анализираме на снимката...');
       const { error, data: temporaryUrl } = await saveTemporaryImage(
         customer?.userId,
         selectedFile
       );
 
       if (error || !temporaryUrl) {
+        console.log('stopping loading 1');
+
         setUploading(false);
         return console.error(error || 'No temporary url response');
       }
@@ -92,6 +101,8 @@ export const ImageInput = () => {
       );
 
       if (generateMaskError || !maskId) {
+        console.log('stopping loading 2');
+
         setUploading(false);
         return console.error(
           'generate mask error in image input',
@@ -100,6 +111,7 @@ export const ImageInput = () => {
       }
 
       setMaskId(maskId);
+      prevFileSelected.current = selectedFile;
     })();
   }, [removeFurniture, selectedFile, customer?.userId]);
 
@@ -120,18 +132,25 @@ export const ImageInput = () => {
           const newMaskUrl = payload.new.url;
           if (newMaskUrl) {
             setMaskedImageUrl(newMaskUrl);
+            console.log('stopping loading 3');
+
             console.log('Mask updated! New URL:', newMaskUrl);
-            setUploading(false);
+            setTimeout(() => {
+              setUploading(false);
+            }, 500);
           }
         }
       )
       .subscribe();
 
     return () => {
-      setUploading(false);
       supabase.removeChannel(channel);
     };
   }, [maskId]);
+
+  useEffect(() => {
+    console.log(uploading);
+  }, [uploading]);
 
   return (
     <View width={'100%'} $lg={{ width: '60%' }}>
@@ -162,7 +181,7 @@ export const ImageInput = () => {
           {uploading && (
             <ImageLoadingContainer gap="$3">
               <Spinner size="large" />
-              <MyText color="white">Обработка...</MyText>
+              <MyText color="white">{uploadingMessage}</MyText>
             </ImageLoadingContainer>
           )}
           <DeleteImageContainer onPress={onDelete}>
@@ -178,7 +197,7 @@ export const ImageInput = () => {
               borderRadius: 10,
             }}
           />
-          {maskedImageUrl && (
+          {maskedImageUrl && removeFurniture && !uploading && (
             <MaskOverlayCanvas
               maskUrl={maskedImageUrl}
               width={imageDimensions.width}
