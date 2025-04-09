@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { RoomType, FurnitureStyle } from '@/constants';
+import { RoomType, FurnitureStyle, ROOM_TYPES, FURNITURE_STYLES } from '@/constants';
 
 type UploadImageStore = {
   localImage: string;
@@ -37,8 +37,8 @@ const initialState = {
   uploading: false,
   uploadingMessage: '',
   maskedImageUrl: '',
-  roomType: 'Всекидневна' as const,
-  furnitureStyle: 'Модерен' as const,
+  roomType: ROOM_TYPES[0],
+  furnitureStyle: FURNITURE_STYLES[0],
   maskId: '',
 };
 

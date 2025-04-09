@@ -1,39 +1,25 @@
-export const ROOM_STYLE_KEYS = {
-  Всекидневна: { id: 'living', name: 'Всекидневна' },
-  Спалня: { id: 'bed', name: 'Спалня' },
-  Кухня: { id: 'kitchen', name: 'Кухня' },
-  Трапезария: { id: 'dining', name: 'Трапезария' },
-  Баня: { id: 'bathroom', name: 'Баня' },
-  'Домашен офис': { id: 'home_office', name: 'Домашен офис' },
-  'На открито': { id: 'outdoor', name: 'На открито' },
-  'Детска стая': { id: 'kids_room', name: 'Детска стая' },
-} as const;
+export const ROOM_TYPES = [
+  { value: 'living', label: 'Хол' },
+  { value: 'bed', label: 'Спалня' },
+  { value: 'kitchen', label: 'Кухня' },
+  { value: 'dining', label: 'Трапезария' },
+  { value: 'bathroom', label: 'Баня' },
+  { value: 'home_office', label: 'Домашен офис' },
+  { value: 'outdoor', label: 'На открито' },
+  { value: 'kids_room', label: 'Детска стая' },
+];
 
-export const ROOMS_STYLES_VALUES = Object.values(ROOM_STYLE_KEYS).map(({ name, id }) => {
-  return {
-    name,
-    id,
-  };
-});
-
-export const FURNITURE_STYLE_KEYS = {
-  Модерен: { id: 'modern', name: 'Модерен' },
-  Скандинавски: { id: 'scandinavian', name: 'Скандинавски' },
-  Индустриален: { id: 'industrial', name: 'Индустриален' },
-  'Средата на века': { id: 'midcentury', name: 'Средата на века' },
-  Луксозен: { id: 'luxury', name: 'Луксозен' },
-  'Селска къща': { id: 'farmhouse', name: 'Селска къща' },
-  Крайбрежен: { id: 'coastal', name: 'Крайбрежен' },
-  Стандартен: { id: 'standard', name: 'Стандартен' },
-} as const;
-
-export const FURNITURE_STYLE_VALUES = Object.values(FURNITURE_STYLE_KEYS).map(({ name, id }) => {
-  return {
-    name,
-    id,
-  };
-});
+export const FURNITURE_STYLES = [
+  { value: 'modern', label: 'Модерен' },
+  { value: 'scandinavian', label: 'Скандинавски' },
+  { value: 'industrial', label: 'Индустриален' },
+  { value: 'midcentury', label: 'Средата на века' },
+  { value: 'luxury', label: 'Луксозен' },
+  { value: 'farmhouse', label: 'Селска къща' },
+  { value: 'coastal', label: 'Крайбрежен' },
+  { value: 'standard', label: 'Стандартен' },
+];
 
 // ✅ Extract string literal types from keys
-export type RoomType = keyof typeof ROOM_STYLE_KEYS;
-export type FurnitureStyle = keyof typeof FURNITURE_STYLE_KEYS;
+export type RoomType = (typeof ROOM_TYPES)[number];
+export type FurnitureStyle = (typeof FURNITURE_STYLES)[number];

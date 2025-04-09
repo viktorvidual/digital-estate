@@ -13,6 +13,7 @@ import { useAuthStore, useUploadImageStore } from '@/stores';
 import { supabase } from '@/lib/supabase';
 import { MaskOverlayCanvas } from '../MaskOverlayCanvas/MaskOverlayCanvas';
 
+
 export const ImageInput = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 

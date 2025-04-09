@@ -1,23 +1,22 @@
 import React from 'react';
 import { useAuthStore, useUploadImageStore } from '@/stores';
-import { MyText, DropDownSelect } from '@/components/shared';
-import { YStack, Button, XStack } from 'tamagui';
+import { MyText } from '@/components/shared';
+import { YStack, Button, XStack, getTokens, View } from 'tamagui';
 import { supabase } from '@/lib/supabase';
 import { CircleMinus } from '@tamagui/lucide-icons';
 import { CirclePlus } from '@tamagui/lucide-icons';
 import { Square } from '@tamagui/lucide-icons';
-import {
-  ImageSettingsButton,
-  ImageSettingsButtonInnerContainer,
-} from './ProcessImageButtons.styles';
+import { ImageSettingsButton, DropDownMenuItem } from './ProcessImageButtons.styles';
 import { CheckSquare2 } from '@tamagui/lucide-icons';
 import { v7 as uuidv7 } from 'uuid';
 import { createRender } from '@/services';
-import { ROOMS_STYLES_VALUES, FURNITURE_STYLE_VALUES } from '@/constants';
-import { MyPopover } from '@/components/shared/Popover/Popover';
+import { ROOM_TYPES, FURNITURE_STYLES, RoomType, FurnitureStyle } from '@/constants';
+import Select from 'react-dropdown-select';
 
 export const ProcessImageButtons = () => {
   const { customer } = useAuthStore();
+  const tokens = getTokens();
+
   const {
     uploading,
     addNewFurniture,
@@ -129,24 +128,86 @@ export const ProcessImageButtons = () => {
       {addNewFurniture && (
         <>
           <MyText fw="bold">Вид Стая</MyText>
-          {/* <DropDownSelect
-            items={ROOMS_STYLES_VALUES}
-            value={roomType}
-            label={'Вид Стая'}
-            onValueChange={setRoomType}
+          <Select
+            placeholder="Избери Вид Стая"
+            options={ROOM_TYPES}
+            onChange={select => {
+              setRoomType(select[0] as RoomType);
+            }}
+            values={[roomType]}
             style={{
-              zIndex: 10,
+              borderRadius: tokens.radius[6].val,
+              backgroundColor: 'white',
+              height: 45,
+            }}
+            searchable={false}
+            dropdownPosition="auto"
+            contentRenderer={({ props, state }) => (
+              <View p={10}>
+                {state.values.length > 0 ? (
+                  <MyText>{state.values[0].label}</MyText>
+                ) : (
+                  <MyText
+                    style={{
+                      fontSize: 16,
+                      color: '#aaa', // Placeholder color
+                    }}
+                  >
+                    {props.placeholder}
+                  </MyText>
+                )}
+              </View>
+            )}
+            dropdownRenderer={({ props, methods }) => {
+              return (
+                <View rounded={'$6'}>
+                  {props.options.map(item => {
+                    const select = item.value === roomType.value;
+                    return (
+                      <DropDownMenuItem
+                        key={item.value}
+                        onPress={() => {
+                          setRoomType(item as FurnitureStyle);
+                          methods.dropDown('toggle');
+                        }}
+                        selected={select}
+                      >
+                        <MyText color={select ? 'white' : 'black'} fw="medium" key={item.value}>
+                          {item.label}
+                        </MyText>
+                      </DropDownMenuItem>
+                    );
+                  })}
+                </View>
+              );
             }}
           />
           <MyText fw="bold">Стил Обзавеждане</MyText>
-          <DropDownSelect
-            items={FURNITURE_STYLE_VALUES}
-            value={furnitureStyle}
-            label={'Стил Обзавеждане'}
-            onValueChange={setFurnitureStyle}
-            style={{
-              zIndex: 10,
+          {/* <Select
+            options={FURNITURE_STYLES}
+            onChange={select => {
+              setFurnitureStyle(select[0] as FurnitureStyle);
             }}
+            values={[furnitureStyle]}
+            style={{
+              borderRadius: tokens.radius[4].val,
+              backgroundColor: 'white',
+              height: 45,
+            }}
+            dropdownPosition="auto"
+            itemRenderer={({ item, methods }) => (
+              <View
+                p={'$2'}
+                onPress={() => {
+                  setFurnitureStyle(item as FurnitureStyle);
+                  methods.dropDown('toggle');
+                }}
+              >
+                <MyText fw="medium" key={item.value}>
+                  {item.label}
+                </MyText>
+              </View>
+            )}
           /> */}
         </>
       )}

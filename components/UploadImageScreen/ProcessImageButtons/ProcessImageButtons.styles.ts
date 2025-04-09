@@ -1,4 +1,4 @@
-import { styled, View, XStack, YStack, Button } from 'tamagui';
+import { styled, Button, View } from 'tamagui';
 
 export const ImageSettingsButton = styled(Button, {
   width: '100%',
@@ -27,4 +27,22 @@ export const ImageSettingsButton = styled(Button, {
   } as const,
 });
 
-export const ImageSettingsButtonInnerContainer = styled(XStack, {});
+export const DropDownMenuItem = styled(View, {
+  p: 10,
+  hoverStyle: {
+    bg: '$blue3',
+  },
+  pressStyle: {
+    backgroundColor: '$blue3',
+  },
+  rounded: '$6',
+  variants: {
+    selected: {
+      true: {
+        bg: '$blue10',
+        hoverStyle: { bg: '$blue10' },
+      },
+      false: {},
+    },
+  } as const,
+});
