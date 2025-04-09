@@ -1,17 +1,20 @@
-import { styled, View, XStack } from 'tamagui';
+import { styled, View, XStack, YStack, Button } from 'tamagui';
 
-export const ImageSettingsButton = styled(XStack, {
-  p: '$3',
-  rounded: '$6',
+export const ImageSettingsButton = styled(Button, {
+  width: '100%',
+  height: 50,
   justify: 'space-between',
   items: 'center',
-  width: '100%',
+  p: '$3',
+  rounded: '$6',
   borderColor: 'grey',
   borderWidth: 1,
   hoverStyle: {
     bg: '$blue3',
     borderColor: '$blue10',
   },
+  bg: 'white',
+  gap: '$2',
   cursor: 'pointer',
   variants: {
     selected: {
@@ -23,3 +26,5 @@ export const ImageSettingsButton = styled(XStack, {
     },
   } as const,
 });
+
+export const ImageSettingsButtonInnerContainer = styled(XStack, {});

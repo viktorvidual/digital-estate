@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Check, ChevronDown, ChevronUp, ChevronsUpDown } from '@tamagui/lucide-icons';
 
 import type { FontSizeTokens, SelectProps } from 'tamagui';
@@ -53,8 +53,10 @@ function DropDownSelectItem(
 
   return (
     <Select value={value} onValueChange={onValueChange} disablePreventBodyScroll {...props}>
-      <Select.Trigger iconAfter={ChevronsUpDown} rounded={'$6'}>
-        <Select.Value placeholder="pLaceholder">{value}</Select.Value>
+      <Select.Trigger iconAfter={ChevronsUpDown} rounded={'$6'} bg="white">
+        <Select.Value size="$5" placeholder="pLaceholder">
+          {value}
+        </Select.Value>
       </Select.Trigger>
 
       <Adapt when="sm" platform="touch">
@@ -69,11 +71,12 @@ function DropDownSelectItem(
             animation="lazy"
             enterStyle={{ opacity: 0 }}
             exitStyle={{ opacity: 0 }}
+            pointerEvents="auto"
           />
         </Sheet>
       </Adapt>
 
-      <Select.Content zIndex={200000}>
+      <Select.Content zIndex={1000}>
         <Select.ScrollUpButton
           alignItems="center"
           justifyContent="center"
@@ -94,22 +97,22 @@ function DropDownSelectItem(
         </Select.ScrollUpButton>
 
         <Select.Viewport
-          // to do animations:
-          // animation="quick"
-          // animateOnly={['transform', 'opacity']}
-          // enterStyle={{ o: 0, y: -10 }}
-          // exitStyle={{ o: 0, y: 10 }}
-          minWidth={200}
+        // to do animations:
+        // animation="medium"
+        // animateOnly={['transform', 'opacity']}
+        // enterStyle={{ x: 0, y: -10 }}
+        // exitStyle={{ x: 0, y: 10 }}
+        // minWidth={200}
         >
-          <Select.Group>
+          <Select.Group style={{ zIndex: 100 }}>
             <Select.Label>{label}</Select.Label>
             {/* for longer lists memoizing these is useful */}
             {useMemo(
               () =>
                 items.map((item, i) => {
                   return (
-                    <Select.Item index={i} key={item.name} value={item.name}>
-                      <Select.ItemText>{item.name}</Select.ItemText>
+                    <Select.Item zIndex={100} pointerEvents='auto' index={i} key={item.name} value={item.name}>
+                      <Select.ItemText size="$5">{item.name}</Select.ItemText>
                       <Select.ItemIndicator marginLeft="auto">
                         <Check size={16} />
                       </Select.ItemIndicator>

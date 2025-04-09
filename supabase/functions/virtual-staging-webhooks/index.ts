@@ -5,6 +5,28 @@ import { createClient } from '@supabase/supabase-js';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 
+type BaseResponse = {
+  render_id: string;
+  variation_id: string;
+  variation_type: 'staging' | string;
+  timestamp: number;
+};
+
+type DoneResponse = BaseResponse & {
+  event_type: 'done';
+  base_variation_id?: string; // optional since it's only present in some 'done' cases
+  result: {
+    url: string;
+    optimized_url: string;
+    thumbnail_url: string;
+  };
+};
+
+type ErrorResponse = BaseResponse & {
+  event_type: 'error';
+  error_message: string;
+};
+
 Deno.serve(async (req: Request) => {
   let body;
 

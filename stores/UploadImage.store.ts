@@ -1,24 +1,30 @@
 import { create } from 'zustand';
+import { RoomType, FurnitureStyle } from '@/constants';
 
 type UploadImageStore = {
   localImage: string;
-  setLocalImage: (image: string) => void;
   selectedFile: File | null;
-  setSelectedFile: (file: File | null) => void;
   imageDimensions: { width: number; height: number };
-  setImageDimensions: ({ width, height }: { width: number; height: number }) => void;
   uploading: boolean;
-  setUploading: (uploading: boolean) => void;
   uploadingMessage: string;
-  setUploadingMessage: (uploadingMessage: string) => void;
   removeFurniture: boolean;
-  setRemoveFurniure: (bool: boolean) => void;
   addNewFurniture: boolean;
-  setAddNewFurniture: (bool: boolean) => void;
   maskedImageUrl: string;
-  setMaskedImageUrl: (url: string) => void;
   maskId: string;
+  roomType: RoomType;
+  furnitureStyle: FurnitureStyle;
+
+  setLocalImage: (image: string) => void;
+  setSelectedFile: (file: File | null) => void;
+  setImageDimensions: ({ width, height }: { width: number; height: number }) => void;
+  setUploading: (uploading: boolean) => void;
+  setUploadingMessage: (uploadingMessage: string) => void;
+  setRemoveFurniure: (bool: boolean) => void;
+  setAddNewFurniture: (bool: boolean) => void;
+  setMaskedImageUrl: (url: string) => void;
   setMaskId: (maskId: string) => void;
+  setRoomType: (roomType: RoomType) => void;
+  setFurnitureStyle: (furnitureStyle: FurnitureStyle) => void;
   reset: () => void;
 };
 
@@ -31,6 +37,8 @@ const initialState = {
   uploading: false,
   uploadingMessage: '',
   maskedImageUrl: '',
+  roomType: 'Всекидневна' as const,
+  furnitureStyle: 'Модерен' as const,
   maskId: '',
 };
 
@@ -46,5 +54,7 @@ export const useUploadImageStore = create<UploadImageStore>(set => ({
   setUploadingMessage: uploadingMessage => set({ uploadingMessage }),
   setMaskedImageUrl: url => set({ maskedImageUrl: url }),
   setMaskId: maskId => set({ maskId }),
+  setRoomType: roomType => set({ roomType }),
+  setFurnitureStyle: furnitureStyle => set({ furnitureStyle }),
   reset: () => set(initialState),
 }));
