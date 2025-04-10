@@ -5,27 +5,21 @@ import { createClient } from '@supabase/supabase-js';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 
-type BaseResponse = {
-  render_id: string;
+type DoneResponse = {
+  render_id: string; // the parent render id
   variation_id: string;
-  variation_type: 'staging' | string;
-  timestamp: number;
-};
-
-type DoneResponse = BaseResponse & {
+  variation_type: 'staging';
+  base_variation_id?: string; // optional, if using a base variation from a removal
+  timestamp: number; // Unix timestamp in milliseconds
   event_type: 'done';
-  base_variation_id?: string; // optional since it's only present in some 'done' cases
   result: {
-    url: string;
-    optimized_url: string;
-    thumbnail_url: string;
+    url: string; // URL of the result image
+    optimized_url: string; // URL of the optimized result image
+    thumbnail_url: string; // URL of the thumbnail image
   };
 };
 
-type ErrorResponse = BaseResponse & {
-  event_type: 'error';
-  error_message: string;
-};
+const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 Deno.serve(async (req: Request) => {
   let body;
@@ -52,13 +46,15 @@ Deno.serve(async (req: Request) => {
   }
 
   const eventType = body.event_type;
-  const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
   switch (eventType) {
     case 'analysis_completion': {
       const url = new URL(req.url);
       const maskId = url.searchParams.get('maskId');
-      console.log('analysis completed', 'maskId', maskId, body.result_url);
+
+      if (!maskId) {
+        throw new Error('No maskId provided in the URL');
+      }
 
       const { error } = await supabaseAdmin
         .from('masks')
@@ -70,6 +66,9 @@ Deno.serve(async (req: Request) => {
         .eq('mask_id', maskId);
 
       if (error) throw error;
+
+      console.log('analysis completed', 'maskId', maskId, body.result_url);
+      break;
     }
 
     case 'analysis_error': {
@@ -86,6 +85,61 @@ Deno.serve(async (req: Request) => {
 
         if (error) throw error;
       }
+      break;
+    }
+
+    case 'done': {
+      const url = new URL(req.url);
+      const userId = url.searchParams.get('userId');
+
+      if (!userId) {
+        throw new Error('No userId provided in the URL');
+      }
+
+      const event = body as DoneResponse;
+      const variationId = event.variation_id;
+      const filePath = `${userId}/${event.variation_id}`;
+
+      //uploadImage to supabase storage
+      const { error: imageError } = await supabaseAdmin.storage
+        .from('images')
+        .upload(filePath, await fetch(event.result.url).then(res => res.blob()));
+
+      if (imageError) {
+        throw new Error('Error uploading image to storage: ' + imageError.message);
+      }
+      console.log('Image uploaded to storage for variantion', variationId);
+
+      const publicUrl = supabaseAdmin.storage.from('images').getPublicUrl(filePath).data.publicUrl;
+      console.log('image public url ', publicUrl);
+
+      //insert into renders table
+      const { error: renderError, data } = await supabaseAdmin
+        .from('variations')
+        .insert([
+          {
+            user_id: userId,
+            render_id: variationId,
+            variation_id: event.variation_id,
+            variation_type: 'staging',
+            base_variation_id: null,
+            status: 'done',
+            url: publicUrl,
+            base_variation_url: body.base_variation_id ?? null,
+          },
+        ])
+        .select();
+
+      if (renderError) {
+        throw new Error('Error saving image to DB: ' + renderError.message);
+      }
+
+      console.log('Image saved to DB: ', data);
+      break;
+    }
+
+    case 'update': {
+      console.log('update event', body);
     }
   }
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useAuthStore, useUploadImageStore } from '@/stores';
 import { MyText, NewSelect } from '@/components/shared';
 import { YStack, Button, XStack } from 'tamagui';
@@ -30,9 +30,13 @@ export const ProcessImageButtons = () => {
     setFurnitureStyle,
   } = useUploadImageStore();
 
-  const onUpload = async () => {
+  const onUpload = useCallback(async () => {
     if (!selectedFile) {
       return console.error('No file selected');
+    }
+
+    if (!customer) {
+      return console.error('No customer. Please log out and log in again');
     }
 
     setUploading(true);
@@ -40,7 +44,7 @@ export const ProcessImageButtons = () => {
     const imageUid = uuidv7();
     const filePath = `${customer?.userId}/${imageUid}`;
 
-    //Save Image To Storage
+    // Save Image To Storage
     const { error } = await supabase.storage.from('images').upload(filePath, selectedFile);
     if (error) {
       setUploading(false);
@@ -50,39 +54,40 @@ export const ProcessImageButtons = () => {
 
     const publicUrl = supabase.storage.from('images').getPublicUrl(filePath).data.publicUrl;
 
-    //Save image info to DB
-    const { data: dbData, error: dbError } = await supabase
-      .from('renders') // Your images table
-      .insert([
-        {
-          user_id: customer?.userId, // The ID of the user uploading the image
-          url: publicUrl, // The public URL of the file
-          dimensions: `${imageDimensions.width}x${imageDimensions.height}`, // If you want to store image dimensions
-          created_at: new Date(),
-          file_path: filePath,
-        },
-      ]);
-
-    if (dbError) {
-      console.error('Error saving image to DB: ', dbError);
-    } else {
-      console.log('Image saved to DB: ', dbData);
-    }
-
-    //Call The Create Render Endpoint
+    // Call The Create Render Endpoint
     const { error: createRenderError, data } = await createRender({
+      userId: customer?.userId,
+      dimensions: `${imageDimensions.width}x${imageDimensions.height}`,
+      filePath: filePath,
       addFurniture: addNewFurniture,
       removeFurniture,
       addVirtuallyStagedWatermark: false,
-      style: furnitureStyle,
-      roomType: roomType,
+      style: furnitureStyle.value,
+      roomType: roomType.value,
       imageUrl: publicUrl,
     });
+
+    if (createRenderError) {
+      console.error('Error creating render: ', createRenderError);
+      setUploading(false);
+      return;
+    }
+
+    console.log('Render created successfully: ', data);
 
     setUploading(false);
 
     console.log('image uploaded successfully');
-  };
+  }, [
+    selectedFile,
+    customer,
+    setUploading,
+    imageDimensions,
+    addNewFurniture,
+    removeFurniture,
+    furnitureStyle,
+    roomType,
+  ]);
 
   return (
     <YStack
@@ -96,7 +101,6 @@ export const ProcessImageButtons = () => {
       <ImageSettingsButton
         selected={removeFurniture}
         onPress={e => {
-          e.stopPropagation();
           setRemoveFurniure(!removeFurniture);
         }}
         disabled={uploading}
@@ -111,7 +115,6 @@ export const ProcessImageButtons = () => {
       <ImageSettingsButton
         selected={addNewFurniture}
         onPress={e => {
-          e.stopPropagation();
           setAddNewFurniture(!addNewFurniture);
         }}
         disabled={uploading}

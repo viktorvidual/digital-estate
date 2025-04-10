@@ -13,7 +13,6 @@ import { useAuthStore, useUploadImageStore } from '@/stores';
 import { supabase } from '@/lib/supabase';
 import { MaskOverlayCanvas } from '../MaskOverlayCanvas/MaskOverlayCanvas';
 
-
 export const ImageInput = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -66,6 +65,8 @@ export const ImageInput = () => {
   };
 
   useEffect(() => {
+    console.log('generate mask effect running');
+
     (async () => {
       if (!customer) {
         return console.error('No customer object does not exist.');
@@ -105,6 +106,8 @@ export const ImageInput = () => {
   }, [removeFurniture, selectedFile, customer?.userId]);
 
   useEffect(() => {
+    console.log("mask listener effect running");
+    
     if (!maskId || !removeFurniture) return;
 
     const channel = supabase

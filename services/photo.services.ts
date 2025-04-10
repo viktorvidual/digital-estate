@@ -1,7 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import camelize from 'camelize';
 import { v7 as uuidv7 } from 'uuid';
-import { RoomType, FurnitureStyle } from '@/constants';
 
 export const getAllUserPhotos = async (userId: string) => {
   const { error, data } = await supabase
@@ -60,11 +59,14 @@ export const generateMask = async (imageUrl: string, userId: string) => {
 };
 
 export type CreateRenderParams = {
+  userId: string;
+  dimensions: string;
+  filePath: string;
   addFurniture: boolean;
   removeFurniture: boolean;
   addVirtuallyStagedWatermark: boolean;
-  style?: FurnitureStyle;
-  roomType: RoomType;
+  style?: string;
+  roomType: string;
   imageUrl: string;
 };
 
@@ -76,11 +78,8 @@ export const createRender = async (reqBody: CreateRenderParams) => {
   });
 
   if (error) {
-    console.error(error.details);
     return { error };
   }
-
-  console.log('render created', data);
 
   return { data };
 };
