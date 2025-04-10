@@ -5,7 +5,7 @@ import { v7 as uuidv7 } from 'uuid';
 export const getAllUserPhotos = async (userId: string) => {
   const { error, data } = await supabase
     .from('renders')
-    .select('id, file_path, user_id')
+    .select('id, file_path, user_id, render_id, dimensions')
     .eq('user_id', userId);
 
   if (error) {

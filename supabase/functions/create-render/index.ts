@@ -205,6 +205,8 @@ Deno.serve(async (req: Request) => {
       throw new Error(`Error saving variations to DB: ${variationsError.message}`);
     }
 
+    console.log('Variations Data Saved to DB ');
+
     //TO-DO Step 5. Return renderID and variations to client
     return new Response(
       JSON.stringify({
