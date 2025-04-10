@@ -1,17 +1,15 @@
-import React, { useEffect, useState, forwardRef } from 'react';
-import { MyText, MyYStack, NewSelect } from '@/components/shared';
+import React, { useEffect, useState } from 'react';
+import { MyText, MyYStack } from '@/components/shared';
 import { useLocalSearchParams } from 'expo-router';
 import { getRender, getRenderVariations } from '@/services';
 import { Render } from '@/types';
-import { getTokens, XStack, YStack, Button, View } from 'tamagui';
-import { ROOM_TYPES, FURNITURE_STYLES, RoomType, FurnitureStyle } from '@/constants';
-import ReactImageGallery, { ReactImageGalleryProps } from 'react-image-gallery';
+import { View, XStack, YStack, useMedia } from 'tamagui';
+import { RoomType, FurnitureStyle } from '@/constants';
+// import ReactImageGallery, { ReactImageGalleryProps } from 'react-image-gallery';
+import { OriginalImage, ImageGallery } from '@/components/ViewRenderScreen';
+
 import 'react-image-gallery/styles/css/image-gallery.css';
 import '@/css/image-gallery-custom.css';
-
-const ImageGallery = forwardRef<HTMLDivElement, ReactImageGalleryProps>((props, ref) => {
-  return <ReactImageGallery ref={ref} {...props} />;
-});
 
 export default function ViewRenderScreen() {
   const [render, setRender] = useState<Render | null>(null);
@@ -26,8 +24,8 @@ export default function ViewRenderScreen() {
   const { id } = useLocalSearchParams();
   const [roomType, setRoomType] = useState<RoomType>({} as RoomType);
   const [furnitureStyle, setFurnitureStyle] = useState<FurnitureStyle>({} as FurnitureStyle);
+  const media = useMedia();
 
-  const tokens = getTokens();
   useEffect(() => {
     (async () => {
       if (!id) return;
@@ -63,73 +61,42 @@ export default function ViewRenderScreen() {
 
   return (
     <MyYStack>
-      <XStack width={'100%'} gap="$4">
-        <YStack gap="$2" width={'30%'}>
-          <MyText ml="$1" fw="bold" size="$8">
-            Оригинал
-          </MyText>
-          <img
-            src={render?.url}
-            alt="Render"
-            style={{ width: '100%', height: 'auto', borderRadius: tokens.radius['$6'].val }}
-          />
-          <MyText fw="bold">Вид Стая</MyText>
-          <NewSelect
-            placeholder="Избери вид стая"
-            options={ROOM_TYPES}
-            onChange={select => {
-              setRoomType(select[0] as RoomType);
-            }}
-            values={[roomType]}
-            searchable={false}
-            setValue={setRoomType}
-          />
-          <MyText fw="bold">Стил Обзавеждане</MyText>
-          <NewSelect
-            placeholder="Избери стил"
-            options={FURNITURE_STYLES}
-            onChange={select => {
-              setFurnitureStyle(select[0] as FurnitureStyle);
-            }}
-            values={[furnitureStyle]}
-            searchable={false}
-            setValue={setFurnitureStyle}
-          />
-          <Button bg="$blue10" mt="$1">
-            <MyText color="white" fw="bold">
-              Генерирай Още
-            </MyText>
-          </Button>
-        </YStack>
-
-        <YStack width={'70%'} gap="$2">
-          <MyText ml="$1" fw="bold" size="$8">
-            Вариации
-          </MyText>
-          <View>
-            <ImageGallery
-              showPlayButton={false}
-              showFullscreenButton={false}
-              items={images}
-              renderItem={renderItem}
+      {media.lg ? (
+        <XStack width={'100%'} gap="$4">
+          <View width={'30%'}>
+            <OriginalImage
+              render={render}
+              roomType={roomType}
+              furnitureStyle={furnitureStyle}
+              setRoomType={setRoomType}
+              setFurnitureStyle={setFurnitureStyle}
             />
           </View>
+
+          <YStack width="70%" gap="$2">
+            <MyText ml="$1" fw="bold" size="$8">
+              Вариации
+            </MyText>
+            <ImageGallery images={images} />
+          </YStack>
+        </XStack>
+      ) : (
+        <YStack width={'100%'} gap="$4">
+          <YStack width={'100%'} gap="$2">
+            <MyText ml="$1" fw="bold" size="$8">
+              Вариации
+            </MyText>
+            <ImageGallery images={images} />
+          </YStack>
+          <OriginalImage
+            render={render}
+            roomType={roomType}
+            furnitureStyle={furnitureStyle}
+            setRoomType={setRoomType}
+            setFurnitureStyle={setFurnitureStyle}
+          />
         </YStack>
-      </XStack>
+      )}
     </MyYStack>
   );
 }
-
-const renderItem = (item: { original: string }) => (
-  <YStack width="100%" alignItems="center" justifyContent="center" rounded="$6" overflow="hidden">
-    <img
-      src={item.original}
-      alt=""
-      style={{
-        maxHeight: 600,
-        borderRadius: getTokens().radius['$6'].val,
-        objectFit: 'fill',
-      }}
-    />
-  </YStack>
-);
