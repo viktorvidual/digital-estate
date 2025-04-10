@@ -4,3 +4,4 @@ export * from './MyText/MyText';
 export * from './Select/Select';
 export * from './Accordion/Accordion';
 export * from './AlertButton/AlertButton';
+export * from "./NewSelect/NewSelect"
