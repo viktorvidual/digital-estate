@@ -1,12 +1,5 @@
 import { create } from 'zustand';
-
-type Render = {
-  renderId: string;
-  url: string;
-  filePath: string;
-  userId: string;
-  dimensions: string;
-};
+import { Render } from '@/types/Render';
 
 type Variation = {
   variationId: string;
@@ -22,3 +15,15 @@ type ViewRenderStore = {
   variations: Variation[];
   setVariations: (variations: Variation[]) => void;
 };
+
+export const useViewRenderStore = create<ViewRenderStore>((set, get) => ({
+  render: null,
+  setRender: render => set({ render }),
+  variations: [],
+  setVariations: variations => set({ variations }),
+  addVariations: (newVariations: Variation[]) =>
+    set({
+      variations: [...get().variations, ...newVariations],
+    }),
+  reset: () => set({ render: null, variations: [] }),
+}));

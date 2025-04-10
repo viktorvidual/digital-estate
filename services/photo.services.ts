@@ -1,11 +1,22 @@
 import { supabase } from '@/lib/supabase';
+import { Render } from '@/types';
+import { Variation } from '@/types/Variation';
 import camelize from 'camelize';
 import { v7 as uuidv7 } from 'uuid';
 
-export const getAllUserPhotos = async (userId: string) => {
+export const getUserPhotosPaths = async (
+  userId: string
+): Promise<{
+  error?: string;
+  data?: {
+    filePath: string;
+    renderId: string;
+    dimensions: string;
+  }[];
+}> => {
   const { error, data } = await supabase
     .from('renders')
-    .select('id, file_path, user_id, render_id, dimensions')
+    .select('file_path, render_id, dimensions')
     .eq('user_id', userId);
 
   if (error) {
@@ -15,6 +26,59 @@ export const getAllUserPhotos = async (userId: string) => {
   }
 
   return { data: camelize(data) };
+};
+
+export const getRender = async (renderId: string): Promise<{ data?: Render; error?: string }> => {
+  const { error, data } = await supabase
+    .from('renders')
+    .select('file_path, render_id, dimensions, url')
+    .eq('render_id', renderId)
+    .single();
+
+  if (error) {
+    return {
+      error: error.details,
+    };
+  }
+
+  return {
+    data: camelize(data),
+  };
+};
+
+export const getRenderVariations = async (
+  renderId: string
+): Promise<{ data?: Variation[]; error?: string }> => {
+  console.log(renderId);
+
+  const { error, data } = await supabase
+    .from('variations')
+    .select('variation_id, render_id, url, file_path, status')
+    .eq('render_id', renderId);
+
+  if (error) {
+    return {
+      error: error.details,
+    };
+  }
+
+  const variationsWithThumbnails = data?.map(el => {
+    const thumbnailUrl = supabase.storage.from('images').getPublicUrl(el.file_path, {
+      transform: {
+        width: 200,
+        height: 200,
+      },
+    });
+
+    return {
+      ...el,
+      thumbnail: thumbnailUrl.data.publicUrl,
+    };
+  });
+
+  return {
+    data: camelize(variationsWithThumbnails),
+  };
 };
 
 export const saveTemporaryImage = async (userId: string, file: File) => {
