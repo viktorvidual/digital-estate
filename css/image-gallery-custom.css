@@ -1,0 +1,32 @@
+.image-gallery {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.image-gallery-slide img {
+  border-radius: 8px;
+}
+
+.image-gallery-thumbnail {
+  border-radius: 10px;
+}
+
+.image-gallery-thumbnail img{
+    border-radius: 6px;
+  }
+
+.image-gallery-thumbnail.active,
+.image-gallery-thumbnail:focus {
+  border: 2px solid 'red';
+  overflow: hidden;
+}
+
+.image-gallery-content {
+  background-color: #f9f9f9;
+}
+
+.image-gallery-t {
+  border-radius: 8px; /* Adjust the value as needed */
+  overflow: hidden;
+}

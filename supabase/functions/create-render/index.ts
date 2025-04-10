@@ -196,6 +196,8 @@ Deno.serve(async (req: Request) => {
       status: variation.status,
       user_id: body.userId,
       base_variation_id: variation.base_variation_id,
+      room_type: variation.config.room_type,
+      style: variation.config.style,
     }));
 
     const { error: variationsError } = await supabase.from('variations').insert(variations);

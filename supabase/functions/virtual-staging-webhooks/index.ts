@@ -114,17 +114,17 @@ Deno.serve(async (req: Request) => {
       console.log('image public url ', publicUrl);
 
       //insert into renders table
-      const { error: renderError } = await supabaseAdmin.from('variations').insert([
-        {
-          user_id: userId,
-          render_id: variationId,
-          variation_id: event.variation_id,
-          status: 'done',
-          url: publicUrl,
-          base_variation_id: body.base_variation_id ?? null,
-          file_path: filePath,
-        },
-      ]);
+      const { error: renderError } = await supabaseAdmin
+        .from('variations')
+        .update([
+          {
+            status: 'done',
+            url: publicUrl,
+            base_variation_id: body.base_variation_id ?? null,
+            file_path: filePath,
+          },
+        ])
+        .eq('variation_id', variationId);
 
       if (renderError) {
         throw new Error('Error saving image to DB: ' + renderError.message);

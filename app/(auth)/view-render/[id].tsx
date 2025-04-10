@@ -1,13 +1,13 @@
 import React, { useEffect, useState, forwardRef } from 'react';
-import type { ComponentType } from 'react';
 import { MyText, MyYStack, NewSelect } from '@/components/shared';
 import { useLocalSearchParams } from 'expo-router';
 import { getRender, getRenderVariations } from '@/services';
 import { Render } from '@/types';
-import { getTokens, XStack, YStack, Button } from 'tamagui';
+import { getTokens, XStack, YStack, Button, View } from 'tamagui';
 import { ROOM_TYPES, FURNITURE_STYLES, RoomType, FurnitureStyle } from '@/constants';
 import ReactImageGallery, { ReactImageGalleryProps } from 'react-image-gallery';
 import 'react-image-gallery/styles/css/image-gallery.css';
+import '@/css/image-gallery-custom.css';
 
 const ImageGallery = forwardRef<HTMLDivElement, ReactImageGalleryProps>((props, ref) => {
   return <ReactImageGallery ref={ref} {...props} />;
@@ -63,7 +63,7 @@ export default function ViewRenderScreen() {
 
   return (
     <MyYStack>
-      <XStack width={'100%'}>
+      <XStack width={'100%'} gap="$4">
         <YStack gap="$2" width={'30%'}>
           <MyText ml="$1" fw="bold" size="$8">
             Оригинал
@@ -102,11 +102,18 @@ export default function ViewRenderScreen() {
           </Button>
         </YStack>
 
-        <YStack width={'70%'}>
+        <YStack width={'70%'} gap="$2">
           <MyText ml="$1" fw="bold" size="$8">
             Вариации
           </MyText>
-          <ImageGallery items={images} renderItem={renderItem} />
+          <View>
+            <ImageGallery
+              showPlayButton={false}
+              showFullscreenButton={false}
+              items={images}
+              renderItem={renderItem}
+            />
+          </View>
         </YStack>
       </XStack>
     </MyYStack>
@@ -114,23 +121,14 @@ export default function ViewRenderScreen() {
 }
 
 const renderItem = (item: { original: string }) => (
-  <YStack
-    width="100%"
-    alignItems="center"
-    justifyContent="center"
-    p="$2"
-    rounded="$6"
-    bg="$background"
-    overflow="hidden"
-  >
+  <YStack width="100%" alignItems="center" justifyContent="center" rounded="$6" overflow="hidden">
     <img
       src={item.original}
       alt=""
       style={{
-        width: '100%',
-        height: 'auto',
+        maxHeight: 600,
         borderRadius: getTokens().radius['$6'].val,
-        objectFit: 'contain',
+        objectFit: 'fill',
       }}
     />
   </YStack>
