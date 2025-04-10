@@ -11,7 +11,7 @@ export const SecondCTA = () => {
   const media = useMedia();
 
   return (
-    <MyXStack p={'$4'}>
+    <MyXStack>
       <YStack width="100%" bg="$blue12" p="$6" rounded="$5" gap="$4">
         <XStack width={'100%'} gap="$4">
           <CTA showButton={media.lg} />

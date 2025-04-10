@@ -1,5 +1,5 @@
 import React from 'react';
-import { YStack as TamaguiYStack, YStackProps } from 'tamagui';
+import { YStack as TamaguiYStack, useMedia, YStackProps } from 'tamagui';
 import { smallScreenPaddingX } from '@/constants';
 type MyYStackProps = {
   children: React.ReactNode;
@@ -8,6 +8,9 @@ type MyYStackProps = {
 };
 
 export const MyYStack = ({ children, bg, ...props }: MyYStackProps) => {
+  const media = useMedia();
+
+  const paddingX = media['2xl'] ? '20%' : media['lg'] ? '15%' : smallScreenPaddingX;
   return (
     <TamaguiYStack
       padding={smallScreenPaddingX}
@@ -15,9 +18,7 @@ export const MyYStack = ({ children, bg, ...props }: MyYStackProps) => {
       alignSelf="center"
       bg={bg}
       gap="$4"
-      $lg={{
-        px: '15%',
-      }}
+      px={paddingX}
       {...props}
     >
       {children}

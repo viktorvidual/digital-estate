@@ -16,7 +16,7 @@ export const HeroMedia = ({ componentWidth }: { componentWidth: number }) => {
   const media = useMedia();
 
   const imageRatio = 800 / 600;
-  const mediaComponentWidth = media.lg ? componentWidth * 0.6 : componentWidth - 32;
+  const mediaComponentWidth = media.lg ? componentWidth * 0.55 : componentWidth - 32;
   const mediaComponentHeight = mediaComponentWidth / imageRatio;
 
   return (
