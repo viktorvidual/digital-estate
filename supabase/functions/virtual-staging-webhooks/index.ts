@@ -134,8 +134,13 @@ Deno.serve(async (req: Request) => {
       break;
     }
 
+    case 'error': {
+      console.log('error event', body);
+    }
+
     case 'update': {
       console.log('update event', body);
+      break;
     }
   }
 

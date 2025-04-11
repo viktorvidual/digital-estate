@@ -144,8 +144,8 @@ Deno.serve(async (req: Request) => {
       status: variation.status,
       user_id: body.userId,
       base_variation_id: variation.base_variation_id,
-      room_type: variation.config.room_type,
-      style: variation.config.style,
+      room_type: body.roomType,
+      style: body.style,
     }));
 
     const { error: variationsError } = await supabase.from('variations').insert(variations);
@@ -157,21 +157,17 @@ Deno.serve(async (req: Request) => {
     console.log('Variations Data Saved to DB ');
 
     return new Response(
-      JSON.stringify({
-        data: {
-          variations: renderResponseBody.variations.map(variation => ({
-            render_id: body.renderId,
-            variation_id: variation.id,
-            status: variation.status,
-            base_variation_id: variation.base_variation_id,
-            file_path: '',
-            url: '',
-            thumbnail: '',
-            room_type: variation.config.room_type,
-            style: variation.config.style,
-          })),
-        },
-      }),
+      JSON.stringify(
+        renderResponseBody.variations.map(variation => ({
+          render_id: body.renderId,
+          variation_id: variation.id,
+          status: variation.status,
+          base_variation_id: variation.base_variation_id,
+          file_path: '',
+          url: '',
+          thumbnail: '',
+        }))
+      ),
       {
         status: 200,
         headers: { 'Content-Type': 'application/json', ...corsHeaders },

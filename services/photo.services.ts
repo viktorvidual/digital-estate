@@ -54,7 +54,8 @@ export const getRenderVariations = async (
   const { error, data } = await supabase
     .from('variations')
     .select('variation_id, render_id, url, file_path, status, room_type, style, base_variation_id')
-    .eq('render_id', renderId);
+    .eq('render_id', renderId)
+    .order('created_at', { ascending: false });
 
   if (error) {
     return {
@@ -63,16 +64,18 @@ export const getRenderVariations = async (
   }
 
   const variationsWithThumbnails = data?.map(el => {
-    const thumbnailUrl = supabase.storage.from('images').getPublicUrl(el.file_path, {
-      transform: {
-        width: 200,
-        height: 200,
-      },
-    });
+    const thumbnailUrl = el.file_path
+      ? supabase.storage.from('images').getPublicUrl(el.file_path, {
+          transform: {
+            width: 200,
+            height: 200,
+          },
+        })
+      : null;
 
     return {
       ...el,
-      thumbnail: thumbnailUrl.data.publicUrl,
+      thumbnail: thumbnailUrl ? thumbnailUrl.data.publicUrl : '',
     };
   });
 
@@ -157,15 +160,12 @@ export const createRender = async (
 };
 
 type CreateVariationsParams = {
-  userId: string;
-  dimensions: string;
-  filePath: string;
-  addFurniture: boolean;
-  removeFurniture: boolean;
-  addVirtuallyStagedWatermark: boolean;
-  style?: string;
+  style: string;
   roomType: string;
-  imageUrl: string;
+  addVirtuallyStagedWatermark: boolean;
+  baseVariationId: string;
+  renderId: string;
+  userId: string;
 };
 
 export const createVariations = async (

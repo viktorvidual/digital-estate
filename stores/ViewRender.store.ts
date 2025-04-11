@@ -8,6 +8,7 @@ type ViewRenderStore = {
   roomType: RoomType;
   furnitureStyle: FurnitureStyle;
   currentIndex: number;
+  updateVariation: (variation: Variation) => void;
   setCurrentIndex: (index: number) => void;
   addVariations: (variations: Variation[]) => void;
   setRoomType: (roomType: RoomType) => void;
@@ -23,6 +24,13 @@ export const useViewRenderStore = create<ViewRenderStore>((set, get) => ({
   furnitureStyle: {} as FurnitureStyle,
   variations: [],
   currentIndex: 0,
+  updateVariation: variantion => {
+    set(state => ({
+      variations: state.variations.map(el =>
+        el.variationId === variantion.variationId ? variantion : { ...el }
+      ),
+    }));
+  },
   setCurrentIndex: index => set({ currentIndex: index }),
   setRoomType: roomType => set({ roomType }),
   setFurnitureStyle: furnitureStyle => set({ furnitureStyle }),

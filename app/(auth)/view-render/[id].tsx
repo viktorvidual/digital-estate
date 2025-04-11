@@ -1,22 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { MyText, MyYStack } from '@/components/shared';
 import { useLocalSearchParams } from 'expo-router';
 import { getRender, getRenderVariations } from '@/services';
 import { View, XStack, YStack, useMedia } from 'tamagui';
 import { ROOM_TYPES, FURNITURE_STYLES } from '@/constants';
-// import ReactImageGallery, { ReactImageGalleryProps } from 'react-image-gallery';
 import { OriginalImage, ImageGallery } from '@/components/ViewRenderScreen';
+import { supabase } from '@/lib/supabase';
 
 import 'react-image-gallery/styles/css/image-gallery.css';
 import '@/css/image-gallery-custom.css';
 
 import { useViewRenderStore } from '@/stores';
+import { VariationStatus } from '@/types';
 
 export default function ViewRenderScreen() {
-  const { id } = useLocalSearchParams();
+  const channelRef = useRef<any>(null);
+
+  const { id: renderId } = useLocalSearchParams();
   const media = useMedia();
 
-  const { currentIndex, variations, setRender, setVariations } = useViewRenderStore();
+  const { currentIndex, variations, setRender, setVariations, updateVariation } =
+    useViewRenderStore();
 
   const roomTypeVariation =
     variations.length > 0
@@ -38,8 +42,8 @@ export default function ViewRenderScreen() {
 
   useEffect(() => {
     (async () => {
-      if (!id) return;
-      const { error, data } = await getRender(id as string);
+      if (!renderId) return;
+      const { error, data } = await getRender(renderId as string);
 
       if (error || !data) {
         return console.error(error || 'No render data in use effect');
@@ -48,7 +52,7 @@ export default function ViewRenderScreen() {
       setRender(data);
 
       const { error: variationsError, data: variationsData } = await getRenderVariations(
-        id as string
+        renderId as string
       );
 
       if (variationsError || !variationsData) {
@@ -56,16 +60,74 @@ export default function ViewRenderScreen() {
       }
 
       setVariations(variationsData);
-
-      const images = variationsData.map(el => ({
-        original: el.url,
-        thumbnail: el.thumbnail,
-        id: el.variationId,
-      }));
-
-      setImages(images);
     })();
-  }, [id]);
+  }, [renderId]);
+
+  useEffect(() => {
+    const images = variations.map(el => ({
+      original: el.url || 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif',
+      thumbnail:
+        el?.thumbnail || 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif',
+      id: el.variationId,
+    }));
+
+    setImages([...images]);
+  }, [variations]);
+
+  useEffect(() => {
+    const hasPending = variations.some(v => v.status === 'queued' || v.status === 'rendering');
+
+    if (hasPending && !channelRef.current) {
+      // Subscribe to variations for this render
+      channelRef.current = supabase
+        .channel(`variations-${renderId}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'variations',
+            filter: `render_id=eq.${renderId}`,
+          },
+          payload => {
+            const updated = payload.new;
+            const thumbnail = supabase.storage.from('images').getPublicUrl(updated.file_path, {
+              transform: {
+                width: 200,
+                height: 200,
+              },
+            });
+
+            updateVariation({
+              status: updated.status as VariationStatus,
+              url: updated.url as string,
+              filePath: updated.file_path as string,
+              variationId: updated.variation_id as string,
+              baseVariationId: updated.base_variation_id as string,
+              roomType: updated.room_type as string,
+              style: updated.style as string,
+              thumbnail: thumbnail.data.publicUrl,
+              renderId: updated.render_id as string,
+            });
+          }
+        )
+        .subscribe();
+    }
+
+    // Cleanup when no more pending
+    if (!hasPending && channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+      channelRef.current = null;
+    }
+
+    // Optional cleanup on unmount
+    return () => {
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+    };
+  }, [variations, renderId]);
 
   return (
     <MyYStack>

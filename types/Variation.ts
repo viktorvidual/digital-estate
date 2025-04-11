@@ -1,7 +1,9 @@
+export type VariationStatus = 'done' | 'queued' | 'rendering' | 'error';
+
 export type Variation = {
   renderId: string;
   variationId: string;
-  status: string;
+  status: VariationStatus;
   baseVariationId: string;
   filePath: string;
   url: string;

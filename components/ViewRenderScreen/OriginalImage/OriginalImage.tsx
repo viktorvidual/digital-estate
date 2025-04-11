@@ -2,21 +2,59 @@ import React from 'react';
 import { YStack, Button, getTokens } from 'tamagui';
 import { MyText, NewSelect } from '@/components/shared';
 import { ROOM_TYPES, FURNITURE_STYLES, RoomType, FurnitureStyle } from '@/constants';
-import { useViewRenderStore } from '@/stores';
+import { useAuthStore, useViewRenderStore } from '@/stores';
+import { createVariations } from '@/services';
 
 export const OriginalImage = () => {
   const tokens = getTokens();
 
-  const { render, roomType, setRoomType, furnitureStyle, setFurnitureStyle } = useViewRenderStore();
+  const { customer } = useAuthStore();
+  const {
+    render,
+    roomType,
+    setRoomType,
+    addVariations,
+    furnitureStyle,
+    setFurnitureStyle,
+    variations,
+  } = useViewRenderStore();
 
-  const onCreateNewVariations = () => {
-    // Implement the logic to create new variations based on selected room type and furniture style
-    console.log(
-      'Creating new variations with render id:',
-      render?.renderId,
-      roomType,
-      furnitureStyle
-    );
+  const buttonDissabled = !roomType.value || !furnitureStyle.value;
+
+  const onCreateNewVariations = async () => {
+    let baseVariationId;
+
+    for (const variation of variations) {
+      if (variation.baseVariationId) {
+        baseVariationId = variation.baseVariationId;
+        break;
+      }
+    }
+
+    if (!customer || !render || !baseVariationId) {
+      return console.error('No customer or render data');
+    }
+
+    const params = {
+      style: furnitureStyle.value,
+      roomType: roomType.value,
+      addVirtuallyStagedWatermark: true,
+      baseVariationId: baseVariationId,
+      renderId: render?.renderId,
+      userId: customer?.userId,
+    };
+
+    console.log(params);
+
+    const { error, data } = await createVariations(params);
+
+    if (error || !data) {
+      return console.error(error || 'No data from create variations');
+    }
+
+    console.log(data);
+  
+    addVariations(data);
   };
 
   return (
@@ -51,7 +89,12 @@ export const OriginalImage = () => {
         searchable={false}
         setValue={setFurnitureStyle}
       />
-      <Button bg="$blue10" mt="$1" onPress={onCreateNewVariations}>
+      <Button
+        bg={buttonDissabled ? '$blue6' : '$blue10'}
+        mt="$1"
+        onPress={onCreateNewVariations}
+        disabled={buttonDissabled}
+      >
         <MyText color="white" fw="bold">
           Генерирай Още
         </MyText>
