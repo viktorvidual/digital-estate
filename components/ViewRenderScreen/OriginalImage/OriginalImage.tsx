@@ -1,25 +1,23 @@
 import React from 'react';
 import { YStack, Button, getTokens } from 'tamagui';
 import { MyText, NewSelect } from '@/components/shared';
-import { Render } from '@/types';
 import { ROOM_TYPES, FURNITURE_STYLES, RoomType, FurnitureStyle } from '@/constants';
+import { useViewRenderStore } from '@/stores';
 
-type Props = {
-  render: Render | null;
-  roomType: RoomType;
-  furnitureStyle: FurnitureStyle;
-  setRoomType: (roomType: RoomType) => void;
-  setFurnitureStyle: (furnitureStyle: FurnitureStyle) => void;
-};
-
-export const OriginalImage = ({
-  render,
-  roomType,
-  furnitureStyle,
-  setRoomType,
-  setFurnitureStyle,
-}: Props) => {
+export const OriginalImage = () => {
   const tokens = getTokens();
+
+  const { render, roomType, setRoomType, furnitureStyle, setFurnitureStyle } = useViewRenderStore();
+
+  const onCreateNewVariations = () => {
+    // Implement the logic to create new variations based on selected room type and furniture style
+    console.log(
+      'Creating new variations with render id:',
+      render?.renderId,
+      roomType,
+      furnitureStyle
+    );
+  };
 
   return (
     <YStack gap="$2" width={'100%'}>
@@ -53,7 +51,7 @@ export const OriginalImage = ({
         searchable={false}
         setValue={setFurnitureStyle}
       />
-      <Button bg="$blue10" mt="$1">
+      <Button bg="$blue10" mt="$1" onPress={onCreateNewVariations}>
         <MyText color="white" fw="bold">
           Генерирай Още
         </MyText>

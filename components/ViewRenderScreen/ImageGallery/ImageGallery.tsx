@@ -1,4 +1,5 @@
-import React, { forwardRef } from 'react';
+import { useViewRenderStore } from '@/stores';
+import React, { forwardRef, useRef } from 'react';
 import ReactImageGallery, { ReactImageGalleryProps } from 'react-image-gallery';
 import { getTokens, useMedia, View, YStack } from 'tamagui';
 
@@ -15,6 +16,8 @@ type Props = {
 };
 
 export const ImageGallery = ({ images }: Props) => {
+  const { setCurrentIndex } = useViewRenderStore();
+
   const media = useMedia();
   return (
     <View>
@@ -23,6 +26,9 @@ export const ImageGallery = ({ images }: Props) => {
         showFullscreenButton={false}
         items={images}
         renderItem={item => renderItem(item, !!media.lg)}
+        onSlide={index => {
+          setCurrentIndex(index);
+        }}
       />
     </View>
   );

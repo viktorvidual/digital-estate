@@ -53,7 +53,7 @@ export const getRenderVariations = async (
 
   const { error, data } = await supabase
     .from('variations')
-    .select('variation_id, render_id, url, file_path, status')
+    .select('variation_id, render_id, url, file_path, status, room_type, style, base_variation_id')
     .eq('render_id', renderId);
 
   if (error) {
@@ -134,7 +134,15 @@ export type CreateRenderParams = {
   imageUrl: string;
 };
 
-export const createRender = async (reqBody: CreateRenderParams) => {
+export const createRender = async (
+  reqBody: CreateRenderParams
+): Promise<{
+  error?: string;
+  data?: {
+    renderId: string;
+    variations: Variation[];
+  };
+}> => {
   console.log('creating render');
 
   const { error, data } = await supabase.functions.invoke('create-render', {
@@ -142,8 +150,39 @@ export const createRender = async (reqBody: CreateRenderParams) => {
   });
 
   if (error) {
-    return { error };
+    return { error: error.message || 'Error creating render' };
   }
 
-  return { data };
+  return { data: camelize(data) };
+};
+
+type CreateVariationsParams = {
+  userId: string;
+  dimensions: string;
+  filePath: string;
+  addFurniture: boolean;
+  removeFurniture: boolean;
+  addVirtuallyStagedWatermark: boolean;
+  style?: string;
+  roomType: string;
+  imageUrl: string;
+};
+
+export const createVariations = async (
+  reqBody: CreateVariationsParams
+): Promise<{
+  error?: string;
+  data?: Variation[];
+}> => {
+  console.log('creating variations');
+
+  const { error, data } = await supabase.functions.invoke('create-variations', {
+    body: reqBody,
+  });
+
+  if (error) {
+    return { error: error.message || 'Error creating variations' };
+  }
+
+  return { data: camelize(data) };
 };

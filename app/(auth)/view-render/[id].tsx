@@ -2,18 +2,32 @@ import React, { useEffect, useState } from 'react';
 import { MyText, MyYStack } from '@/components/shared';
 import { useLocalSearchParams } from 'expo-router';
 import { getRender, getRenderVariations } from '@/services';
-import { Render } from '@/types';
 import { View, XStack, YStack, useMedia } from 'tamagui';
-import { RoomType, FurnitureStyle } from '@/constants';
+import { ROOM_TYPES, FURNITURE_STYLES } from '@/constants';
 // import ReactImageGallery, { ReactImageGalleryProps } from 'react-image-gallery';
 import { OriginalImage, ImageGallery } from '@/components/ViewRenderScreen';
 
 import 'react-image-gallery/styles/css/image-gallery.css';
 import '@/css/image-gallery-custom.css';
 
+import { useViewRenderStore } from '@/stores';
+
 export default function ViewRenderScreen() {
-  const [render, setRender] = useState<Render | null>(null);
-  const [variations, setVariations] = useState<any[]>([]);
+  const { id } = useLocalSearchParams();
+  const media = useMedia();
+
+  const { currentIndex, variations, setRender, setVariations } = useViewRenderStore();
+
+  const roomTypeVariation =
+    variations.length > 0
+      ? ROOM_TYPES.find(el => el.value === variations[currentIndex].roomType)
+      : { value: '', label: '' };
+
+  const furnitureStyleIndexVariation =
+    variations.length > 0
+      ? FURNITURE_STYLES.find(el => el.value === variations[currentIndex].style)
+      : { value: '', label: '' };
+
   const [images, setImages] = useState<
     {
       original: string;
@@ -21,10 +35,6 @@ export default function ViewRenderScreen() {
       id: string;
     }[]
   >([]);
-  const { id } = useLocalSearchParams();
-  const [roomType, setRoomType] = useState<RoomType>({} as RoomType);
-  const [furnitureStyle, setFurnitureStyle] = useState<FurnitureStyle>({} as FurnitureStyle);
-  const media = useMedia();
 
   useEffect(() => {
     (async () => {
@@ -54,8 +64,6 @@ export default function ViewRenderScreen() {
       }));
 
       setImages(images);
-
-      console.log(images);
     })();
   }, [id]);
 
@@ -64,18 +72,12 @@ export default function ViewRenderScreen() {
       {media.lg ? (
         <XStack width={'100%'} gap="$4">
           <View width={'30%'}>
-            <OriginalImage
-              render={render}
-              roomType={roomType}
-              furnitureStyle={furnitureStyle}
-              setRoomType={setRoomType}
-              setFurnitureStyle={setFurnitureStyle}
-            />
+            <OriginalImage />
           </View>
 
           <YStack width="70%" gap="$2">
             <MyText ml="$1" fw="bold" size="$8">
-              Вариации
+              Резултат ({roomTypeVariation?.label}, {furnitureStyleIndexVariation?.label} стил)
             </MyText>
             <ImageGallery images={images} />
           </YStack>
@@ -84,17 +86,11 @@ export default function ViewRenderScreen() {
         <YStack width={'100%'} gap="$4">
           <YStack width={'100%'} gap="$2">
             <MyText ml="$1" fw="bold" size="$8">
-              Вариации
+              Резултат ({roomTypeVariation?.label}, {furnitureStyleIndexVariation?.label} стил)
             </MyText>
             <ImageGallery images={images} />
           </YStack>
-          <OriginalImage
-            render={render}
-            roomType={roomType}
-            furnitureStyle={furnitureStyle}
-            setRoomType={setRoomType}
-            setFurnitureStyle={setFurnitureStyle}
-          />
+          <OriginalImage />
         </YStack>
       )}
     </MyYStack>

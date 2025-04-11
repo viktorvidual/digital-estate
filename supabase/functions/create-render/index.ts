@@ -67,6 +67,7 @@ Deno.serve(async (req: Request) => {
       },
     });
   }
+
   let body: requestBody;
 
   try {
@@ -168,7 +169,6 @@ Deno.serve(async (req: Request) => {
     const renderResponseBody: RenderResponse = await response.json();
 
     //Step 3. Save the render to the DB
-
     const { data: renderData, error: renderError } = await supabase
       .from('renders')
       .insert([
@@ -215,9 +215,15 @@ Deno.serve(async (req: Request) => {
         data: {
           render_id: renderResponseBody.id,
           variations: renderResponseBody.variations.items.map(variation => ({
-            id: variation.id,
+            render_id: renderResponseBody.id,
+            variation_id: variation.id,
             status: variation.status,
             base_variation_id: variation.base_variation_id,
+            file_path: '',
+            thumbnail: '',
+            url: '',
+            room_type: variation.config.room_type,
+            style: variation.config.style,
           })),
         },
       }),

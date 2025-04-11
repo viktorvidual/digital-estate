@@ -37,8 +37,6 @@ export default function LoginScreen() {
         return setError(error.message);
       }
     }
-
-    console.log(data);
     
 
     // if (data) {
