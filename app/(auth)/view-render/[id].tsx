@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { MyText, MyYStack } from '@/components/shared';
-import { useLocalSearchParams } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { getRender, getRenderVariations } from '@/services';
 import { View, XStack, YStack, useMedia } from 'tamagui';
 import { ROOM_TYPES, FURNITURE_STYLES } from '@/constants';
@@ -19,7 +19,7 @@ export default function ViewRenderScreen() {
   const { id: renderId } = useLocalSearchParams();
   const media = useMedia();
 
-  const { currentIndex, variations, setRender, setVariations, updateVariation } =
+  const { currentIndex, variations, render, setRender, setVariations, updateVariation } =
     useViewRenderStore();
 
   const roomTypeVariation =
@@ -40,28 +40,32 @@ export default function ViewRenderScreen() {
     }[]
   >([]);
 
-  useEffect(() => {
-    (async () => {
-      if (!renderId) return;
-      const { error, data } = await getRender(renderId as string);
+  useFocusEffect(
+    useCallback(() => {
+      (async () => {
+        if (!render) {
+          const { error, data } = await getRender(renderId as string);
+          if (error || !data) {
+            return console.error(error || 'No render data in use effect');
+          }
+          setRender(data);
+          return;
+        }
 
-      if (error || !data) {
-        return console.error(error || 'No render data in use effect');
-      }
+        const { error: variationsError, data: variationsData } = await getRenderVariations(
+          render.renderId as string
+        );
 
-      setRender(data);
+        if (variationsError || !variationsData) {
+          return console.error(variationsError);
+        }
 
-      const { error: variationsError, data: variationsData } = await getRenderVariations(
-        renderId as string
-      );
+        setVariations(variationsData);
+      })();
+    }, [render])
+  );
 
-      if (variationsError || !variationsData) {
-        return console.error(variationsError);
-      }
-
-      setVariations(variationsData);
-    })();
-  }, [renderId]);
+  // useEffect(() => {}, [render?.renderId]);
 
   useEffect(() => {
     const images = variations.map(el => ({
@@ -69,6 +73,7 @@ export default function ViewRenderScreen() {
       thumbnail:
         el?.thumbnail || 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif',
       id: el.variationId,
+      variation: el,
     }));
 
     setImages([...images]);

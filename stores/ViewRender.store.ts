@@ -18,12 +18,16 @@ type ViewRenderStore = {
   reset: () => void;
 };
 
-export const useViewRenderStore = create<ViewRenderStore>((set, get) => ({
+const baseState = {
   render: null,
   roomType: {} as RoomType,
   furnitureStyle: {} as FurnitureStyle,
   variations: [],
   currentIndex: 0,
+};
+
+export const useViewRenderStore = create<ViewRenderStore>((set, get) => ({
+  ...baseState,
   updateVariation: variantion => {
     set(state => ({
       variations: state.variations.map(el =>
@@ -38,7 +42,7 @@ export const useViewRenderStore = create<ViewRenderStore>((set, get) => ({
   setVariations: variations => set({ variations }),
   addVariations: (newVariations: Variation[]) =>
     set({
-      variations: [...get().variations, ...newVariations],
+      variations: [...newVariations, ...get().variations],
     }),
-  reset: () => set({ render: null, variations: [] }),
+  reset: () => set({ ...baseState }),
 }));

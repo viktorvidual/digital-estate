@@ -1,19 +1,19 @@
 import React, { useCallback } from 'react';
-import { useAuthStore, useUploadImageStore } from '@/stores';
+import { useAuthStore, useUploadImageStore, useViewRenderStore } from '@/stores';
 import { MyText, NewSelect } from '@/components/shared';
 import { YStack, Button, XStack } from 'tamagui';
 import { supabase } from '@/lib/supabase';
-import { CircleMinus } from '@tamagui/lucide-icons';
-import { CirclePlus } from '@tamagui/lucide-icons';
-import { Square } from '@tamagui/lucide-icons';
+import { CircleMinus, CirclePlus, Square, CheckSquare2 } from '@tamagui/lucide-icons';
 import { ImageSettingsButton } from './ProcessImageButtons.styles';
-import { CheckSquare2 } from '@tamagui/lucide-icons';
 import { v7 as uuidv7 } from 'uuid';
 import { createRender } from '@/services';
 import { ROOM_TYPES, FURNITURE_STYLES, RoomType, FurnitureStyle } from '@/constants';
+import { Render, Variation } from '@/types';
+import { router } from 'expo-router';
 
 export const ProcessImageButtons = () => {
   const { customer } = useAuthStore();
+  const { setRender, setVariations } = useViewRenderStore();
 
   const {
     uploading,
@@ -53,6 +53,7 @@ export const ProcessImageButtons = () => {
     }
 
     const publicUrl = supabase.storage.from('images').getPublicUrl(filePath).data.publicUrl;
+    console.log('image uploaded successfully');
 
     // Call The Create Render Endpoint
     const { error: createRenderError, data } = await createRender({
@@ -61,23 +62,35 @@ export const ProcessImageButtons = () => {
       filePath: filePath,
       addFurniture: addNewFurniture,
       removeFurniture,
-      addVirtuallyStagedWatermark: false,
+      addVirtuallyStagedWatermark: true,
       style: furnitureStyle.value,
       roomType: roomType.value,
       imageUrl: publicUrl,
     });
 
-    if (createRenderError) {
-      console.error('Error creating render: ', createRenderError);
+    if (createRenderError || !data) {
+      console.error(createRenderError || 'Error creating render, no data returned');
       setUploading(false);
       return;
     }
 
-    console.log('Render created successfully: ', data);
+    const render: Render = {
+      renderId: data.renderId,
+      filePath: filePath,
+      dimensions: `${imageDimensions.width}x${imageDimensions.height}`,
+      url: publicUrl,
+    };
+    const variations: Variation[] = data.variations;
+
+    console.log('render', render);
+    console.log('variations', variations);
+
+    setRender(render);
+    setVariations(variations);
 
     setUploading(false);
 
-    console.log('image uploaded successfully');
+    router.replace(`/view-render/${data.renderId}`);
   }, [
     selectedFile,
     customer,

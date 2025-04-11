@@ -23,6 +23,7 @@ export default function RootLayout() {
   const [sessionLoading, setSessionLoading] = useState(false);
   const { setSession, session } = useAuthStore();
 
+
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });

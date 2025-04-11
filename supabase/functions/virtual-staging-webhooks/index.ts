@@ -135,6 +135,27 @@ Deno.serve(async (req: Request) => {
     }
 
     case 'error': {
+      const url = new URL(req.url);
+      const userId = url.searchParams.get('userId');
+      const variationId = url.searchParams.get('variationId');
+      const errorMessage = body.error_message;
+      if (!userId) {
+        throw new Error('No userId provided in the URL');
+      }
+      if (!variationId) {
+        throw new Error('No variationId provided in the URL');
+      }
+      if (errorMessage) {
+        const { error } = await supabaseAdmin
+          .from('variations')
+          .update({
+            status: 'error',
+            error_message: errorMessage,
+          })
+          .eq('variation_id', variationId);
+
+        if (error) throw error;
+      }
       console.log('error event', body);
     }
 

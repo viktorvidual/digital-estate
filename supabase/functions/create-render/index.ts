@@ -126,6 +126,40 @@ Deno.serve(async (req: Request) => {
     }
 
     //Step 1. TO-DO check if subscription is active. If yes - continue
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('image_count, stripe_subscription_status')
+      .eq('user_id', body.userId)
+      .single();
+
+    if (userError) {
+      console.error('Error fetching user: ', userError);
+      throw new Error(`Error fetching user: ${userError.message}`);
+    }
+
+    if (user.image_count === 0) {
+      return new Response(
+        JSON.stringify({
+          error: 'No image credits available',
+        }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        }
+      );
+    }
+
+    if (user.stripe_subscription_status !== 'active') {
+      return new Response(
+        JSON.stringify({
+          error: 'Subscription is not active',
+        }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        }
+      );
+    }
 
     //Step 2. Create the render with Virtual Stagin API
     const virtualStagingBody = {
@@ -196,8 +230,8 @@ Deno.serve(async (req: Request) => {
       status: variation.status,
       user_id: body.userId,
       base_variation_id: variation.base_variation_id,
-      room_type: variation.config.room_type,
-      style: variation.config.style,
+      room_type: body.roomType,
+      style: body.style,
     }));
 
     const { error: variationsError } = await supabase.from('variations').insert(variations);
@@ -209,23 +243,32 @@ Deno.serve(async (req: Request) => {
 
     console.log('Variations Data Saved to DB ');
 
-    //TO-DO Step 5. Return renderID and variations to client
+    //Step 5 Reduce the user credits
+    const { error: creditsError } = await supabase
+      .from('users')
+      .update({ image_count: user.image_count - 1 })
+      .eq('user_id', body.userId);
+
+    if (creditsError) {
+      console.error('Error reducing user credits: ', creditsError);
+      throw new Error(`Error reducing user credits: ${creditsError.message}`);
+    }
+
+    //TO-DO Step 6. Return renderID and variations to client
     return new Response(
       JSON.stringify({
-        data: {
+        render_id: renderResponseBody.id,
+        variations: renderResponseBody.variations.items.map(variation => ({
           render_id: renderResponseBody.id,
-          variations: renderResponseBody.variations.items.map(variation => ({
-            render_id: renderResponseBody.id,
-            variation_id: variation.id,
-            status: variation.status,
-            base_variation_id: variation.base_variation_id,
-            file_path: '',
-            thumbnail: '',
-            url: '',
-            room_type: variation.config.room_type,
-            style: variation.config.style,
-          })),
-        },
+          variation_id: variation.id,
+          status: variation.status,
+          base_variation_id: variation.base_variation_id,
+          file_path: '',
+          thumbnail: '',
+          url: '',
+          room_type: body.roomType,
+          style: body.style,
+        })),
       }),
       {
         status: 200,

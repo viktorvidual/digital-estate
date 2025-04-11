@@ -4,19 +4,15 @@ import { Variation } from '@/types/Variation';
 import camelize from 'camelize';
 import { v7 as uuidv7 } from 'uuid';
 
-export const getUserPhotosPaths = async (
+export const getAllRenders = async (
   userId: string
 ): Promise<{
   error?: string;
-  data?: {
-    filePath: string;
-    renderId: string;
-    dimensions: string;
-  }[];
+  data?: Render[];
 }> => {
   const { error, data } = await supabase
     .from('renders')
-    .select('file_path, render_id, dimensions')
+    .select('file_path, render_id, dimensions, url')
     .eq('user_id', userId);
 
   if (error) {

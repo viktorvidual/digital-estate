@@ -1,20 +1,24 @@
 import { useAuthStore } from '@/stores';
 import React, { useEffect, useState } from 'react';
-import { getUserPhotosPaths } from '@/services';
+import { getAllRenders } from '@/services';
 import { supabase } from '@/lib/supabase';
 import { MyText } from '@/components/shared';
 import { Spinner, View, XStack, useMedia } from 'tamagui';
 import { Render } from '@/types';
 import { router } from 'expo-router';
+import { useViewRenderStore } from '@/stores';
 
 export const PhotosList = () => {
+  const { reset, setRender } = useViewRenderStore();
   const media = useMedia();
-  const [photos, setPhotos] = useState<any[]>([]);
+  const [renders, setRenders] = useState<Render[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { customer } = useAuthStore();
 
-  const onPressPhoto = (photo: Render) => {
-    router.navigate(`/view-render/${photo.renderId}`);
+  const onPressPhoto = (render: Render) => {
+    reset();
+    setRender(render);
+    router.navigate(`/view-render/${render.renderId}`);
   };
 
   useEffect(() => {
@@ -24,13 +28,13 @@ export const PhotosList = () => {
 
     (async () => {
       setIsLoading(true);
-      const { error, data } = await getUserPhotosPaths(customer.userId);
+      const { error, data } = await getAllRenders(customer.userId);
 
       if (error) {
         console.error(error);
       }
 
-      const thumbnails = data?.map(el => {
+      const thumbnailedRenders = data?.map(el => {
         const thumbnailUrl = supabase.storage.from('images').getPublicUrl(el.filePath, {
           transform: {
             width: 200,
@@ -44,8 +48,8 @@ export const PhotosList = () => {
         };
       });
 
-      if (thumbnails) {
-        setPhotos(thumbnails);
+      if (thumbnailedRenders) {
+        setRenders(thumbnailedRenders);
       }
       setIsLoading(false);
     })();
@@ -56,12 +60,12 @@ export const PhotosList = () => {
       {isLoading && <Spinner />}
       {!isLoading && (
         <>
-          {photos.length === 0 ? (
+          {renders.length === 0 ? (
             <MyText>Все още нямате качени снимки</MyText>
           ) : (
             <>
               <XStack flexWrap="wrap" gap="$2">
-                {photos.map(el => (
+                {renders.map(el => (
                   <View
                     cursor="pointer"
                     key={el.renderId}
@@ -69,7 +73,7 @@ export const PhotosList = () => {
                     width={media.lg ? '10%' : '31%'}
                   >
                     <img
-                      src={el.thumbnaiUrl}
+                      src={el?.thumbnaiUrl ?? ""}
                       style={{
                         width: '100%',
                         aspectRatio: 1,

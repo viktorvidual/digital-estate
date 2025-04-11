@@ -3,4 +3,5 @@ export type Render = {
   filePath: string;
   dimensions: string;
   url: string;
+  thumbnaiUrl?: string;
 };
