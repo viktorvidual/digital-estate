@@ -4,6 +4,9 @@ import { Variation } from '@/types';
 import React, { forwardRef } from 'react';
 import ReactImageGallery, { ReactImageGalleryProps } from 'react-image-gallery';
 import { getTokens, useMedia, View, YStack } from 'tamagui';
+import { DownloadImageContainer } from './ImageGallery.styles';
+import { Download } from '@tamagui/lucide-icons';
+import { saveAs } from 'file-saver';
 
 const ImageGalleryComponent = forwardRef<HTMLDivElement, ReactImageGalleryProps>((props, ref) => {
   return <ReactImageGallery ref={ref} {...props} />;
@@ -22,11 +25,22 @@ type Props = {
 };
 
 export const ImageGallery = ({ images }: Props) => {
-  const { setCurrentIndex } = useViewRenderStore();
+  const { setCurrentIndex, variations, currentIndex } = useViewRenderStore();
+
+  const item = variations[currentIndex];
+
+  const onDownload = async () => {
+    const imageUrl = item.url;
+    const fileName = `${item.roomType}-${item.style}-${item.variationId}.jpg`;
+    saveAs(imageUrl, fileName);
+  };
 
   const media = useMedia();
   return (
     <View>
+      <DownloadImageContainer cursor="pointer" onPress={onDownload}>
+        <Download color="white" size={16} />
+      </DownloadImageContainer>
       <ImageGalleryComponent
         showPlayButton={false}
         showFullscreenButton={false}

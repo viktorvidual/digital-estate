@@ -66,8 +66,6 @@ export default function ViewRenderScreen() {
           return;
         }
 
-        console.log("render", render);
-        
         const { error: variationsError, data: variationsData } = await getRenderVariations(
           render.renderId as string
         );
@@ -91,8 +89,6 @@ export default function ViewRenderScreen() {
       })();
     }, [render])
   );
-
-  // useEffect(() => {}, [render?.renderId]);
 
   useEffect(() => {
     const images = variations.map(el => ({
@@ -177,8 +173,7 @@ export default function ViewRenderScreen() {
 
                 <YStack width="70%" gap="$2">
                   <MyText ml="$1" fw="bold" size="$8">
-                    Резултат ({roomTypeVariation?.label}, {furnitureStyleIndexVariation?.label}{' '}
-                    стил)
+                    {roomTypeVariation?.label}, {furnitureStyleIndexVariation?.label} стил
                   </MyText>
                   <ImageGallery images={images} />
                 </YStack>

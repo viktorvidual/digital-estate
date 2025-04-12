@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { YStack, Button, getTokens, Spinner } from 'tamagui';
+import { YStack, Button, getTokens, Spinner, XStack } from 'tamagui';
 import { MyText, NewSelect, Checkbox } from '@/components/shared';
 import { ROOM_TYPES, FURNITURE_STYLES, RoomType, FurnitureStyle } from '@/constants';
 import { useAuthStore, useViewRenderStore } from '@/stores';
 import { createVariations } from '@/services';
-import { Image } from '@tamagui/lucide-icons';
+import { Image, BedDouble, Palette } from '@tamagui/lucide-icons';
 import { useShowToast } from '@/hooks';
 
 export const OriginalImage = () => {
@@ -91,7 +91,10 @@ export const OriginalImage = () => {
         alt="Render"
         style={{ width: '100%', height: 'auto', borderRadius: tokens.radius['$6'].val }}
       />
-      <MyText fw="bold">Вид Стая</MyText>
+      <XStack gap="$2" alignItems="center">
+        <Palette size={20} />
+        <MyText fw="bold">Вид Стая</MyText>
+      </XStack>
       <NewSelect
         placeholder="Избери вид стая"
         options={ROOM_TYPES}
@@ -103,7 +106,11 @@ export const OriginalImage = () => {
         setValue={setRoomType}
         disabled={isLoading}
       />
-      <MyText fw="bold">Стил Обзавеждане</MyText>
+      <XStack gap="$2" alignItems="center">
+        <BedDouble size={20} />
+
+        <MyText fw="bold">Стил Обзавеждане</MyText>
+      </XStack>
       <NewSelect
         placeholder="Избери стил"
         options={FURNITURE_STYLES}

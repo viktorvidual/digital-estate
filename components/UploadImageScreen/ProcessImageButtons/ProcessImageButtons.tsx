@@ -187,7 +187,7 @@ export const ProcessImageButtons = () => {
         mt="$1"
       >
         <MyText fw="bold" color="white">
-          Обработи Снимката
+          Генерирай
         </MyText>
       </Button>
     </YStack>
