@@ -166,6 +166,8 @@ Deno.serve(async (req: Request) => {
           file_path: '',
           url: '',
           thumbnail: '',
+          room_type: body.roomType,
+          style: body.style,
         }))
       ),
       {

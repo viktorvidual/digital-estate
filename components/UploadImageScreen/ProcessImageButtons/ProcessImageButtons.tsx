@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useAuthStore, useUploadImageStore, useViewRenderStore } from '@/stores';
-import { MyText, NewSelect } from '@/components/shared';
+import { MyText, NewSelect, Checkbox } from '@/components/shared';
 import { YStack, Button, XStack } from 'tamagui';
 import { supabase } from '@/lib/supabase';
 import { CircleMinus, CirclePlus, Square, CheckSquare2 } from '@tamagui/lucide-icons';
@@ -8,28 +8,29 @@ import { ImageSettingsButton } from './ProcessImageButtons.styles';
 import { v7 as uuidv7 } from 'uuid';
 import { createRender } from '@/services';
 import { ROOM_TYPES, FURNITURE_STYLES, RoomType, FurnitureStyle } from '@/constants';
-import { Render, Variation } from '@/types';
+import { Render } from '@/types';
 import { router } from 'expo-router';
-import { useToastController } from '@tamagui/toast';
-import { MyToast } from '@/components/shared/Toast/Toast';
+import { useShowToast } from '@/hooks';
 
 export const ProcessImageButtons = () => {
-  const { customer } = useAuthStore();
-  const { setRender, setVariations } = useViewRenderStore();
+  const showToast = useShowToast();
 
-  const toast = useToastController();
+  const { customer } = useAuthStore();
+  const { setRender, reset } = useViewRenderStore();
 
   const {
+    addVirtuallyStagedWatermark,
     uploading,
     addNewFurniture,
-    setAddNewFurniture,
     removeFurniture,
-    setRemoveFurniure,
-    setUploading,
     selectedFile,
     imageDimensions,
     roomType,
     furnitureStyle,
+    setAddVirtuallyStagedWatermark,
+    setAddNewFurniture,
+    setRemoveFurniure,
+    setUploading,
     setRoomType,
     setFurnitureStyle,
   } = useUploadImageStore();
@@ -66,7 +67,7 @@ export const ProcessImageButtons = () => {
       filePath: filePath,
       addFurniture: addNewFurniture,
       removeFurniture,
-      addVirtuallyStagedWatermark: true,
+      addVirtuallyStagedWatermark: addVirtuallyStagedWatermark,
       style: furnitureStyle.value,
       roomType: roomType.value,
       imageUrl: publicUrl,
@@ -84,17 +85,19 @@ export const ProcessImageButtons = () => {
       dimensions: `${imageDimensions.width}x${imageDimensions.height}`,
       url: publicUrl,
     };
-    const variations: Variation[] = data.variations;
 
-    console.log('render', render);
-    console.log('variations', variations);
-
+    reset();
     setRender(render);
-    setVariations(variations);
 
     setUploading(false);
+    showToast({
+      title: 'Генерирането започна',
+      description: 'Новите вариации ще бъдат готови след около 20 секунди. Моля, изчакайте.',
+      type: 'success',
+      duration: 5000,
+    });
 
-    router.replace(`/view-render/${data.renderId}`);
+    router.replace(`/view-render/${render.renderId}`);
   }, [
     selectedFile,
     customer,
@@ -169,6 +172,12 @@ export const ProcessImageButtons = () => {
           />
         </>
       )}
+
+      <Checkbox
+        checked={addVirtuallyStagedWatermark}
+        onCheckedChange={setAddVirtuallyStagedWatermark}
+        label='Добави надпис "Virtually Staged"'
+      />
 
       <Button
         width={'100%'}

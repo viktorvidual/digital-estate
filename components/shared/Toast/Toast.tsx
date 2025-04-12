@@ -35,6 +35,7 @@ export const MyToast = () => {
       p="$3"
       bg={getToastColor()}
       borderRadius="$4"
+      maxWidth={320}
     >
       <YStack>
         <Toast.Title size="$6" fontWeight="bold" color="white">

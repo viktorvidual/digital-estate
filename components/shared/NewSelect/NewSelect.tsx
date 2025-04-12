@@ -10,6 +10,7 @@ type Props<T> = {
   values: { label: string; value: string }[];
   searchable?: boolean;
   setValue: (value: T) => void;
+  disabled?: boolean;
 };
 
 export const NewSelect = ({
@@ -19,6 +20,7 @@ export const NewSelect = ({
   values,
   searchable,
   setValue,
+  disabled,
 }: Props<{
   value: string;
   label: string;
@@ -39,7 +41,7 @@ export const NewSelect = ({
         }}
         searchable={searchable || false}
         dropdownPosition="auto"
-        contentRenderer={({ props, state, methods }) => {
+        contentRenderer={({ props, state }) => {
           return (
             <View p={10}>
               {state.values.length > 0 ? (
@@ -80,6 +82,7 @@ export const NewSelect = ({
             </View>
           );
         }}
+        disabled={disabled}
       />
       {/* <View width={'100%'} height={45} position="absolute" top={0} left={0} right={0} bottom={0} /> */}
     </View>

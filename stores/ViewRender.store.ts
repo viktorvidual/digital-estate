@@ -9,6 +9,8 @@ type ViewRenderStore = {
   roomType: RoomType;
   furnitureStyle: FurnitureStyle;
   currentIndex: number;
+  addVirtuallyStagedWatermark: boolean;
+
   setLoading: (loading: boolean) => void;
   updateVariation: (variation: Variation) => void;
   setCurrentIndex: (index: number) => void;
@@ -17,6 +19,7 @@ type ViewRenderStore = {
   setFurnitureStyle: (furnitureStyle: FurnitureStyle) => void;
   setRender: (render: Render) => void;
   setVariations: (variations: Variation[]) => void;
+  setAddVirtuallyStagedWatermark: (addVirtuallyStageWatermark: boolean) => void;
   reset: () => void;
 };
 
@@ -27,6 +30,7 @@ const baseState = {
   furnitureStyle: {} as FurnitureStyle,
   variations: [],
   currentIndex: 0,
+  addVirtuallyStagedWatermark: false,
 };
 
 export const useViewRenderStore = create<ViewRenderStore>((set, get) => ({
@@ -48,5 +52,7 @@ export const useViewRenderStore = create<ViewRenderStore>((set, get) => ({
     set({
       variations: [...newVariations, ...get().variations],
     }),
+  setAddVirtuallyStagedWatermark: addVirtuallyStagedWatermark =>
+    set({ addVirtuallyStagedWatermark }),
   reset: () => set({ ...baseState }),
 }));

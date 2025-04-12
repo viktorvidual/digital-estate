@@ -66,6 +66,8 @@ export default function ViewRenderScreen() {
           return;
         }
 
+        console.log("render", render);
+        
         const { error: variationsError, data: variationsData } = await getRenderVariations(
           render.renderId as string
         );

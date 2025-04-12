@@ -13,7 +13,9 @@ type UploadImageStore = {
   maskId: string;
   roomType: RoomType;
   furnitureStyle: FurnitureStyle;
+  addVirtuallyStagedWatermark: boolean;
 
+  setAddVirtuallyStagedWatermark: (bool: boolean) => void;
   setLocalImage: (image: string) => void;
   setSelectedFile: (file: File | null) => void;
   setImageDimensions: ({ width, height }: { width: number; height: number }) => void;
@@ -40,11 +42,13 @@ const initialState = {
   roomType: ROOM_TYPES[0],
   furnitureStyle: FURNITURE_STYLES[0],
   maskId: '',
+  addVirtuallyStagedWatermark: false,
 };
 
 export const useUploadImageStore = create<UploadImageStore>(set => ({
   ...initialState,
 
+  setAddVirtuallyStagedWatermark: bool => set({ addVirtuallyStagedWatermark: bool }),
   setAddNewFurniture: bool => set({ addNewFurniture: bool }),
   setRemoveFurniure: bool => set({ removeFurniture: bool }),
   setLocalImage: image => set({ localImage: image }),

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Input, Button, YStack, XStack, styled } from 'tamagui';
 import { MyText, MyYStack } from '@/components/shared';
-import { useToastController } from '@tamagui/toast';
 import { Link } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { CircleMinus, CheckCircle, Square, SquareCheckBig } from '@tamagui/lucide-icons';
@@ -68,6 +67,13 @@ export default function RegistrationScreen() {
 
       return setError(error.message);
     }
+
+    showToast({
+      title: 'Успешна Регистрация',
+      description: 'Вече сте логнати в приложението',
+      duration: 5000,
+      type: 'success',
+    });
 
     if (authData.user && authData.session) {
       const { error, data: customerResponse } = await createCustomer(
