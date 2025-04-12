@@ -7,11 +7,12 @@ import { supabase } from '@/lib/supabase';
 import { CircleMinus, CheckCircle, Square, SquareCheckBig } from '@tamagui/lucide-icons';
 import { createCustomer } from '@/services';
 import { useAuthStore } from '@/stores';
+import { useShowToast } from '@/hooks';
 
 export default function RegistrationScreen() {
   const { setCustomer } = useAuthStore();
 
-  const toast = useToastController();
+  const showToast = useShowToast();
 
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -59,7 +60,12 @@ export default function RegistrationScreen() {
     });
 
     if (error) {
-      console.log('error', error);
+      if (error.message.toLowerCase().includes('already registered')) {
+        return setError('Имейлът вече е регистриран');
+      } else if (error.message.toLowerCase().includes('invalid email')) {
+        return setError('Невалиден имейл');
+      }
+
       return setError(error.message);
     }
 
@@ -71,7 +77,8 @@ export default function RegistrationScreen() {
       );
 
       if (error || !customerResponse) {
-        return console.error(error ? error : 'No customer response on register');
+        const errorMessage = error || 'No customer response on register';
+        return setError(errorMessage);
       }
 
       setCustomer(customerResponse);

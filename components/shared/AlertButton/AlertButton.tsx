@@ -59,7 +59,7 @@ export const AlertButton = ({
           y={0}
         >
           <YStack gap="$4">
-            <TamaguiAlertDialog.Title fw="bold" size="$7">
+            <TamaguiAlertDialog.Title size="$7" fw="bold">
               {title}
             </TamaguiAlertDialog.Title>
             {description && (

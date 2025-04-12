@@ -8,8 +8,10 @@ import { useAuthStore, useSideBarStore } from '@/stores';
 import { supabase } from '@/lib/supabase';
 import { ROUTES } from '@/constants';
 import { AlertButton } from '../shared';
+import { useShowToast } from '@/hooks';
 
 export const SideBar = () => {
+  const showToast = useShowToast();
   const { session, customer, setCustomer } = useAuthStore();
   const { isSideBarOpen, setIsSideBarOpen } = useSideBarStore();
 
@@ -23,6 +25,11 @@ export const SideBar = () => {
     setCustomer(null);
     setIsSideBarOpen(false);
     router.navigate('/login');
+
+    showToast({
+      title: 'Успешно излязохте',
+      type: 'success',
+    });
   };
 
   const isDesktop = useMedia().lg;

@@ -3,9 +3,10 @@ import { MyText, MyYStack } from '@/components/shared';
 import { YStack, Input, Button, XStack, styled } from 'tamagui';
 import { Link } from 'expo-router';
 import { supabase } from '@/lib/supabase';
-import { router } from 'expo-router';
+import { useShowToast } from '@/hooks';
 
 export default function LoginScreen() {
+  const showToast = useShowToast();
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
 
@@ -37,11 +38,11 @@ export default function LoginScreen() {
         return setError(error.message);
       }
     }
-    
 
-    // if (data) {
-    //   router.navigate('/');
-    // }
+    showToast({
+      title: 'Успешно влязохте',
+      type: 'success',
+    });
   };
 
   useEffect(() => {

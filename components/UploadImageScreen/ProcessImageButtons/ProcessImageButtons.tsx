@@ -10,10 +10,14 @@ import { createRender } from '@/services';
 import { ROOM_TYPES, FURNITURE_STYLES, RoomType, FurnitureStyle } from '@/constants';
 import { Render, Variation } from '@/types';
 import { router } from 'expo-router';
+import { useToastController } from '@tamagui/toast';
+import { MyToast } from '@/components/shared/Toast/Toast';
 
 export const ProcessImageButtons = () => {
   const { customer } = useAuthStore();
   const { setRender, setVariations } = useViewRenderStore();
+
+  const toast = useToastController();
 
   const {
     uploading,

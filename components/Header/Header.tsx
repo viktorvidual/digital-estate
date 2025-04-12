@@ -8,12 +8,29 @@ import { useAuthStore } from '@/stores';
 import { supabase } from '@/lib/supabase';
 import { ROUTES } from '@/constants';
 import { useSideBarStore } from '@/stores';
+import { useShowToast } from '@/hooks';
 
 export const Header = () => {
+  const showToast = useShowToast();
+
   const { session, customer, setCustomer } = useAuthStore();
   const { isSideBarOpen, setIsSideBarOpen } = useSideBarStore();
 
   const media = useMedia();
+
+  const onLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Error signing out:', error);
+    } else {
+      setCustomer(null);
+    }
+
+    showToast({
+      title: 'Успешно излязохте',
+      type: 'error',
+    });
+  };
 
   return (
     <>
@@ -45,10 +62,7 @@ export const Header = () => {
                 <AlertButton
                   title="Излез"
                   buttonText="Излез"
-                  onConfirm={() => {
-                    supabase.auth.signOut();
-                    setCustomer(null);
-                  }}
+                  onConfirm={onLogout}
                   description="Сигурни ли сте, че искате да излезете?"
                   buttonTextColor="black"
                   buttonColor="white"
@@ -73,7 +87,9 @@ export const Header = () => {
           </>
         )}
 
-        {!media.lg && <Menu color="white" siize={24} onPress={() => setIsSideBarOpen(!isSideBarOpen)} />}
+        {!media.lg && (
+          <Menu color="white" siize={24} onPress={() => setIsSideBarOpen(!isSideBarOpen)} />
+        )}
       </MyXStack>
     </>
   );

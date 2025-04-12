@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { TamaguiProvider, YStack } from 'tamagui';
+import { TamaguiProvider, useMedia, YStack } from 'tamagui';
+import { ToastViewport } from '@tamagui/toast';
 import { tamaguiConfig } from '../tamagui.config';
 import { ToastProvider } from '@tamagui/toast';
 import { Header } from '@/components/Header/Header';
@@ -12,6 +13,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/stores';
 import '@tamagui/core/reset.css';
 import { getCustomer } from '@/services';
+import { MyToast } from '@/components/shared/Toast/Toast';
 
 const UNAUTHORIZED_ROUTES = ['login', 'register'];
 
@@ -19,10 +21,11 @@ const UNAUTHORIZED_ROUTES = ['login', 'register'];
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const media = useMedia();
+
   const segments = useSegments();
   const [sessionLoading, setSessionLoading] = useState(false);
   const { setSession, session } = useAuthStore();
-
 
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -99,6 +102,7 @@ export default function RootLayout() {
     <TamaguiProvider config={tamaguiConfig}>
       <ToastProvider>
         <SideBar />
+
         <YStack minHeight="100vh" flex={1} overflow="scroll" bg="$white2">
           <Header />
           <Stack
@@ -110,6 +114,12 @@ export default function RootLayout() {
             <Stack.Screen name="+not-found" />
           </Stack>
         </YStack>
+        <MyToast />
+        <ToastViewport
+          top={'5%'}
+          alignSelf="center"
+          right={media['2xl'] ? '20%' : media.lg ? '15%' : undefined}
+        />
       </ToastProvider>
     </TamaguiProvider>
   );
