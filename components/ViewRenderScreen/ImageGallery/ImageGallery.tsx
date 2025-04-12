@@ -1,7 +1,7 @@
 import { MyText } from '@/components/shared';
 import { useViewRenderStore } from '@/stores';
 import { Variation } from '@/types';
-import React, { forwardRef, useRef } from 'react';
+import React, { forwardRef } from 'react';
 import ReactImageGallery, { ReactImageGalleryProps } from 'react-image-gallery';
 import { getTokens, useMedia, View, YStack } from 'tamagui';
 
@@ -14,6 +14,7 @@ type Image = {
   thumbnail: string;
   id: string;
   variation: Variation;
+  renderUrl?: string;
 };
 
 type Props = {
@@ -30,31 +31,63 @@ export const ImageGallery = ({ images }: Props) => {
         showPlayButton={false}
         showFullscreenButton={false}
         items={images}
-        renderItem={item => renderItem(item as Image, !!media.lg)}
         onSlide={index => {
           setCurrentIndex(index);
         }}
+        renderItem={item => renderItem(item as Image, !!media.lg)}
       />
     </View>
   );
 };
 
 const renderItem = (item: Image, mediaLg: boolean) => {
-  const error = item.variation.status === 'error';
   return (
-    <YStack
-      px="15%"
-      alignItems="center"
-      alignSelf="center"
-      justifyContent="center"
-      overflow="hidden"
-    >
-      {error ? (
-        <View height={mediaLg ? 600 : 300} width="100%" alignItems="center" justifyContent="center">
+    <YStack alignItems="center" alignSelf="center" justifyContent="center" overflow="hidden">
+      {item.variation.status === 'error' ? (
+        <View
+          height={mediaLg ? 600 : 300}
+          px="15%"
+          width="100%"
+          alignItems="center"
+          justifyContent="center"
+        >
           <MyText fw="medium">Грешка при генериране на изображението.</MyText>
-
           <MyText>Моля, опитайте отново.</MyText>
         </View>
+      ) : item.variation.status === 'queued' ? (
+        <YStack
+          height={mediaLg ? 600 : 300}
+          width="100%"
+          alignItems="center"
+          justifyContent="center"
+          gap={'$4'}
+        >
+          <img
+            src={item.renderUrl}
+            alt=""
+            style={{
+              maxHeight: mediaLg ? 600 : 300,
+              borderRadius: getTokens().radius['$1'].val,
+              objectFit: 'fill',
+            }}
+          />
+          <View
+            position="absolute"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            alignItems="center"
+            justifyContent="center"
+            bg="black"
+            opacity={0.7}
+            px="15%"
+          >
+            <MyText fw="bold" size="$8" color="white">
+              Изображението се Генерира...
+            </MyText>
+          </View>
+        </YStack>
       ) : (
         <>
           <img

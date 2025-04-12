@@ -11,7 +11,7 @@ import 'react-image-gallery/styles/css/image-gallery.css';
 import '@/css/image-gallery-custom.css';
 
 import { useViewRenderStore } from '@/stores';
-import { VariationStatus } from '@/types';
+import { Variation, VariationStatus } from '@/types';
 
 export default function ViewRenderScreen() {
   const channelRef = useRef<any>(null);
@@ -19,8 +19,18 @@ export default function ViewRenderScreen() {
   const { id: renderId } = useLocalSearchParams();
   const media = useMedia();
 
-  const { currentIndex, variations, render, setRender, setVariations, updateVariation } =
-    useViewRenderStore();
+  const {
+    currentIndex,
+    variations,
+    render,
+    loading,
+    setLoading,
+    setRoomType,
+    setFurnitureStyle,
+    setRender,
+    setVariations,
+    updateVariation,
+  } = useViewRenderStore();
 
   const roomTypeVariation =
     variations.length > 0
@@ -37,15 +47,19 @@ export default function ViewRenderScreen() {
       original: string;
       thumbnail: string;
       id: string;
+      variation: Variation;
+      renderUrl?: string;
     }[]
   >([]);
 
   useFocusEffect(
     useCallback(() => {
       (async () => {
+        setLoading(true);
         if (!render) {
           const { error, data } = await getRender(renderId as string);
           if (error || !data) {
+            setLoading(false);
             return console.error(error || 'No render data in use effect');
           }
           setRender(data);
@@ -57,10 +71,21 @@ export default function ViewRenderScreen() {
         );
 
         if (variationsError || !variationsData) {
+          setLoading(false);
           return console.error(variationsError);
         }
 
+        const roomType = ROOM_TYPES.find(el => el.value === variationsData[0].roomType) as {
+          value: string;
+          label: string;
+        };
+        const furnitureStyle = FURNITURE_STYLES.find(
+          el => el.value === variationsData[0].style
+        ) as { value: string; label: string };
+        setRoomType(roomType);
+        setFurnitureStyle(furnitureStyle);
         setVariations(variationsData);
+        setLoading(false);
       })();
     }, [render])
   );
@@ -69,11 +94,12 @@ export default function ViewRenderScreen() {
 
   useEffect(() => {
     const images = variations.map(el => ({
-      original: el.url || 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif',
+      original: el.url || 'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1263.gif',
       thumbnail:
-        el?.thumbnail || 'https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif',
+        el?.thumbnail || 'https://www.icegif.com/wp-content/uploads/2023/07/icegif-1263.gif',
       id: el.variationId,
       variation: el,
+      renderUrl: render?.url,
     }));
 
     setImages([...images]);
@@ -136,30 +162,40 @@ export default function ViewRenderScreen() {
 
   return (
     <MyYStack>
-      {media.lg ? (
-        <XStack width={'100%'} gap="$4">
-          <View width={'30%'}>
-            <OriginalImage />
-          </View>
+      <>
+        {loading ? (
+          <></>
+        ) : (
+          <>
+            {media.lg ? (
+              <XStack width={'100%'} gap="$4">
+                <View width={'30%'}>
+                  <OriginalImage />
+                </View>
 
-          <YStack width="70%" gap="$2">
-            <MyText ml="$1" fw="bold" size="$8">
-              Резултат ({roomTypeVariation?.label}, {furnitureStyleIndexVariation?.label} стил)
-            </MyText>
-            <ImageGallery images={images} />
-          </YStack>
-        </XStack>
-      ) : (
-        <YStack width={'100%'} gap="$4">
-          <YStack width={'100%'} gap="$2">
-            <MyText ml="$1" fw="bold" size="$8">
-              Резултат ({roomTypeVariation?.label}, {furnitureStyleIndexVariation?.label} стил)
-            </MyText>
-            <ImageGallery images={images} />
-          </YStack>
-          <OriginalImage />
-        </YStack>
-      )}
+                <YStack width="70%" gap="$2">
+                  <MyText ml="$1" fw="bold" size="$8">
+                    Резултат ({roomTypeVariation?.label}, {furnitureStyleIndexVariation?.label}{' '}
+                    стил)
+                  </MyText>
+                  <ImageGallery images={images} />
+                </YStack>
+              </XStack>
+            ) : (
+              <YStack width={'100%'} gap="$4">
+                <YStack width={'100%'} gap="$2">
+                  <MyText ml="$1" fw="bold" size="$8">
+                    Резултат ({roomTypeVariation?.label}, {furnitureStyleIndexVariation?.label}{' '}
+                    стил)
+                  </MyText>
+                  <ImageGallery images={images} />
+                </YStack>
+                <OriginalImage />
+              </YStack>
+            )}
+          </>
+        )}
+      </>
     </MyYStack>
   );
 }

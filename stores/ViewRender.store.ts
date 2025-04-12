@@ -3,11 +3,13 @@ import { Render, Variation } from '@/types';
 import { FurnitureStyle, RoomType } from '@/constants';
 
 type ViewRenderStore = {
+  loading: boolean;
   render: Render | null;
   variations: Variation[];
   roomType: RoomType;
   furnitureStyle: FurnitureStyle;
   currentIndex: number;
+  setLoading: (loading: boolean) => void;
   updateVariation: (variation: Variation) => void;
   setCurrentIndex: (index: number) => void;
   addVariations: (variations: Variation[]) => void;
@@ -19,6 +21,7 @@ type ViewRenderStore = {
 };
 
 const baseState = {
+  loading: false,
   render: null,
   roomType: {} as RoomType,
   furnitureStyle: {} as FurnitureStyle,
@@ -35,6 +38,7 @@ export const useViewRenderStore = create<ViewRenderStore>((set, get) => ({
       ),
     }));
   },
+  setLoading: loading => set({ loading }),
   setCurrentIndex: index => set({ currentIndex: index }),
   setRoomType: roomType => set({ roomType }),
   setFurnitureStyle: furnitureStyle => set({ furnitureStyle }),
