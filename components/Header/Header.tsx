@@ -36,11 +36,8 @@ export const Header = () => {
     <>
       <MyXStack justify="space-between" items="center" self="center" bg="$blue12">
         <Link href="/">
-          <SizableText size="$9" fontWeight="bold" color="white">
-            Digital Estate{' '}
-            <SizableText color="white" size="$9">
-              AI
-            </SizableText>
+          <SizableText size="$8" fontWeight="bold" color="white">
+            DIGITAL-ESTATE.BG
           </SizableText>
         </Link>
 

@@ -4,6 +4,7 @@ import { Button } from 'tamagui';
 import { MyText, AlertButton } from '@/components/shared';
 import { router } from 'expo-router';
 import { useUploadImageStore } from '@/stores';
+import { Upload } from '@tamagui/lucide-icons';
 
 export const UploadImageButton = () => {
   const { reset } = useUploadImageStore();
@@ -20,7 +21,7 @@ export const UploadImageButton = () => {
   return (
     <>
       {customer?.stripeSubscriptionStatus === 'active' ? (
-        <Button bg="$blue10" $lg={{ width: 200 }} width={'100%'} onPress={onUplaodImage}>
+        <Button bg="$blue10" $lg={{ width: 200 }} width={'100%'} onPress={onUplaodImage} iconAfter={<Upload color="white" size={16} />}>
           <MyText fontWeight="bold" color="white">
             Kaчи Снимка
           </MyText>

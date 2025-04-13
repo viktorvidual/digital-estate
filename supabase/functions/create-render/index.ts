@@ -88,6 +88,7 @@ Deno.serve(async (req: Request) => {
     if (body.addFurniture === undefined) {
       throw new Error('No addFurniture provided');
     }
+
     if (body.removeFurniture === undefined) {
       throw new Error('No removeFurniture provided');
     }
@@ -178,7 +179,7 @@ Deno.serve(async (req: Request) => {
       },
       image_url: body.imageUrl,
       webhook_url: `${VIRTAUL_STAGING_WEBHOOKS_URL}?userId=${body.userId}`,
-      variation_count: 3,
+      variation_count: !body.addFurniture ? 1 : 3,
       wait_for_completion: false,
     };
 
@@ -202,6 +203,8 @@ Deno.serve(async (req: Request) => {
 
     const renderResponseBody: RenderResponse = await response.json();
 
+    console.log('sucessfully created a render with Virtal Staging, ID: ', renderResponseBody.id);
+    
     //Step 3. Save the render to the DB
     const { data: renderData, error: renderError } = await supabase
       .from('renders')

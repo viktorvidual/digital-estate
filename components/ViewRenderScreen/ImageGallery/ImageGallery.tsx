@@ -22,12 +22,17 @@ type Image = {
 
 type Props = {
   images: Image[];
+  dimensions: string;
 };
 
-export const ImageGallery = ({ images }: Props) => {
+export const ImageGallery = ({ images, dimensions }: Props) => {
   const { setCurrentIndex, variations, currentIndex } = useViewRenderStore();
 
   const item = variations[currentIndex];
+
+  const [width, height] = dimensions.split('x');
+  const imageRatio =
+    typeof width === 'number' && typeof height === 'number' ? width / height : null;
 
   const onDownload = async () => {
     const imageUrl = item.url;
@@ -48,13 +53,13 @@ export const ImageGallery = ({ images }: Props) => {
         onSlide={index => {
           setCurrentIndex(index);
         }}
-        renderItem={item => renderItem(item as Image, !!media.lg)}
+        renderItem={item => renderItem(item as Image, !!media.lg, imageRatio)}
       />
     </View>
   );
 };
 
-const renderItem = (item: Image, mediaLg: boolean) => {
+const renderItem = (item: Image, mediaLg: boolean, imageRatio: number | null) => {
   return (
     <YStack alignItems="center" alignSelf="center" justifyContent="center" overflow="hidden">
       {item.variation.status === 'error' ? (
@@ -111,6 +116,7 @@ const renderItem = (item: Image, mediaLg: boolean) => {
               maxHeight: mediaLg ? 600 : 300,
               borderRadius: getTokens().radius['$1'].val,
               objectFit: 'fill',
+              aspectRatio: imageRatio ?? 'auto',
             }}
           />
         </>

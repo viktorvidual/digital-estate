@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { MyText, MyYStack } from '@/components/shared';
 import { useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { getRender, getRenderVariations } from '@/services';
-import { View, XStack, YStack, useMedia } from 'tamagui';
+import { Spinner, View, XStack, YStack, useMedia } from 'tamagui';
 import { ROOM_TYPES, FURNITURE_STYLES } from '@/constants';
 import { OriginalImage, ImageGallery } from '@/components/ViewRenderScreen';
 import { supabase } from '@/lib/supabase';
@@ -79,6 +79,7 @@ export default function ViewRenderScreen() {
           value: string;
           label: string;
         };
+
         const furnitureStyle = FURNITURE_STYLES.find(
           el => el.value === variationsData[0].style
         ) as { value: string; label: string };
@@ -161,8 +162,10 @@ export default function ViewRenderScreen() {
   return (
     <MyYStack>
       <>
-        {loading ? (
-          <></>
+        {loading || !render ? (
+          <View flex={1} items={'center'} justify={'center'} height={"40vh"}>
+            <Spinner size="large" />
+          </View>
         ) : (
           <>
             {media.lg ? (
@@ -175,7 +178,7 @@ export default function ViewRenderScreen() {
                   <MyText ml="$1" fw="bold" size="$8">
                     {roomTypeVariation?.label}, {furnitureStyleIndexVariation?.label} стил
                   </MyText>
-                  <ImageGallery images={images} />
+                  <ImageGallery images={images} dimensions={render.dimensions} />
                 </YStack>
               </XStack>
             ) : (
@@ -185,7 +188,7 @@ export default function ViewRenderScreen() {
                     Резултат ({roomTypeVariation?.label}, {furnitureStyleIndexVariation?.label}{' '}
                     стил)
                   </MyText>
-                  <ImageGallery images={images} />
+                  <ImageGallery images={images} dimensions={render.dimensions} />
                 </YStack>
                 <OriginalImage />
               </YStack>

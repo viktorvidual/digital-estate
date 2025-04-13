@@ -18,7 +18,7 @@ export default function MyPhotos() {
           </XStack>
         ) : (
           <>
-            <MyText size="$9" fw="bold">
+            <MyText size="$9" fw="bold" >
               Моите Снимки
             </MyText>
 
