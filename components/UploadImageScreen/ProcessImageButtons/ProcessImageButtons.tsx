@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
 import { useAuthStore, useUploadImageStore, useViewRenderStore } from '@/stores';
 import { MyText, NewSelect, Checkbox } from '@/components/shared';
-import { YStack, Button, XStack } from 'tamagui';
+import { YStack, Button, XStack, Spinner } from 'tamagui';
 import { supabase } from '@/lib/supabase';
-import { CircleMinus, CirclePlus, Square, CheckSquare2 } from '@tamagui/lucide-icons';
+import { CircleMinus, CirclePlus, Square, CheckSquare2, Image } from '@tamagui/lucide-icons';
 import { ImageSettingsButton } from './ProcessImageButtons.styles';
 import { v7 as uuidv7 } from 'uuid';
 import { createRender } from '@/services';
@@ -37,6 +37,11 @@ export const ProcessImageButtons = () => {
 
   const onUpload = useCallback(async () => {
     if (!selectedFile) {
+      showToast({
+        title: 'Моля, изберете изображение',
+        type: 'info',
+      });
+
       return console.error('No file selected');
     }
 
@@ -49,7 +54,6 @@ export const ProcessImageButtons = () => {
     const imageUid = uuidv7();
     const filePath = `${customer?.userId}/${imageUid}`;
 
-    // Save Image To Storage
     const { error } = await supabase.storage.from('images').upload(filePath, selectedFile);
     if (error) {
       setUploading(false);
@@ -120,7 +124,13 @@ export const ProcessImageButtons = () => {
     >
       <ImageSettingsButton
         selected={removeFurniture}
-        onPress={e => {
+        onPress={() => {
+          if (uploading) {
+            return showToast({
+              title: 'Моля, изчакайте',
+              type: 'info',
+            });
+          }
           setRemoveFurniure(!removeFurniture);
         }}
         disabled={uploading}
@@ -135,6 +145,12 @@ export const ProcessImageButtons = () => {
       <ImageSettingsButton
         selected={addNewFurniture}
         onPress={e => {
+          if (uploading) {
+            return showToast({
+              title: 'Моля, изчакайте',
+              type: 'info',
+            });
+          }
           setAddNewFurniture(!addNewFurniture);
         }}
         disabled={uploading}
@@ -158,6 +174,7 @@ export const ProcessImageButtons = () => {
             values={[roomType]}
             searchable={false}
             setValue={setRoomType}
+            disabled={uploading}
           />
           <MyText fw="bold">Стил Обзавеждане</MyText>
           <NewSelect
@@ -169,6 +186,7 @@ export const ProcessImageButtons = () => {
             values={[furnitureStyle]}
             searchable={false}
             setValue={setFurnitureStyle}
+            disabled={uploading}
           />
         </>
       )}
@@ -182,13 +200,16 @@ export const ProcessImageButtons = () => {
       <Button
         width={'100%'}
         onPress={onUpload}
-        disabled={!selectedFile || uploading}
-        bg={selectedFile ? '$blue10' : '$blue6'}
+        bg={'$blue10'}
         mt="$1"
+        iconAfter={
+          !uploading ? <Image size={20} style={{ marginLeft: 10 }} color="white" /> : undefined
+        }
       >
         <MyText fw="bold" color="white">
           Генерирай
         </MyText>
+        {uploading && <Spinner color="white" />}
       </Button>
     </YStack>
   );

@@ -14,6 +14,7 @@ import { useAuthStore } from '@/stores';
 import '@tamagui/core/reset.css';
 import { getCustomer } from '@/services';
 import { MyToast } from '@/components/shared/Toast/Toast';
+import Div100vh from 'react-div-100vh';
 
 const UNAUTHORIZED_ROUTES = ['login', 'register'];
 
@@ -103,7 +104,11 @@ export default function RootLayout() {
       <ToastProvider>
         <SideBar />
 
-        <YStack minHeight="100vh" flex={1} overflow="scroll" bg="$white2">
+        <Div100vh
+          style={{
+            overflowY: 'scroll',
+          }}
+        >
           <Header />
           <Stack
             screenOptions={{
@@ -113,7 +118,7 @@ export default function RootLayout() {
             <Stack.Screen name="index" />
             <Stack.Screen name="+not-found" />
           </Stack>
-        </YStack>
+        </Div100vh>
         <MyToast />
         <ToastViewport
           top={'5%'}

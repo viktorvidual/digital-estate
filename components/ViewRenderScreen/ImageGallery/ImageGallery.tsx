@@ -74,20 +74,15 @@ const renderItem = (item: Image, mediaLg: boolean, imageRatio: number | null) =>
           <MyText>Моля, опитайте отново.</MyText>
         </View>
       ) : item.variation.status === 'queued' ? (
-        <YStack
-          height={mediaLg ? 600 : 300}
-          width="100%"
-          alignItems="center"
-          justifyContent="center"
-          gap={'$4'}
-        >
+        <YStack width="100%" alignItems="center" justifyContent="center" gap={'$4'}>
           <img
             src={item.renderUrl}
             alt=""
             style={{
-              maxHeight: mediaLg ? 600 : 300,
+              width: '100%',
+              maxHeight: mediaLg ? 600 : undefined,
               borderRadius: getTokens().radius['$1'].val,
-              objectFit: 'fill',
+              objectFit: 'contain',
             }}
           />
           <View
@@ -113,9 +108,10 @@ const renderItem = (item: Image, mediaLg: boolean, imageRatio: number | null) =>
             src={item.original}
             alt=""
             style={{
-              maxHeight: mediaLg ? 600 : 300,
+              width: '100%',
+              maxHeight: mediaLg ? 600 : undefined,
               borderRadius: getTokens().radius['$1'].val,
-              objectFit: 'fill',
+              objectFit: 'contain',
               aspectRatio: imageRatio ?? 'auto',
             }}
           />

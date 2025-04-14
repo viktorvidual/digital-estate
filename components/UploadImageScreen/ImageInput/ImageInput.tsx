@@ -12,9 +12,11 @@ import { saveTemporaryImage, generateMask } from '@/services';
 import { useAuthStore, useUploadImageStore } from '@/stores';
 import { supabase } from '@/lib/supabase';
 import { MaskOverlayCanvas } from '../MaskOverlayCanvas/MaskOverlayCanvas';
+import { useMedia } from 'tamagui';
 
 export const ImageInput = () => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const media = useMedia();
 
   const { customer } = useAuthStore();
 
@@ -106,8 +108,8 @@ export const ImageInput = () => {
   }, [removeFurniture, selectedFile, customer?.userId]);
 
   useEffect(() => {
-    console.log("mask listener effect running");
-    
+    console.log('mask listener effect running');
+
     if (!maskId || !removeFurniture) return;
 
     const channel = supabase
@@ -162,7 +164,7 @@ export const ImageInput = () => {
       )}
 
       {localImage && (
-        <YStack width={'100%'}>
+        <YStack width={'100%'} bg="#f9f9f9" rounded={'$6'}>
           {uploading && (
             <ImageLoadingContainer gap="$3">
               <Spinner size="large" />
@@ -177,9 +179,10 @@ export const ImageInput = () => {
             alt="Preview"
             style={{
               width: '100%',
-              height: 'auto',
+              maxHeight: media.lg ? 600 : 350,
               display: 'block',
               borderRadius: 10,
+              objectFit: 'contain',
             }}
           />
           {maskedImageUrl && (

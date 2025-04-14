@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { YStack, Button, getTokens, Spinner, XStack } from 'tamagui';
 import { MyText, NewSelect, Checkbox } from '@/components/shared';
 import { ROOM_TYPES, FURNITURE_STYLES, RoomType, FurnitureStyle } from '@/constants';
@@ -26,9 +26,9 @@ export const OriginalImage = () => {
     setFurnitureStyle,
   } = useViewRenderStore();
 
-  const buttonDissabled = !roomType.value || !furnitureStyle.value || isLoading;
+  const onCreateNewVariations = useCallback(async () => {
+    if (isLoading) return; // Prevent re-entry if already loading
 
-  const onCreateNewVariations = async () => {
     setIsLoading(true);
     let baseVariationId;
 
@@ -78,7 +78,7 @@ export const OriginalImage = () => {
       description: 'Новите вариации ще бъдат готови след около 20 секунди. Моля, изчакайте.',
       type: 'success',
     });
-  };
+  }, [roomType, furnitureStyle, render, customer]);
 
   return (
     <YStack gap="$2" width={'100%'}>
@@ -107,7 +107,6 @@ export const OriginalImage = () => {
       />
       <XStack gap="$2" alignItems="center">
         <BedDouble size={20} />
-
         <MyText fw="bold">Стил Обзавеждане</MyText>
       </XStack>
       <NewSelect
@@ -127,10 +126,9 @@ export const OriginalImage = () => {
         label='Добави надпис "Virtually Staged"'
       />
       <Button
-        bg={buttonDissabled ? '$blue8' : '$blue10'}
+        bg={'$blue10'}
         mt="$1"
         onPress={onCreateNewVariations}
-        disabled={buttonDissabled}
         iconAfter={
           !isLoading ? <Image size={20} style={{ marginLeft: 10 }} color="white" /> : undefined
         }

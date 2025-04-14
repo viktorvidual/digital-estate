@@ -163,7 +163,7 @@ export default function ViewRenderScreen() {
     <MyYStack>
       <>
         {loading || !render ? (
-          <View flex={1} items={'center'} justify={'center'} height={"40vh"}>
+          <View flex={1} items={'center'} justify={'center'} height={'40vh'}>
             <Spinner size="large" />
           </View>
         ) : (
