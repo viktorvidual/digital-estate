@@ -1,5 +1,5 @@
 import React from 'react';
-import { YStack, XStack, useMedia } from 'tamagui';
+import { YStack, XStack, useMedia, View } from 'tamagui';
 import { MyText, Accordion, MyYStack } from '@/components/shared';
 import { MessageCircle } from '@tamagui/lucide-icons';
 import { IconContainer } from '@/components/ui';
@@ -13,7 +13,7 @@ export const PricingFAQ = () => {
         <YStack gap="$2" width="100%" items="center" $lg={{ width: '40%', items: 'flex-start' }}>
           <XStack items="center" gap="$2">
             <IconContainer>
-              <MessageCircle size={16} color="white"/>
+              <MessageCircle size={16} color="white" />
             </IconContainer>
             <MyText fw="bold">FAQ</MyText>
           </XStack>
@@ -27,12 +27,16 @@ export const PricingFAQ = () => {
         </YStack>
 
         {media.lg && (
-          <YStack width="100%" $lg={{ width: '60%' }}>
+          <YStack width="100%" $lg={{ width: '60%' }} rounded={'$6'} overflow="hidden">
             <Accordion items={FAQ_CONTENT} />
           </YStack>
         )}
       </XStack>
-      {!media.lg && <Accordion items={FAQ_CONTENT} />}
+      {!media.lg && (
+        <View width={'100%'} rounded={'$6'} overflow="hidden">
+          <Accordion items={FAQ_CONTENT} />
+        </View>
+      )}
     </MyYStack>
   );
 };

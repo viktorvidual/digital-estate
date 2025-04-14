@@ -133,7 +133,9 @@ Deno.serve(async (req: Request) => {
       }
     );
 
+    
     const renderData: RenderDetailsResponse = await renderResponse.json();
+    console.log('Variation Renders', renderData.variations.total_count);
     const variationsToCreate =
       renderData.variations.total_count <= MAX_VARIATIONS - DEFAULT_N_VARIATIONS
         ? DEFAULT_N_VARIATIONS

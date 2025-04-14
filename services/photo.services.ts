@@ -182,9 +182,7 @@ export const createVariations = async (
 
     const error = await getSupabaseError(response.error);
 
-    if (error.includes('maximum number of variations')) {
-      return { error: 'Достигнахте максималния брой вариации' };
-    }
+
 
     return { error: error || 'Error creating variations' };
   }

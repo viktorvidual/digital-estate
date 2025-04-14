@@ -15,6 +15,7 @@ import { Variation, VariationStatus } from '@/types';
 
 export default function ViewRenderScreen() {
   const channelRef = useRef<any>(null);
+  const [hasPending, setHasPending] = useState(false);
 
   const { id: renderId } = useLocalSearchParams();
   const media = useMedia();
@@ -106,58 +107,68 @@ export default function ViewRenderScreen() {
 
   useEffect(() => {
     const hasPending = variations.some(v => v.status === 'queued' || v.status === 'rendering');
+    setHasPending(hasPending);
+    console.log('Has pending:', hasPending);
+  }, [variations]);
 
-    if (hasPending && !channelRef.current) {
-      // Subscribe to variations for this render
-      channelRef.current = supabase
-        .channel(`variations-${renderId}`)
-        .on(
-          'postgres_changes',
-          {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'variations',
-            filter: `render_id=eq.${renderId}`,
-          },
-          payload => {
-            const updated = payload.new;
-            const thumbnail = supabase.storage.from('images').getPublicUrl(updated.file_path, {
-              transform: {
-                width: 200,
-                height: 200,
-              },
-            });
+  useEffect(() => {
+    if (hasPending) {
+      // Ensure an active subscription if not already present
+      if (!channelRef.current) {
+        console.log('Creating new subscription');
+        channelRef.current = supabase
+          .channel(`variations-${renderId}`)
+          .on(
+            'postgres_changes',
+            {
+              event: 'UPDATE',
+              schema: 'public',
+              table: 'variations',
+              filter: `render_id=eq.${renderId}`,
+            },
+            payload => {
+              const updated = payload.new;
+              console.log('Updated variation:', updated);
 
-            updateVariation({
-              status: updated.status as VariationStatus,
-              url: updated.url as string,
-              filePath: updated.file_path as string,
-              variationId: updated.variation_id as string,
-              baseVariationId: updated.base_variation_id as string,
-              roomType: updated.room_type as string,
-              style: updated.style as string,
-              thumbnail: thumbnail.data.publicUrl,
-              renderId: updated.render_id as string,
-            });
-          }
-        )
-        .subscribe();
-    }
+              const thumbnail = supabase.storage.from('images').getPublicUrl(updated.file_path, {
+                transform: {
+                  width: 200,
+                  height: 200,
+                },
+              });
 
-    // Cleanup when no more pending
-    if (!hasPending && channelRef.current) {
+              updateVariation({
+                status: updated.status as VariationStatus,
+                url: updated.url as string,
+                filePath: updated.file_path as string,
+                variationId: updated.variation_id as string,
+                baseVariationId: updated.base_variation_id as string,
+                roomType: updated.room_type as string,
+                style: updated.style as string,
+                thumbnail: thumbnail.data.publicUrl,
+                renderId: updated.render_id as string,
+              });
+            }
+          )
+          .subscribe();
+      }
+    } else if (!hasPending && channelRef.current) {
+      console.log('Unsubscribing from channel');
       supabase.removeChannel(channelRef.current);
       channelRef.current = null;
     }
+  }, [hasPending, renderId]);
 
-    // Optional cleanup on unmount
+  useEffect(() => {
     return () => {
+      // Cleanup subscription on unmount
+      console.log('Cleaning up subscription on unmount');
       if (channelRef.current) {
         supabase.removeChannel(channelRef.current);
         channelRef.current = null;
       }
     };
-  }, [variations, renderId]);
+  }, []);
 
   return (
     <MyYStack>

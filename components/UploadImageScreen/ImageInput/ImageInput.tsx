@@ -67,8 +67,6 @@ export const ImageInput = () => {
   };
 
   useEffect(() => {
-    console.log('generate mask effect running');
-
     (async () => {
       if (!customer) {
         return console.error('No customer object does not exist.');
@@ -77,7 +75,7 @@ export const ImageInput = () => {
       } else if (!removeFurniture) {
         return console.log('Furniter will not be removed, no need to upload temporary image');
       }
-
+      console.log('generate mask effect running');
       setUploading(true);
       const { error, data: temporaryUrl } = await saveTemporaryImage(
         customer?.userId,
@@ -108,10 +106,10 @@ export const ImageInput = () => {
   }, [removeFurniture, selectedFile, customer?.userId]);
 
   useEffect(() => {
-    console.log('mask listener effect running');
-
     if (!maskId || !removeFurniture) return;
 
+    console.log('mask listener effect running');
+    
     const channel = supabase
       .channel('mask-updates')
       .on(

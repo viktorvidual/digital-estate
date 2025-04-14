@@ -6,12 +6,12 @@ import { MyText } from '@/components/shared';
 import { Spinner, View, XStack, useMedia } from 'tamagui';
 import { Render } from '@/types';
 import { router } from 'expo-router';
-import { useViewRenderStore } from '@/stores';
+import { useViewRenderStore, usePhotosListStore } from '@/stores';
 
 export const PhotosList = () => {
   const { reset, setRender } = useViewRenderStore();
+  const { renders, setRenders } = usePhotosListStore();
   const media = useMedia();
-  const [renders, setRenders] = useState<Render[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const { customer } = useAuthStore();
 
@@ -73,7 +73,7 @@ export const PhotosList = () => {
                     width={media.lg ? '10%' : '31%'}
                   >
                     <img
-                      src={el?.thumbnaiUrl ?? ""}
+                      src={el?.thumbnaiUrl ?? ''}
                       style={{
                         width: '100%',
                         aspectRatio: 1,

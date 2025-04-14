@@ -1,6 +1,6 @@
 import React from 'react';
 import { MyYStack, MyText } from '@/components/shared';
-import { View, XStack, YStack, useMedia } from 'tamagui';
+import { XStack, YStack, useMedia } from 'tamagui';
 import { UploadImageButton, PhotosList } from '@/components/MyPhotosScreen';
 
 export default function MyPhotos() {

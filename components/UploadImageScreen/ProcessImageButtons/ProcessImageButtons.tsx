@@ -1,5 +1,10 @@
 import React, { useCallback } from 'react';
-import { useAuthStore, useUploadImageStore, useViewRenderStore } from '@/stores';
+import {
+  useAuthStore,
+  usePhotosListStore,
+  useUploadImageStore,
+  useViewRenderStore,
+} from '@/stores';
 import { MyText, NewSelect, Checkbox } from '@/components/shared';
 import { YStack, Button, XStack, Spinner } from 'tamagui';
 import { supabase } from '@/lib/supabase';
@@ -17,6 +22,7 @@ export const ProcessImageButtons = () => {
 
   const { customer } = useAuthStore();
   const { setRender, reset } = useViewRenderStore();
+  const { addRender } = usePhotosListStore();
 
   const {
     addVirtuallyStagedWatermark,
@@ -91,6 +97,7 @@ export const ProcessImageButtons = () => {
     };
 
     reset();
+    addRender(render);
     setRender(render);
 
     setUploading(false);

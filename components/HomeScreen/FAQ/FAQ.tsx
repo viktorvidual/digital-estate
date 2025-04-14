@@ -1,5 +1,5 @@
 import React from 'react';
-import { YStack, XStack, useMedia } from 'tamagui';
+import { YStack, XStack, useMedia, View } from 'tamagui';
 import { MyText, Accordion, MyYStack } from '@/components/shared';
 import { MessageCircle } from '@tamagui/lucide-icons';
 import { IconContainer } from '@/components/ui';
@@ -27,12 +27,16 @@ export const FAQ = () => {
         </YStack>
 
         {media.lg && (
-          <YStack width="100%" $lg={{ width: '60%' }}>
+          <YStack width="100%" $lg={{ width: '60%' }} rounded={'$6'} overflow="hidden">
             <Accordion items={FAQ_CONTENT} />
           </YStack>
         )}
       </XStack>
-      {!media.lg && <Accordion items={FAQ_CONTENT} />}
+      {!media.lg && (
+        <View width={'100%'} rounded={'$6'} overflow="hidden">
+          <Accordion items={FAQ_CONTENT} />
+        </View>
+      )}
     </MyYStack>
   );
 };

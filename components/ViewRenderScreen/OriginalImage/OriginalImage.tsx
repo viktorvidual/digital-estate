@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { YStack, Button, getTokens, Spinner, XStack } from 'tamagui';
 import { MyText, NewSelect, Checkbox } from '@/components/shared';
 import { ROOM_TYPES, FURNITURE_STYLES, RoomType, FurnitureStyle } from '@/constants';
@@ -60,11 +60,30 @@ export const OriginalImage = () => {
 
     const { error, data } = await createVariations(params);
 
-    if (error || !data) {
+    if (error) {
       setIsLoading(false);
+
+      if (error.includes('maximum number of variations')) {
+        return showToast({
+          title: 'Информация',
+          description: 'Достигнат е максималния брой вариации.',
+          type: 'info',
+        });
+      }
+
       return showToast({
         title: 'Грешка',
         description: error,
+        type: 'error',
+      });
+    }
+
+
+    if(!data) {
+      setIsLoading(false);
+      return showToast({
+        title: 'Грешка',
+        description: 'Неуспешно генериране на вариации',
         type: 'error',
       });
     }
