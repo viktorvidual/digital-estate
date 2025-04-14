@@ -20,9 +20,9 @@ import { useShowToast } from '@/hooks';
 export const ProcessImageButtons = () => {
   const showToast = useShowToast();
 
-  const { customer } = useAuthStore();
-  const { setRender, reset } = useViewRenderStore();
-  const { addRender } = usePhotosListStore();
+  const { customer, setImageCount } = useAuthStore();
+  const { setRender: setRenderToViewRender, reset: resetViewRender } = useViewRenderStore();
+  const { addRender: addRenderToPhotosList } = usePhotosListStore();
 
   const {
     addVirtuallyStagedWatermark,
@@ -55,6 +55,15 @@ export const ProcessImageButtons = () => {
       return console.error('No customer. Please log out and log in again');
     }
 
+    if (customer.imageCount === 0) {
+      return showToast({
+        title: 'Нямате кредити',
+        description: 'Моля, абонирайте се за друг план, за да генерирате нови изображения',
+        type: 'error',
+        duration: 4000,
+      });
+    }
+
     setUploading(true);
 
     const imageUid = uuidv7();
@@ -84,8 +93,22 @@ export const ProcessImageButtons = () => {
     });
 
     if (createRenderError || !data) {
-      console.error(createRenderError || 'Error creating render, no data returned');
       setUploading(false);
+      if (createRenderError?.includes('No image credits')) {
+        return showToast({
+          title: 'Нямате кредити',
+          description: 'Моля, абонирайте се за друг план, за да генерирате нови изображения',
+          type: 'error',
+          duration: 4000,
+        });
+      }
+      showToast({
+        title: 'Генерирането не успя',
+        description: createRenderError || 'Неуспешно генериране на изображение',
+        type: 'error',
+        duration: 5000,
+      });
+
       return;
     }
 
@@ -96,9 +119,12 @@ export const ProcessImageButtons = () => {
       url: publicUrl,
     };
 
-    reset();
-    addRender(render);
-    setRender(render);
+    addRenderToPhotosList(render);
+
+    resetViewRender();
+    setRenderToViewRender(render);
+
+    setImageCount(data.remainingCredits);
 
     setUploading(false);
     showToast({

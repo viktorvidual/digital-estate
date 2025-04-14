@@ -75,6 +75,7 @@ export const ImageInput = () => {
       } else if (!removeFurniture) {
         return console.log('Furniter will not be removed, no need to upload temporary image');
       }
+
       console.log('generate mask effect running');
       setUploading(true);
       const { error, data: temporaryUrl } = await saveTemporaryImage(
@@ -109,7 +110,7 @@ export const ImageInput = () => {
     if (!maskId || !removeFurniture) return;
 
     console.log('mask listener effect running');
-    
+
     const channel = supabase
       .channel('mask-updates')
       .on(
@@ -183,7 +184,7 @@ export const ImageInput = () => {
               objectFit: 'contain',
             }}
           />
-          {maskedImageUrl && (
+          {maskedImageUrl && removeFurniture && (
             <MaskOverlayCanvas
               maskUrl={maskedImageUrl}
               width={imageDimensions.width}

@@ -141,6 +141,7 @@ export const createRender = async (
   data?: {
     renderId: string;
     variations: Variation[];
+    remainingCredits: number;
   };
 }> => {
   console.log('creating render');
@@ -150,7 +151,8 @@ export const createRender = async (
   });
 
   if (error) {
-    return { error: error.message || 'Error creating render' };
+    const errorMessage = await getSupabaseError(error);
+    return { error: errorMessage || 'Error creating render' };
   }
 
   return { data: camelize(data) };
@@ -181,8 +183,6 @@ export const createVariations = async (
     // Read the ReadableStream body
 
     const error = await getSupabaseError(response.error);
-
-
 
     return { error: error || 'Error creating variations' };
   }

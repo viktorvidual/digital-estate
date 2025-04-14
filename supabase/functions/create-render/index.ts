@@ -204,7 +204,7 @@ Deno.serve(async (req: Request) => {
     const renderResponseBody: RenderResponse = await response.json();
 
     console.log('sucessfully created a render with Virtal Staging, ID: ', renderResponseBody.id);
-    
+
     //Step 3. Save the render to the DB
     const { data: renderData, error: renderError } = await supabase
       .from('renders')
@@ -261,6 +261,7 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({
         render_id: renderResponseBody.id,
+        remaining_credits: user.image_count - 1,
         variations: renderResponseBody.variations.items.map(variation => ({
           render_id: renderResponseBody.id,
           variation_id: variation.id,

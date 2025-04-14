@@ -16,17 +16,39 @@ export const UploadImageButton = () => {
 
   const onSubscribe = () => router.navigate('/pricing');
 
+  const onUpgradePlan = async () => {
+    router.navigate('/pricing');
+  };
+
   const { customer } = useAuthStore();
 
   return (
     <>
-      {customer?.stripeSubscriptionStatus === 'active' ? (
-        <Button bg="$blue10" $lg={{ width: 200 }} width={'100%'} onPress={onUplaodImage} iconAfter={<Upload color="white" size={16} />}>
+      {customer?.stripeSubscriptionStatus === 'active' && customer.imageCount > 0 && (
+        <Button
+          bg="$blue10"
+          $lg={{ width: 200 }}
+          width={'100%'}
+          onPress={onUplaodImage}
+          iconAfter={<Upload color="white" size={16} />}
+        >
           <MyText fontWeight="bold" color="white">
             Kaчи Снимка
           </MyText>
         </Button>
-      ) : (
+      )}
+
+      {customer?.stripeSubscriptionStatus === 'active' && customer.imageCount === 0 && (
+        <AlertButton
+          buttonText="Качи Снимка"
+          title="Нямате кредити"
+          description="За да качите снимка е нужно повишите абонамента си"
+          onConfirmText="Повиши Абонамента"
+          onConfirm={onUpgradePlan}
+        />
+      )}
+
+      {customer?.stripeSubscriptionStatus !== 'active' && (
         <AlertButton
           buttonText="Качи Снимка"
           title="Нужен Абонамент"

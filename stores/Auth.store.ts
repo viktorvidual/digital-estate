@@ -24,9 +24,10 @@ type SessionStore = {
   customer: Customer | null;
   setSession: (session: Session | null, customer: Customer | null) => void;
   setCustomer: (customer: Customer | null) => void;
+  setImageCount: (imageCount: number) => void;
 };
 
-export const useAuthStore = create<SessionStore>(set => ({
+export const useAuthStore = create<SessionStore>((set, get) => ({
   session: null,
   user: null,
   customer: null,
@@ -41,5 +42,16 @@ export const useAuthStore = create<SessionStore>(set => ({
     set({
       customer,
     });
+  },
+  setImageCount: (imageCount: number) => {
+    const { customer } = get();
+    if (customer) {
+      set({
+        customer: {
+          ...customer,
+          imageCount,
+        },
+      });
+    }
   },
 }));
