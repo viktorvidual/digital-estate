@@ -8,6 +8,9 @@ const VIRTAUL_STAGING_WEBHOOKS_URL = Deno.env.get('VIRTAUL_STAGING_WEBHOOKS_URL'
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 
+const MAX_VARIATIONS = 20;
+const DEFAULT_N_VARIATIONS = 3;
+
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 type requestBody = {
@@ -19,26 +22,42 @@ type requestBody = {
   userId: string;
 };
 
-type VariationsResponse = {
-  variations: Array<{
-    id: string;
-    type: 'staging';
-    render_id: string;
-    created_at: number;
-    status: 'queued' | 'done' | 'error';
-    result: {
-      url: string;
-      optimized_url: string;
-      thumbnail_url: string;
-    };
-    base_variation_id: string;
-    eta: number;
-    config: {
-      type: 'legacy_staging';
-      room_type: string;
-      style: string;
-    };
-  }>;
+type Variation = {
+  id: string;
+  type: 'staging';
+  render_id: string;
+  created_at: number;
+  status: 'queued' | 'done' | 'error';
+  result: {
+    url: string;
+    optimized_url: string;
+    thumbnail_url: string;
+  };
+  base_variation_id: string;
+  eta: number;
+  config: {
+    type: 'legacy_staging';
+    room_type: string;
+    style: string;
+  };
+};
+
+type CreateVariationsResponse = {
+  variations: Variation[];
+};
+
+interface VariationsCollection {
+  total_count: number;
+  next_cursor: string;
+  items: Variation[];
+}
+
+type RenderDetailsResponse = {
+  id: string;
+  created_at: number;
+  queued_at: number;
+  variations: VariationsCollection;
+  eta: number;
 };
 
 Deno.serve(async (req: Request) => {
@@ -102,6 +121,28 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
+    //check how many variations are generated so far
+
+    const renderResponse = await fetch(
+      `https://api.virtualstagingai.app/v2/renders/${body.renderId}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Api-Key ${VIRTUAL_STAGING_API_KEY}`,
+        },
+      }
+    );
+
+    const renderData: RenderDetailsResponse = await renderResponse.json();
+    const variationsToCreate =
+      renderData.variations.total_count <= MAX_VARIATIONS - DEFAULT_N_VARIATIONS
+        ? DEFAULT_N_VARIATIONS
+        : MAX_VARIATIONS - renderData.variations.total_count;
+
+    if (variationsToCreate <= 0) {
+      throw new Error('You have reached the maximum number of variations');
+    }
+
     const response = await fetch(
       `https://api.virtualstagingai.app/v2/renders/${body.renderId}/variations`,
       {
@@ -120,7 +161,7 @@ Deno.serve(async (req: Request) => {
               base_variation_id: body.baseVariationId,
             },
           },
-          variation_count: 1,
+          variation_count: variationsToCreate,
           wait_for_completion: false,
         }),
       }
@@ -135,7 +176,7 @@ Deno.serve(async (req: Request) => {
 
     console.log('variations created at Virutal Staging API');
 
-    const renderResponseBody: VariationsResponse = await response.json();
+    const renderResponseBody: CreateVariationsResponse = await response.json();
 
     //Step 4. Save the variations to the DB
     const variations = renderResponseBody.variations.map(variation => ({
@@ -179,6 +220,13 @@ Deno.serve(async (req: Request) => {
     //Return the variations
   } catch (e) {
     console.error('Unexpected error:', e);
-    return new Response('Internal Server Error', { status: 500, headers: corsHeaders });
+
+    // Include the error message in the response for debugging (optional, not for production)
+    const errorMessage = e instanceof Error ? e.message : 'Unknown error';
+
+    return new Response(JSON.stringify({ error: errorMessage }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   }
 });

@@ -63,9 +63,8 @@ export const OriginalImage = () => {
     if (error || !data) {
       setIsLoading(false);
       return showToast({
-        title: 'Готово',
-        description:
-          'Генерирането на нови вариации започна и ще бъде завършено след около 20 секунди',
+        title: 'Грешка',
+        description: error,
         type: 'error',
       });
     }

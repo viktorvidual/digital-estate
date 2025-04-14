@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { Render } from '@/types';
 import { Variation } from '@/types/Variation';
+import { getSupabaseError } from '@/utils/handleSupabaseFunctionError';
 import camelize from 'camelize';
 import { v7 as uuidv7 } from 'uuid';
 
@@ -172,13 +173,21 @@ export const createVariations = async (
 }> => {
   console.log('creating variations');
 
-  const { error, data } = await supabase.functions.invoke('create-variations', {
+  const response = await supabase.functions.invoke('create-variations', {
     body: reqBody,
   });
 
-  if (error) {
-    return { error: error.message || 'Error creating variations' };
+  if (response.error) {
+    // Read the ReadableStream body
+
+    const error = await getSupabaseError(response.error);
+
+    if (error.includes('maximum number of variations')) {
+      return { error: 'Достигнахте максималния брой вариации' };
+    }
+
+    return { error: error || 'Error creating variations' };
   }
 
-  return { data: camelize(data) };
+  return { data: camelize(response.data) };
 };
