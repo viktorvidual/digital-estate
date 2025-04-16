@@ -1,12 +1,13 @@
 import React from 'react';
 import { usePricingStore } from '@/stores';
 import { MyText, MyXStack } from '@/components/shared';
-import { styled, useMedia, YStack, XStack, Button } from 'tamagui';
+import { useMedia, YStack, XStack, Button } from 'tamagui';
 import { Check } from '@tamagui/lucide-icons';
 import { ENDPOINTS } from '@/constants';
 import { useAuthStore } from '@/stores';
 import { router } from 'expo-router';
 import { getStripePortalUrl } from '@/services';
+import { CategoryContainer, CategoryInnerContainer } from './PriceCategories.styles';
 
 export const PriceCategories = () => {
   const { session, customer } = useAuthStore();
@@ -106,27 +107,35 @@ const Category = ({
 
         <MyText size="$4">{category.subtitle}</MyText>
 
-        <XStack mt="$3" gap="$2" alignItems="center">
-          <MyText fw="bold" type="title">
-            {category.photos}
-          </MyText>
-          <MyText fw="medium">снимки / месец</MyText>
-        </XStack>
+        <YStack>
+          {price.amount === 0 && (
+            <MyText mt="$4" mb={-10} fw="bold">
+              Повече от
+            </MyText>
+          )}
+          <XStack mt="$3" gap="$2" alignItems="center">
+            <MyText fw="bold" type="title">
+              {category.photos}
+            </MyText>
+            <MyText fw="medium">снимки / месец</MyText>
+          </XStack>
+        </YStack>
 
         <XStack width={'100%'} justify={'space-between'}>
-          <YStack>
-            <XStack mt="$3" gap="$2" alignItems="center">
-              <MyText fw="bold" size="$8">
-                {price.amount}лв
-              </MyText>
-              <MyText fw="medium">/ месец</MyText>
-            </XStack>
-
-            <XStack mt="$3" gap="$2" alignItems="center">
-              <MyText size="$4">{(price.amount / category.photos).toFixed(2)}лв</MyText>
-              <MyText size="$4">/ снимка</MyText>
-            </XStack>
-          </YStack>
+          {price.amount > 0 && (
+            <YStack>
+              <XStack mt="$3" gap="$2" alignItems="center">
+                <MyText fw="bold" size="$8">
+                  {price.amount}лв
+                </MyText>
+                <MyText fw="medium">/ месец</MyText>
+              </XStack>
+              <XStack mt="$3" gap="$2" alignItems="center">
+                <MyText size="$4">{(price.amount / category.photos).toFixed(2)}лв</MyText>
+                <MyText size="$4">/ снимка</MyText>
+              </XStack>
+            </YStack>
+          )}
 
           {!media.lg && selectedPricing === 'monthly' && (
             <YStack mt="$3" alignSelf="center" bg="$blue12" p="$2" rounded="$6" items={'center'}>
@@ -151,12 +160,27 @@ const Category = ({
               <MyText fw="bold" color="white">
                 {category.price.yearly.amount}лв
               </MyText>{' '}
-              (м. с год. план)
+              (с год. план)
             </MyText>
           </XStack>
         )}
 
-        {customer?.stripeSubscriptionStatus === 'active' ? (
+        {price.amount === 0 ? (
+          <>
+            <Button
+              mt="$3"
+              bg="$blue10"
+              borderRadius="$10"
+              width={'100%'}
+              rounded="$6"
+              onPress={() => {}}
+            >
+              <MyText fw="bold" color="white">
+                Свържи се с нас
+              </MyText>
+            </Button>
+          </>
+        ) : customer?.stripeSubscriptionStatus === 'active' ? (
           <>
             <Button
               mt="$3"
@@ -208,24 +232,6 @@ const Benefits = () => {
   );
 };
 
-const CategoryContainer = styled(YStack, {
-  rounded: '$6',
-  backgroundColor: 'white',
-  padding: 8,
-  width: '100%',
-  $lg: {
-    width: '24%',
-  },
-});
-
-const CategoryInnerContainer = styled(YStack, {
-  rounded: '$5',
-  backgroundColor: 'white',
-  padding: '$4',
-  width: '100%',
-  bg: '#EDF1F8',
-});
-
 const CATEGORIES = [
   {
     name: 'Базов',
@@ -233,11 +239,11 @@ const CATEGORIES = [
     photos: 6,
     price: {
       monthly: {
-        amount: 40,
+        amount: 39,
         priceId: 'price_1R9PddG2OXqPrYSSIWElH4sb',
       },
       yearly: {
-        amount: 26,
+        amount: 25,
         priceId: 'price_1R9PeJG2OXqPrYSSNDZi3uzG',
       },
     },
@@ -248,11 +254,11 @@ const CATEGORIES = [
     photos: 20,
     price: {
       monthly: {
-        amount: 56,
+        amount: 55,
         priceId: 'price_1R9PiOG2OXqPrYSSelXUORjC',
       },
       yearly: {
-        amount: 32,
+        amount: 29,
         priceId: 'price_1R9PjfG2OXqPrYSSovzapmXb',
       },
     },
@@ -263,19 +269,19 @@ const CATEGORIES = [
     photos: 60,
     price: {
       monthly: {
-        amount: 128,
+        amount: 123,
         priceId: 'price_1R9PkBG2OXqPrYSSKTyORJjy',
       },
       yearly: {
-        amount: 63,
+        amount: 61,
         priceId: 'price_1R9PkeG2OXqPrYSShcpB8H4T',
       },
     },
   },
   {
-    name: 'Премиум',
+    name: 'Бизнес',
     subtitle: 'За екипи, брокерски къщи и фотографи',
-    photos: 100,
+    photos: '60',
     price: {
       monthly: {
         amount: 0,
@@ -290,10 +296,10 @@ const CATEGORIES = [
 ];
 
 const BENEFITS = [
-  'Неограничен брой визуализации',
+  'До 20 визуализации',
   'Всички стилове обзавеждане',
   'Всички видове стаи',
   'Премахване на мебели',
-  '15 секунди време за обработка',
-  'Съхранение на изображенията',
+  '20 секунди време за обработка',
+  'Безкраен достъп до изображенията',
 ];

@@ -29,7 +29,7 @@ export const CallToAction = ({ componentWidth }: { componentWidth: number }) => 
           }
         >
           <SizableText size="$6" fontWeight="bold" color="white">
-            {customer?.stripeSubscriptionStatus ? 'Моите Снимки' : 'Изполвай Сега'}
+            {customer?.stripeSubscriptionStatus ? 'Моите Снимки' : 'Обзаведи Сега'}
           </SizableText>
         </Button>
       </YStack>

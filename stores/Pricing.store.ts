@@ -6,6 +6,6 @@ interface PricingStore {
 }
 
 export const usePricingStore = create<PricingStore>(set => ({
-  selectedPricing: 'monthly',
+  selectedPricing: 'yearly',
   setSelectedPricing: selected => set({ selectedPricing: selected }),
 }));

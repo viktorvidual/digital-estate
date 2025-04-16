@@ -2,8 +2,9 @@ import React from 'react';
 import { MyYStack, MyText } from '@/components/shared';
 import { Wallet } from '@tamagui/lucide-icons';
 import { IconContainer } from '@/components/ui';
-import { styled, View, XStack, YStack, useMedia } from 'tamagui';
+import { View, XStack, YStack, useMedia } from 'tamagui';
 import { useAuthStore, usePricingStore } from '@/stores';
+import { ToggleContainer, ToggleItem } from './PricingHeader.styles';
 
 export const PricingHeader = () => {
   const media = useMedia();
@@ -15,6 +16,7 @@ export const PricingHeader = () => {
         gap="$3"
         content="center"
         alignSelf="center"
+        items={'center'}
         $lg={{
           alignSelf: 'flex-start',
         }}
@@ -22,7 +24,7 @@ export const PricingHeader = () => {
         <IconContainer>
           <Wallet size={16} color="white" />
         </IconContainer>
-        <MyText size="$2" color="white" fw="bold">
+        <MyText size="$3" color="white" fw="bold">
           Прекрати по всяко време
         </MyText>
       </XStack>
@@ -63,7 +65,7 @@ const Content = ({
             text: 'left',
           }}
         >
-          Цените на нашите планове
+          Нашите ценови планове
         </MyText>
         <MyText
           text="center"
@@ -72,25 +74,24 @@ const Content = ({
           }}
           color="white"
         >
-          Изберете правилния план за вас и вашият бизнес.
+          Изберете правилния план за вас и вашият бизнес. Променете по всяко време.
         </MyText>
 
         {customer?.stripeSubscriptionStatus === 'active' && (
-
           <View bg="$green9" p="$3" rounded={'$4'}>
             <>
-            <MyText
-              text="center"
-              $lg={{
-                text: 'left',
-              }}
-              color="white"
-              fw="bold"
-              size={'$8'}
-            >
-              Активен План: {customer.stripePlanName} ({customer.stripePlanDescription}){' '}
-              {customer.stripePlanInterval === 'month' ? 'месечен' : 'годишен'}
-            </MyText>
+              <MyText
+                text="center"
+                $lg={{
+                  text: 'left',
+                }}
+                color="white"
+                fw="bold"
+                size={'$8'}
+              >
+                Активен План: {customer.stripePlanName} ({customer.stripePlanDescription}){' '}
+                {customer.stripePlanInterval === 'month' ? 'месечен' : 'годишен'}
+              </MyText>
             </>
           </View>
         )}
@@ -117,24 +118,3 @@ const Content = ({
     </>
   );
 };
-
-const ToggleContainer = styled(XStack, {
-  borderRadius: '$10',
-  backgroundColor: '#141A2F',
-});
-
-const ToggleItem = styled(XStack, {
-  borderRadius: '$10',
-  padding: '$2',
-  paddingHorizontal: '$5',
-  cursor: 'pointer',
-  alignItems: 'center',
-
-  variants: {
-    selected: {
-      true: {
-        backgroundColor: 'white',
-      },
-    },
-  } as const,
-});
