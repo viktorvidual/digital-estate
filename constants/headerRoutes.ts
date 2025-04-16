@@ -17,4 +17,8 @@ export const ROUTES = [
     name: 'Снимки',
     href: '/my-photos' as Href,
   },
+  {
+    name: 'Kонтакти',
+    href: '/contacts' as Href,
+  },
 ];

@@ -173,7 +173,9 @@ const Category = ({
               borderRadius="$10"
               width={'100%'}
               rounded="$6"
-              onPress={() => {}}
+              onPress={() => {
+                router.navigate('/contacts');
+              }}
             >
               <MyText fw="bold" color="white">
                 Свържи се с нас
