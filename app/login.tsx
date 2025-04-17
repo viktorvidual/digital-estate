@@ -95,7 +95,7 @@ export default function LoginScreen() {
       </InputContainer>
 
       <XStack width={'100%'} $lg={{ width: 500 }} alignItems="center" gap="$2">
-        <Link href="/">
+        <Link href="/forgot-password">
           <MyText>Забравена парола?</MyText>
         </Link>
       </XStack>

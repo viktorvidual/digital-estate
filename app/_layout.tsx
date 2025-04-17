@@ -58,6 +58,10 @@ export default function RootLayout() {
       const {
         data: { subscription },
       } = supabase.auth.onAuthStateChange(async (_event, session) => {
+        if (_event === 'PASSWORD_RECOVERY') {
+          //Login the user
+          return console.log('Password recovery event');
+        }
         // console.log('Auth State Changed:', session);
 
         if (session) {
