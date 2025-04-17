@@ -15,10 +15,14 @@ import { MaskOverlayCanvas } from '../MaskOverlayCanvas/MaskOverlayCanvas';
 import { useMedia } from 'tamagui';
 
 export const ImageInput = () => {
+  const imageRef = useRef<HTMLImageElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const media = useMedia();
 
   const { customer } = useAuthStore();
+
+  const [imageWidthClient, setImageWidthClient] = React.useState(0);
+  const [imageHeightClient, setImageHeightClient] = React.useState(0);
 
   const {
     imageDimensions,
@@ -138,6 +142,44 @@ export const ImageInput = () => {
     };
   }, [maskId, removeFurniture]);
 
+  useEffect(() => {
+    if (!localImage || !imageRef.current) return;
+
+    const img = imageRef.current;
+
+    const handleImageLoad = () => {
+      if (!imageRef.current) return;
+
+      const ratio = imageDimensions.width / imageDimensions.height;
+      let width = img.height * ratio;
+      let height = img.height;
+
+      if (width > img.width) {
+        width = img.width;
+        height = img.width / ratio;
+      }
+      
+      setImageWidthClient(width);
+      setImageHeightClient(height);
+    };
+
+    // Attach the load handler
+    img.addEventListener('load', handleImageLoad);
+
+    // If it's already loaded (from cache), fire manually
+    if (img.complete) {
+      handleImageLoad();
+    }
+
+    // Resize listener
+    window.addEventListener('resize', handleImageLoad);
+
+    return () => {
+      img.removeEventListener('load', handleImageLoad);
+      window.removeEventListener('resize', handleImageLoad);
+    };
+  }, [localImage, imageDimensions]);
+
   return (
     <View width={'100%'} $lg={{ width: '60%' }}>
       {!localImage && (
@@ -174,6 +216,7 @@ export const ImageInput = () => {
             <Trash color="white" size={20} />
           </DeleteImageContainer>
           <img
+            ref={imageRef}
             src={localImage}
             alt="Preview"
             style={{
@@ -187,8 +230,8 @@ export const ImageInput = () => {
           {maskedImageUrl && removeFurniture && (
             <MaskOverlayCanvas
               maskUrl={maskedImageUrl}
-              width={imageDimensions.width}
-              height={imageDimensions.height}
+              width={imageWidthClient}
+              height={imageHeightClient}
             />
           )}
         </YStack>

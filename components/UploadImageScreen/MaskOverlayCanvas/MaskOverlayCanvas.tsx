@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { View } from 'tamagui';
 
 type Props = {
   maskUrl: string;
@@ -10,6 +11,9 @@ export const MaskOverlayCanvas = ({ maskUrl, width, height }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    if (!width || !height) {
+      return;
+    }
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -18,14 +22,14 @@ export const MaskOverlayCanvas = ({ maskUrl, width, height }: Props) => {
 
     let cancelled = false;
 
-    // Clear the canvas before repainting
-    ctx.clearRect(0, 0, width, height);
-
+    // Load the mask image
     const mask = new Image();
     mask.crossOrigin = 'anonymous';
 
     mask.onload = () => {
       if (cancelled) return;
+
+      ctx.clearRect(0, 0, width, height);
 
       const maskCanvas = document.createElement('canvas');
       maskCanvas.width = width;
@@ -47,10 +51,10 @@ export const MaskOverlayCanvas = ({ maskUrl, width, height }: Props) => {
         const isWhite = r > 200 && g > 200 && b > 200;
 
         if (isWhite) {
-          overlay.data[i] = 254; // Red
-          overlay.data[i + 1] = 0; // Green
-          overlay.data[i + 2] = 50; // Blue
-          overlay.data[i + 3] = 100; // Alpha
+          overlay.data[i] = 254;
+          overlay.data[i + 1] = 0;
+          overlay.data[i + 2] = 50;
+          overlay.data[i + 3] = 100;
         }
       }
 
@@ -65,16 +69,21 @@ export const MaskOverlayCanvas = ({ maskUrl, width, height }: Props) => {
   }, [maskUrl, width, height]);
 
   return (
-    <canvas
-      ref={canvasRef}
-      width={width}
-      height={height}
+    <View
       style={{
-        borderRadius: 10,
-        opacity: 0.8,
         position: 'absolute',
-        width: '100%',
+        alignSelf: 'center',
       }}
-    />
+    >
+      <canvas
+        ref={canvasRef}
+        width={width}
+        height={height}
+        style={{
+          borderRadius: 10,
+          touchAction: 'none', // important to prevent touch gestures
+        }}
+      />
+    </View>
   );
 };
