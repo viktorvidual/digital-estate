@@ -3,6 +3,7 @@ import { styled, YStack, Input, Button, Spinner } from 'tamagui';
 import { MyYStack, MyText } from '@/components/shared';
 import { useShowToast } from '@/hooks';
 import { supabase } from '@/lib/supabase';
+import { router } from 'expo-router';
 
 export default function CreateNewPasswordScreen() {
   const showToast = useShowToast();
@@ -28,7 +29,6 @@ export default function CreateNewPasswordScreen() {
     }
 
     setIsLoading(true);
-
     const { error } = await supabase.auth.updateUser({
       password,
     });
@@ -50,6 +50,8 @@ export default function CreateNewPasswordScreen() {
       description: 'Паролата е променена успешно',
       type: 'success',
     });
+
+    router.replace('/');
   };
 
   useEffect(() => {
@@ -61,26 +63,26 @@ export default function CreateNewPasswordScreen() {
     const refresh_token = params.get('refresh_token');
 
     if (access_token && refresh_token) {
-      supabase.auth
-        .setSession({ access_token, refresh_token })
-        .then(({ error }) => {
-          if (error) {
-            showToast({
-              title: 'Грешка',
-              description: error.message,
-              type: 'error',
-            });
-          }
-        })
-        .finally(() => setIsLoading(false));
-    } else {
-      showToast({
-        title: 'Грешка',
-        description: 'Липсват токени в URL адреса',
-        type: 'error',
-      });
+      (async () => {
+        const { error } = await supabase.auth.setSession({
+          access_token,
+          refresh_token,
+        });
 
-      setIsLoading(false);
+        if (error) {
+          return showToast({
+            title: 'Грешка',
+            description: error.message,
+            type: 'error',
+          });
+        }
+
+        showToast({
+          title: 'Успешно',
+          description: 'Въведете нова парола',
+          type: 'success',
+        });
+      })();
     }
   }, []);
 
