@@ -4,10 +4,14 @@ import { MyYStack, MyText } from '@/components/shared';
 import { useShowToast } from '@/hooks';
 import { supabase } from '@/lib/supabase';
 import { router } from 'expo-router';
+import { PasswordRequirements } from '@/constants';
+import { PasswordRequirements as PasswordRequirementsComponent } from '@/components/RegisterScreen';
+import { validatePassword } from '@/utils';
 
 export default function CreateNewPasswordScreen() {
   const showToast = useShowToast();
 
+  const [passwordRequirements, setPasswordRequirements] = useState(PasswordRequirements);
   const [isLoading, setIsLoading] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
@@ -18,40 +22,41 @@ export default function CreateNewPasswordScreen() {
   const onConfirm = async () => {
     if (!password) {
       return setPasswordError('Въведете парола');
+    } else if (password !== confirmPassword) {
+      throw new Error('Паролите не съвпадат');
+    } else if (passwordRequirements.some(requirement => requirement.isValid === false)) {
+      return setPasswordError(
+        'Паролата трябва да бъде поне 8 символа, да съдържа главна и малка буква, цифра и специален символ'
+      );
     }
 
-    if (password !== confirmPassword) {
-      return showToast({
-        title: 'Грешка',
-        description: 'Паролите не съвпадат',
-        type: 'error',
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.auth.updateUser({
+        password,
       });
-    }
 
-    setIsLoading(true);
-    const { error } = await supabase.auth.updateUser({
-      password,
-    });
+      if (error) {
+        throw new Error(error.message);
+      }
 
-    if (error) {
-      setIsLoading(false);
+      showToast({
+        title: 'Успешно',
+        description: 'Паролата е променена успешно',
+        type: 'success',
+      });
+
+      router.replace('/');
+    } catch (error) {
       console.log(error);
-
-      return showToast({
+      showToast({
         title: 'Грешка',
-        description: error.message,
+        description: error instanceof Error ? error.message : 'Неочаквана грешка',
         type: 'error',
       });
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
-    showToast({
-      title: 'Успешно',
-      description: 'Паролата е променена успешно',
-      type: 'success',
-    });
-
-    router.replace('/');
   };
 
   useEffect(() => {
@@ -96,11 +101,24 @@ export default function CreateNewPasswordScreen() {
     }
   }, [password, confirmPassword]);
 
+  useEffect(() => {
+    const result = validatePassword(password);
+    setPasswordRequirements(result);
+  }, [password]);
+
   return (
     <MyYStack justify="center" items="center">
+      <MyText type="title" fw="bold">
+        Създайте нова парола
+      </MyText>
       <InputContainer>
         <MyText fw="bold">Парола</MyText>
-        <Input value={password} onChangeText={setPassword} placeholder="Въведете нова парола" />
+        <Input
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Въведете нова парола"
+          secureTextEntry
+        />
         <>
           {passwordError && (
             <MyText fw="bold" color="$red10">
@@ -116,6 +134,7 @@ export default function CreateNewPasswordScreen() {
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           placeholder="Потвърдете нова парола"
+          secureTextEntry
         />
         <>
           {confirmPasswordError && (
@@ -125,6 +144,14 @@ export default function CreateNewPasswordScreen() {
           )}
         </>
       </InputContainer>
+
+      <YStack width={'100%'} $lg={{ width: 500 }} my="$1">
+        <MyText fw="bold" size="$2" mb="$1">
+          Парола трябва да съдържа:
+        </MyText>
+        <PasswordRequirementsComponent passwordRequirements={passwordRequirements} />
+      </YStack>
+
       <Button width={'100%'} $lg={{ width: 500 }} bg="$blue10" onPress={onConfirm}>
         <MyText color="white" fw="bold">
           Смени Парола

@@ -4,3 +4,4 @@ export * from './Endpoints';
 export * from './ImageSettings';
 export * from './TermsOfService';
 export * from './PrivacyPolicy';
+export * from './PasswordRequirements';

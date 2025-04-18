@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TamaguiProvider, useMedia, YStack } from 'tamagui';
+import { TamaguiProvider, useMedia } from 'tamagui';
 import { ToastViewport } from '@tamagui/toast';
 import { tamaguiConfig } from '../tamagui.config';
 import { ToastProvider } from '@tamagui/toast';
@@ -65,13 +65,15 @@ export default function RootLayout() {
         // console.log('Auth State Changed:', session);
 
         if (session) {
-          const { data: customer, error } = await getCustomer(session.user.id);
-          if (error || !customer) {
-            console.error(error ? error : 'No customer available on Auth State Change');
-            return setSession(session, null);
-          }
+          setTimeout(async () => {
+            const { data: customer, error } = await getCustomer(session.user.id);
+            if (error || !customer) {
+              console.error(error ? error : 'No customer available on Auth State Change');
+              return setSession(session, null);
+            }
 
-          setSession(session, customer);
+            setSession(session, customer);
+          }, 100);
         } else {
           setSession(null, null);
         }

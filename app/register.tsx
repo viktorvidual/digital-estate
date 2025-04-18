@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Input, Button, YStack, XStack, styled } from 'tamagui';
+import { Input, Button, YStack, XStack } from 'tamagui';
 import { MyText, MyYStack } from '@/components/shared';
 import { Link } from 'expo-router';
 import { supabase } from '@/lib/supabase';
-import { CircleMinus, CheckCircle, Square, SquareCheckBig } from '@tamagui/lucide-icons';
+import { Square, SquareCheckBig } from '@tamagui/lucide-icons';
 import { createCustomer } from '@/services';
 import { useAuthStore } from '@/stores';
 import { useShowToast } from '@/hooks';
+import { validatePassword } from '@/utils';
+import { PasswordRequirements } from '@/constants';
+import { PasswordRequirements as PasswordRequirementsComponent } from '@/components/RegisterScreen';
 
 export default function RegistrationScreen() {
   const { setCustomer } = useAuthStore();
@@ -22,11 +25,7 @@ export default function RegistrationScreen() {
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
   //password validation
-  const [passwordIsEightChars, setPasswordIsEightChars] = useState(false);
-  const [passwordHasUppercase, setPasswordHasUppercase] = useState(false);
-  const [passwordHasLowercase, setPasswordHasLowercase] = useState(false);
-  const [passwordHasNumber, setPasswordHasNumber] = useState(false);
-  const [passwordHasSpecialChar, setPasswordHasSpecialChar] = useState(false);
+  const [passwordRequirements, setPasswordRequirements] = useState([...PasswordRequirements]);
 
   const [confirmConditions, setConfirmConditions] = useState(false);
 
@@ -41,13 +40,7 @@ export default function RegistrationScreen() {
       return setPasswordError('Моля въведете парола');
     }
 
-    if (
-      !passwordIsEightChars ||
-      !passwordHasUppercase ||
-      !passwordHasLowercase ||
-      !passwordHasNumber ||
-      !passwordHasSpecialChar
-    ) {
+    if (passwordRequirements.some(requirement => requirement.isValid === false)) {
       return setPasswordError(
         'Паролата трябва да бъде поне 8 символа, да съдържа главна и малка буква, цифра и специален символ'
       );
@@ -112,17 +105,8 @@ export default function RegistrationScreen() {
   }, [email, password]);
 
   useEffect(() => {
-    password.length >= 8 ? setPasswordIsEightChars(true) : setPasswordIsEightChars(false);
-
-    password.match(/[A-Z]/) ? setPasswordHasUppercase(true) : setPasswordHasUppercase(false);
-
-    password.match(/[a-z]/) ? setPasswordHasLowercase(true) : setPasswordHasLowercase(false);
-
-    password.match(/\d/) ? setPasswordHasNumber(true) : setPasswordHasNumber(false);
-
-    password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/)
-      ? setPasswordHasSpecialChar(true)
-      : setPasswordHasSpecialChar(false);
+    const result = validatePassword(password);
+    setPasswordRequirements(result);
   }, [password]);
 
   return (
@@ -181,82 +165,7 @@ export default function RegistrationScreen() {
         <MyText fw="bold" size="$2" mb="$1">
           Парола трябва да съдържа:
         </MyText>
-        <XStack flexWrap="wrap" gap="$2">
-          <PasswordRequirementContainer>
-            {passwordIsEightChars ? (
-              <CheckCircle size={16} color="$green10" />
-            ) : (
-              <CircleMinus size={16} color="black" />
-            )}
-            <MyText
-              size="$2"
-              color={passwordIsEightChars ? '$green10' : 'black'}
-              opacity={password.length > 0 || passwordIsEightChars ? 1 : 0.7}
-            >
-              поне 8 символа
-            </MyText>
-          </PasswordRequirementContainer>
-
-          <PasswordRequirementContainer>
-            {passwordHasUppercase ? (
-              <CheckCircle size={16} color="$green10" />
-            ) : (
-              <CircleMinus size={16} color="black" />
-            )}
-            <MyText
-              size="$2"
-              color={passwordHasUppercase ? '$green10' : 'black'}
-              opacity={password.length > 0 || passwordHasUppercase ? 1 : 0.7}
-            >
-              главна буква
-            </MyText>
-          </PasswordRequirementContainer>
-
-          <PasswordRequirementContainer>
-            {passwordHasLowercase ? (
-              <CheckCircle size={16} color="$green10" />
-            ) : (
-              <CircleMinus size={16} color="black" />
-            )}
-            <MyText
-              size="$2"
-              color={passwordHasLowercase ? '$green10' : 'black'}
-              opacity={password.length > 0 || passwordHasLowercase ? 1 : 0.7}
-            >
-              малка буква
-            </MyText>
-          </PasswordRequirementContainer>
-
-          <XStack alignItems="center" gap="$2">
-            {passwordHasNumber ? (
-              <CheckCircle size={16} color="$green10" />
-            ) : (
-              <CircleMinus size={16} color="black" />
-            )}
-            <MyText
-              size="$2"
-              color={passwordHasNumber ? '$green10' : 'black'}
-              opacity={password.length > 0 || passwordHasNumber ? 1 : 0.7}
-            >
-              цифра
-            </MyText>
-          </XStack>
-
-          <PasswordRequirementContainer>
-            {passwordHasSpecialChar ? (
-              <CheckCircle size={16} color="$green10" />
-            ) : (
-              <CircleMinus size={16} color="black" />
-            )}
-            <MyText
-              size="$2"
-              color={passwordHasSpecialChar ? '$green10' : 'black'}
-              opacity={password.length > 0 || passwordHasSpecialChar ? 1 : 0.7}
-            >
-              специален символ
-            </MyText>
-          </PasswordRequirementContainer>
-        </XStack>
+        <PasswordRequirementsComponent passwordRequirements={passwordRequirements} />
       </YStack>
 
       <>
@@ -288,8 +197,3 @@ export default function RegistrationScreen() {
     </MyYStack>
   );
 }
-
-const PasswordRequirementContainer = styled(XStack, {
-  gap: '$2',
-  alignItems: 'center',
-});

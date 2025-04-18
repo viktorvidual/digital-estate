@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { YStack, XStack, SizableText, Button } from 'tamagui';
-import { router, Href } from 'expo-router';
+import { YStack, XStack, SizableText, Button, Image } from 'tamagui';
+import { router, Href, Link } from 'expo-router';
 import { useMedia } from 'tamagui';
 import { useAuthStore, useSideBarStore } from '@/stores';
 import { supabase } from '@/lib/supabase';
@@ -45,9 +45,14 @@ export const SideBar = () => {
       {isSideBarOpen && (
         <YStack fullscreen z="$zIndex.1" bg="white" padding="$4">
           <XStack justify="space-between" items="center" self="center" width="100%">
-            <SizableText size="$9" fontWeight="bold" color={'$blue10'}>
-              Digital Estate
-            </SizableText>
+            <Link href="/">
+              <XStack items="center" gap="$2">
+                <Image width={40} height={40} src={require('@/assets/logo/logo.png')} alt="logo" />
+                <SizableText size="$8" fontWeight="bold" color="$blue11">
+                  DIGITAL-ESTATE.BG
+                </SizableText>
+              </XStack>
+            </Link>
             <Ionicons
               name="close"
               size={24}

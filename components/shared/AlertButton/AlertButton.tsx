@@ -1,5 +1,12 @@
 import React from 'react';
-import { AlertDialog as TamaguiAlertDialog, Button, XStack, YStack, Variable } from 'tamagui';
+import {
+  AlertDialog as TamaguiAlertDialog,
+  Button,
+  XStack,
+  YStack,
+  Variable,
+  Spinner,
+} from 'tamagui';
 import { MyText } from '../MyText/MyText';
 
 type Props = {
@@ -10,6 +17,7 @@ type Props = {
   description?: string;
   onConfirmText?: string;
   onConfirm: () => void;
+  isLoading?: boolean;
 };
 
 export const AlertButton = ({
@@ -20,6 +28,7 @@ export const AlertButton = ({
   description,
   onConfirmText,
   onConfirm,
+  isLoading,
 }: Props) => {
   return (
     <TamaguiAlertDialog native>
@@ -28,6 +37,7 @@ export const AlertButton = ({
           <MyText fw="bold" color={buttonTextColor ?? 'white'}>
             {buttonText}
           </MyText>
+          {isLoading && <Spinner color={buttonTextColor ?? 'white'} />}
         </Button>
       </TamaguiAlertDialog.Trigger>
 

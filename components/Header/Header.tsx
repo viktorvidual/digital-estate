@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'expo-router';
-import { XStack, SizableText, useMedia, Button } from 'tamagui';
+import { XStack, SizableText, useMedia, Button, Image, Spinner } from 'tamagui';
 import { MyXStack, MyText, AlertButton } from '@/components/shared';
 import { Menu } from '@tamagui/lucide-icons';
 import { router } from 'expo-router';
@@ -12,33 +12,46 @@ import { useShowToast } from '@/hooks';
 
 export const Header = () => {
   const showToast = useShowToast();
+  const media = useMedia();
 
   const { session, customer, setCustomer } = useAuthStore();
   const { isSideBarOpen, setIsSideBarOpen } = useSideBarStore();
 
-  const media = useMedia();
+  const [isLoading, setIsLoading] = useState(false);
 
   const onLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Error signing out:', error);
-    } else {
+    try {
+      setIsLoading(true);
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        throw new Error(error.message);
+      }
       setCustomer(null);
+      showToast({
+        title: 'Успешно излязохте',
+        type: 'error',
+      });
+    } catch (error) {
+      showToast({
+        title: 'Грешка при излизане',
+        description: 'Моля, опитайте отново.',
+        type: 'success',
+      });
+    } finally {
+      setIsLoading(false);
     }
-
-    showToast({
-      title: 'Успешно излязохте',
-      type: 'error',
-    });
   };
 
   return (
     <>
       <MyXStack justify="space-between" items="center" self="center" bg="$blue12">
         <Link href="/">
-          <SizableText size="$8" fontWeight="bold" color="white">
-            DIGITAL-ESTATE.BG
-          </SizableText>
+          <XStack items="center" gap="$2">
+            <Image width={40} height={40} src={require('@/assets/logo/logo.png')} alt="logo" />
+            <SizableText size="$8" fontWeight="bold" color="white">
+              DIGITAL-ESTATE.BG
+            </SizableText>
+          </XStack>
         </Link>
 
         {media.lg && (
@@ -63,6 +76,7 @@ export const Header = () => {
                   description="Сигурни ли сте, че искате да излезете?"
                   buttonTextColor="black"
                   buttonColor="white"
+                  isLoading={isLoading}
                 />
               </XStack>
             ) : (
