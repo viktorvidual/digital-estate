@@ -126,4 +126,4 @@ const CATEGORIES_PROD = [
   },
 ];
 
-export const CATEGORIES = IsProduction ? CATEGORIES_PROD : CATEGORIES_DEV;
+export const CATEGORIES = CATEGORIES_PROD;

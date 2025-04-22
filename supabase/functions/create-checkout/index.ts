@@ -2,7 +2,7 @@ import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import Stripe from 'stripe';
 
 const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY');
-const devUrl = 'http://localhost:8081';
+const domain = 'https://digital-estate.bg';
 
 Deno.serve(async (req: Request) => {
   // Add CORS headers
@@ -66,9 +66,10 @@ Deno.serve(async (req: Request) => {
         },
       ],
       customer: stripeCustomerId,
-      success_url: `${devUrl}/payment-success`,
-      cancel_url: `${devUrl}/pricing`,
+      success_url: `${domain}/payment-success`,
+      cancel_url: `${domain}/pricing`,
       locale: 'bg',
+      allow_promotion_codes: true,
     });
 
     return new Response(JSON.stringify({ sessionId: session.id, url: session.url }), {

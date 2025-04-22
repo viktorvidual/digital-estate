@@ -9,27 +9,27 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 
 const PRICES = {
-  price_1R9PkeG2OXqPrYSShcpB8H4T: {
+  price_1RGb3kG2OXqPrYSSwFrFCOcY: {
     photos: 60,
     name: 'Yearly Pro',
   },
-  price_1R9PkBG2OXqPrYSSKTyORJjy: {
+  price_1RGb2DG2OXqPrYSSOaVVvfIN: {
     photos: 60,
     mame: 'Monthly Pro',
   },
-  price_1R9PjfG2OXqPrYSSovzapmXb: {
+  price_1RGaxCG2OXqPrYSS2XjsxCBV: {
     photos: 20,
     name: 'Standard Yearly',
   },
-  price_1R9PiOG2OXqPrYSSelXUORjC: {
+  price_1RGaunG2OXqPrYSSwje4xmrt: {
     photos: 20,
     name: 'Standard Monthly',
   },
-  price_1R9PeJG2OXqPrYSSNDZi3uzG: {
+  price_1RGapHG2OXqPrYSSrQ9kAmE0: {
     photos: 6,
     name: 'Yearly Basic',
   },
-  price_1R9PddG2OXqPrYSSIWElH4sb: {
+  price_1RGanuG2OXqPrYSSMH9HnmgC: {
     photos: 6,
     name: 'Monthly Basic',
   },

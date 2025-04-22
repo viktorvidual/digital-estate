@@ -32,6 +32,7 @@ export const Header = () => {
         type: 'error',
       });
     } catch (error) {
+      console.error('Error logging out:', error);
       showToast({
         title: 'Грешка при излизане',
         description: 'Моля, опитайте отново.',
