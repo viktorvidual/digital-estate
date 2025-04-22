@@ -3,7 +3,7 @@ import { usePricingStore } from '@/stores';
 import { MyText, MyXStack } from '@/components/shared';
 import { useMedia, YStack, XStack, Button } from 'tamagui';
 import { Check } from '@tamagui/lucide-icons';
-import { ENDPOINTS } from '@/constants';
+import { ENDPOINTS, CATEGORIES } from '@/constants';
 import { useAuthStore } from '@/stores';
 import { router } from 'expo-router';
 import { getStripePortalUrl } from '@/services';
@@ -28,6 +28,7 @@ export const PriceCategories = () => {
       console.error('Stripe userid or access token not availabes');
     }
   };
+
   return (
     <MyXStack justify="space-between" flexWrap="wrap" gap="$3">
       {CATEGORIES.map(category => (
@@ -233,69 +234,6 @@ const Benefits = () => {
     </YStack>
   );
 };
-
-const CATEGORIES = [
-  {
-    name: 'Базов',
-    subtitle: 'За да опитате',
-    photos: 6,
-    price: {
-      monthly: {
-        amount: 39,
-        priceId: 'price_1R9PddG2OXqPrYSSIWElH4sb',
-      },
-      yearly: {
-        amount: 25,
-        priceId: 'price_1R9PeJG2OXqPrYSSNDZi3uzG',
-      },
-    },
-  },
-  {
-    name: 'Стандарт',
-    subtitle: 'За агенти',
-    photos: 20,
-    price: {
-      monthly: {
-        amount: 55,
-        priceId: 'price_1R9PiOG2OXqPrYSSelXUORjC',
-      },
-      yearly: {
-        amount: 29,
-        priceId: 'price_1R9PjfG2OXqPrYSSovzapmXb',
-      },
-    },
-  },
-  {
-    name: 'Про',
-    subtitle: 'За топ брокери',
-    photos: 60,
-    price: {
-      monthly: {
-        amount: 123,
-        priceId: 'price_1R9PkBG2OXqPrYSSKTyORJjy',
-      },
-      yearly: {
-        amount: 61,
-        priceId: 'price_1R9PkeG2OXqPrYSShcpB8H4T',
-      },
-    },
-  },
-  {
-    name: 'Бизнес',
-    subtitle: 'За екипи, брокерски къщи и фотографи',
-    photos: '60',
-    price: {
-      monthly: {
-        amount: 0,
-        priceId: '',
-      },
-      yearly: {
-        amount: 0,
-        priceId: '',
-      },
-    },
-  },
-];
 
 const BENEFITS = [
   'До 20 визуализации',

@@ -18,7 +18,7 @@ export default function MyPhotos() {
             </MyText>
 
             <XStack gap={'$2'} items="center">
-              {customer && (
+              {customer && customer.stripeSubscriptionStatus === 'active' && (
                 <XStack items="center" bg="$green10" rounded={'$4'} p="$2" px="$3">
                   <MyText color="white" size="$8" fw="bold">
                     {customer.imageCount}{' '}
@@ -37,7 +37,7 @@ export default function MyPhotos() {
               <MyText size="$9" fw="bold">
                 Моите Снимки
               </MyText>
-              {customer && (
+              {customer && customer.stripeSubscriptionStatus === 'active' && (
                 <YStack items="center" bg="$green10" rounded={'$4'} p="$2">
                   <MyText color="white" size="$8" fw="bold">
                     {customer.imageCount}
