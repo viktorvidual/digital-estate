@@ -66,7 +66,7 @@ Deno.serve(async (req: Request) => {
         },
       ],
       customer: stripeCustomerId,
-      success_url: `${domain}/payment-success`,
+      success_url: `${domain}/my-photos?subscriptionCreated=true`,
       cancel_url: `${domain}/pricing`,
       locale: 'bg',
       allow_promotion_codes: true,

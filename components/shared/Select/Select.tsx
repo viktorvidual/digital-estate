@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Check, ChevronDown, ChevronUp, ChevronsUpDown } from '@tamagui/lucide-icons';
 
 import type { FontSizeTokens, SelectProps } from 'tamagui';
@@ -10,6 +10,7 @@ export function DropDownSelect({
   label,
   onValueChange,
   value,
+  progress,
 }: {
   items: {
     name: string;
@@ -18,6 +19,7 @@ export function DropDownSelect({
   label: string;
   onValueChange: (value: string) => void;
   value: string;
+  progress?: number;
 }) {
   return (
     <YStack gap="$4">
@@ -29,6 +31,7 @@ export function DropDownSelect({
             label={label}
             value={value}
             onValueChange={onValueChange}
+            progress={progress}
           />
         </XStack>
       ) : (
@@ -39,6 +42,7 @@ export function DropDownSelect({
             label={label}
             native
             onValueChange={onValueChange}
+            progress={progress}
           />
         </XStack>
       )}
@@ -47,14 +51,27 @@ export function DropDownSelect({
 }
 
 function DropDownSelectItem(
-  props: SelectProps & { items: { name: string; id: string }[]; label: string }
+  props: SelectProps & { items: { name: string; id: string }[]; label: string; progress?: number }
 ) {
-  const { items, label, value, onValueChange } = props;
+  const { items, label, value, progress, onValueChange } = props;
 
   return (
     <Select value={value} onValueChange={onValueChange} disablePreventBodyScroll {...props}>
-      <Select.Trigger iconAfter={ChevronsUpDown} rounded={'$6'} bg="white">
-        <Select.Value size="$5" placeholder="pLaceholder">
+      <Select.Trigger iconAfter={ChevronsUpDown} rounded={'$6'} bg="white" zIndex={10}>
+        {progress && (
+          <YStack
+            position="absolute"
+            left={0}
+            top={0}
+            bottom={0}
+            width={`${progress}%`}
+            bg="$blue6"
+            opacity={0.3}
+            zIndex={0}
+          />
+        )}
+
+        <Select.Value size="$5" placeholder="pLaceholder" zIndex={10}>
           {value}
         </Select.Value>
       </Select.Trigger>
@@ -111,7 +128,13 @@ function DropDownSelectItem(
               () =>
                 items.map((item, i) => {
                   return (
-                    <Select.Item zIndex={100} pointerEvents='auto' index={i} key={item.name} value={item.name}>
+                    <Select.Item
+                      zIndex={100}
+                      pointerEvents="auto"
+                      index={i}
+                      key={item.name}
+                      value={item.name}
+                    >
                       <Select.ItemText size="$5">{item.name}</Select.ItemText>
                       <Select.ItemIndicator marginLeft="auto">
                         <Check size={16} />

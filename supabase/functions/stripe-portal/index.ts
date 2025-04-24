@@ -1,7 +1,7 @@
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 import Stripe from 'stripe';
 
-const devUrl = 'http://localhost:8081';
+const clientUrl = 'https://digital-estate.bg/';
 
 const STRIPE_SECRET_KEY = Deno.env.get('STRIPE_SECRET_KEY');
 
@@ -51,7 +51,7 @@ Deno.serve(async (req: Request) => {
 
   const portalSession = await stripe.billingPortal.sessions.create({
     customer: stripeUserId,
-    return_url: devUrl,
+    return_url: clientUrl,
     locale: 'bg',
   });
 

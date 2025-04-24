@@ -4,15 +4,13 @@ import { MyText } from '../../shared/MyText/MyText';
 import { useAuthStore } from '@/stores';
 import { router } from 'expo-router';
 
-export const CallToAction = ({ componentWidth }: { componentWidth: number }) => {
+export const CallToAction = () => {
   const { customer } = useAuthStore();
 
   const media = useMedia();
 
-  const localComponentWidth = media.lg ? componentWidth * 0.4 : componentWidth;
-
   return (
-    <YStack justify="center" width={'100%'} $lg={{ width: localComponentWidth, pr: '$8' }}>
+    <YStack justify="center" width={'100%'} $lg={{ width: '40%', pr: '$8' }}>
       <YStack gap="$4">
         <MyText type="title" fontWeight="bold" color="white">
           Виртуално Обзавеждане {!media.md && '\n'}с Един Клик

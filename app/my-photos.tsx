@@ -1,15 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { MyYStack, MyText } from '@/components/shared';
 import { XStack, YStack, useMedia } from 'tamagui';
 import { UploadImageButton, PhotosList } from '@/components/MyPhotosScreen';
 import { useAuthStore } from '@/stores';
+import { useLocalSearchParams } from 'expo-router';
+import { useShowToast } from '@/hooks';
 
 export default function MyPhotos() {
+  const showToast = useShowToast();
   const media = useMedia();
   const { customer } = useAuthStore();
 
+  const { subscriptionCreated } = useLocalSearchParams();
+
   return (
     <MyYStack>
+      {subscriptionCreated && (
+        <MyText size="$8" color="$green10" textAlign="center" fw="bold">
+          Успешно активирана абонаментна услуга. Може да качите снимки.
+        </MyText>
+      )}
       <YStack width={'100%'} bg="#F9FAFB" rounded={'$6'} p={'$4'} gap="$3">
         {media.lg ? (
           <XStack width={'100%'} justify={'space-between'} items="center">

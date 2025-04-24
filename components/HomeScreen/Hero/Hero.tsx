@@ -1,5 +1,5 @@
 import React from 'react';
-import { XStack, useMedia } from 'tamagui';
+import { XStack, useMedia, View } from 'tamagui';
 import { MyYStack } from '../../shared';
 
 import { CallToAction } from './CallToAction';
@@ -11,15 +11,21 @@ export const Hero = () => {
   const media = useMedia();
 
   const viewPortWidth = useWindowDimensions().width;
-  const componentWidth = media.lg ? viewPortWidth - viewPortWidth * 0.3 : viewPortWidth;
 
   return (
     <MyYStack bg="$blue12" py="$5">
       <XStack>
-        {media.lg && <CallToAction componentWidth={componentWidth} />}
-        <HeroMedia componentWidth={componentWidth} />
+        {media.lg && <CallToAction />}
+        <View
+          width="100%"
+          $lg={{
+            width: '60%',
+          }}
+        >
+          <HeroMedia />
+        </View>
       </XStack>
-      {!media.lg && <CallToAction componentWidth={componentWidth} />}
+      {!media.lg && <CallToAction />}
       <Benefits />
     </MyYStack>
   );

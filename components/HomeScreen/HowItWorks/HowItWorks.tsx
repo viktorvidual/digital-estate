@@ -1,27 +1,27 @@
 import React from 'react';
-import { ImageSourcePropType } from 'react-native';
-import { Image, XStack, styled, View, useMedia } from 'tamagui';
+import { XStack, View, useMedia, getTokens } from 'tamagui';
 import { MyText, MyXStack, MyYStack } from '@/components/shared';
 import { Settings, Sparkles } from '@tamagui/lucide-icons';
 import { ElementContainer, NumberContainer, ImageIconContainer } from './HowItWorks.styles';
+import { supabase } from '@/lib/supabase';
 
 const STEPS = [
   {
     title: 'Качете снимка',
     description: 'Поддържаме както обзаведени, така и необзаведени стаи.',
-    media: require('@/assets/samples/living-room/unfurnished.jpg'),
+    media: supabase.storage.from('home-page').getPublicUrl('howItWorks/step-1.jpeg').data.publicUrl,
     id: '1',
   },
   {
     title: 'AI Магия',
     description: 'Нашият AI ще обзаведе пространството Ви за 20 секунди.',
-    media: require('@/assets/samples/living-room/unfurnished.jpg'),
+    media: supabase.storage.from('home-page').getPublicUrl('howItWorks/step-2.jpeg').data.publicUrl,
     id: '2',
   },
   {
     title: 'Изтегли и заблести',
     description: 'Изтеглете обзаведената снимка и я използвайте за успешна реклама.',
-    media: require('@/assets/samples/living-room/scandinavian.jpg'),
+    media: supabase.storage.from('home-page').getPublicUrl('howItWorks/step-3.jpeg').data.publicUrl,
     id: '3',
   },
 ];
@@ -49,7 +49,7 @@ export const HowItWorks = () => {
           }}
         >
           <MyText>
-            Поедвайте <MyText fw="bold">три лесни стъпки</MyText> , за да създадете най-добрата
+            Последвайте <MyText fw="bold">три лесни стъпки</MyText> , за да създадете най-добрата
             визия за вашия имот, която ще привлече вниманието на купувачите и ще ускори продажбата.
           </MyText>
         </View>
@@ -68,12 +68,14 @@ const Element = ({
   el,
   isSeconStep,
 }: {
-  el: { title: string; value: string; description: string; media: ImageSourcePropType; id: string };
+  el: { title: string; description: string; media: string; id: string };
   isSeconStep: boolean;
 }) => {
   const media = useMedia();
 
   const width = media['2xl'] ? '32%' : media.md ? '31%' : '100%';
+
+  console.log('el media', el.media);
 
   return (
     <ElementContainer width={width}>
@@ -88,7 +90,7 @@ const Element = ({
 
       <MyText>{el.description}</MyText>
 
-      <View maxWidth={'100%'} maxHeight={200}>
+      <View maxWidth={'100%'}>
         {isSeconStep && (
           <ImageIconContainer>
             <XStack
@@ -108,7 +110,14 @@ const Element = ({
           </ImageIconContainer>
         )}
 
-        <Image maxWidth={'100%'} maxHeight={'100%'} source={el.media} rounded="$6" />
+        <img
+          src={el.media}
+          style={{
+            borderRadius: getTokens().radius['$6'].val,
+            width: '100%',
+            objectFit: 'cover',
+          }}
+        />
       </View>
     </ElementContainer>
   );

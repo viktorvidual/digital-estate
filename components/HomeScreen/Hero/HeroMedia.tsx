@@ -1,7 +1,31 @@
-import React, { useState } from 'react';
-import { Image, YStack, styled, View, useMedia } from 'tamagui';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { Image, YStack, styled, View, useMedia, getTokens } from 'tamagui';
 import { DropDownSelect } from '@/components/shared';
 import { supabase } from '@/lib/supabase';
+
+//The types below are used to define the options for the dropdowns
+const ROOM_TYPES: { name: RoomType; id: string }[] = [
+  { name: 'Хол', id: 'livingRoom.jpg' },
+  { name: 'Спалня', id: 'bedroom.jpg' },
+  { name: 'Трапезария', id: 'diningRoom.jpg' },
+  { name: 'Открито', id: 'outdoor.jpg' },
+];
+
+// The types below are used to define the options for the dropdowns
+const FURNITURE_TYPES: { name: FurnitureType; id: string }[] = [
+  { name: 'Оригинален', id: 'original' },
+  { name: 'Модерен', id: 'modern' },
+  { name: 'Луксозен', id: 'luxury' },
+  // { name: 'Индустриален', id: 'industrial' },
+  // { name: 'Фармхаус', id: 'farmhouse' },
+  { name: 'Мид-сенчъри', id: 'mid-century' },
+  { name: 'Скандинавски', id: 'scandinavian' },
+  { name: 'Коастъл', id: 'coastal' },
+  { name: 'Стандартен', id: 'standard' },
+];
+
+const STYLE_EFFECT_DURATION = 3000; // Duration for the style effect in milliseconds
+const ROOM_EFFECT_DURATION = FURNITURE_TYPES.length * STYLE_EFFECT_DURATION; // Total duration for the room effect
 
 // Define types for better type safety
 type RoomType = 'Спалня' | 'Трапезария' | 'Хол' | 'Открито';
@@ -17,18 +41,99 @@ type FurnitureType =
   | 'Скандинавски'
   | 'Стандартен';
 
-export const HeroMedia = ({ componentWidth }: { componentWidth: number }) => {
-  const [roomType, setRoomType] = useState<RoomType>('Спалня');
-  const [furnitureType, setFurnitureType] = useState<FurnitureType>('Оригинален');
+export const HeroMedia = () => {
+  const roomTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const roomProgressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [roomProgress, setRoomProgress] = useState(0);
+
+  const furnitureTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const progressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [furnitureProgress, setFurnitureProgress] = useState(0);
+
+  const [roomType, setRoomType] = useState<RoomType>(ROOM_TYPES[0].name);
+  const [furnitureType, setFurnitureType] = useState<FurnitureType>(FURNITURE_TYPES[0].name);
+
+  const [currentIndexFurnitureType, setCurrentIndexFurnitureType] = useState(0);
+  const [currentIndexRoomType, setCurrentIndexRoomType] = useState(0);
 
   // Get image source based on selected types
-  const imageSource = getImageUrl(furnitureType, roomType);
+  const imageSource = useMemo(
+    () => getImageUrl(furnitureType, roomType),
+    [furnitureType, roomType]
+  );
 
-  const media = useMedia();
+  useEffect(() => {
+    const furnitureIndex = FURNITURE_TYPES.findIndex(item => item.name === furnitureType);
+    const roomIndex = ROOM_TYPES.findIndex(item => item.name === roomType);
 
-  const imageRatio = 800 / 600;
-  const mediaComponentWidth = media.lg ? componentWidth * 0.55 : componentWidth - 32;
-  const mediaComponentHeight = mediaComponentWidth / imageRatio;
+    setCurrentIndexFurnitureType(furnitureIndex);
+    setCurrentIndexRoomType(roomIndex);
+  }, [furnitureType, roomType]);
+
+  //furniture effect
+  useEffect(() => {
+    if (furnitureTimerRef.current) {
+      clearTimeout(furnitureTimerRef.current);
+    }
+
+    if (progressTimerRef.current) {
+      clearTimeout(progressTimerRef.current);
+    }
+
+    const start = Date.now();
+    progressTimerRef.current = setInterval(() => {
+      const elapsed = Date.now() - start;
+      const percent = Math.min((elapsed / STYLE_EFFECT_DURATION) * 100, 100);
+      setFurnitureProgress(percent);
+    }, 50);
+
+    furnitureTimerRef.current = setTimeout(() => {
+      let nextFurnitureIndex = currentIndexFurnitureType + 1;
+
+      if (nextFurnitureIndex >= FURNITURE_TYPES.length) {
+        nextFurnitureIndex = 0;
+      }
+
+      setFurnitureType(FURNITURE_TYPES[nextFurnitureIndex].name);
+      setFurnitureProgress(0);
+    }, STYLE_EFFECT_DURATION);
+
+    return () => {
+      furnitureTimerRef.current && clearTimeout(furnitureTimerRef.current);
+    };
+  }, [furnitureType, currentIndexFurnitureType]);
+
+  useEffect(() => {
+    if (roomTimerRef.current) {
+      clearTimeout(roomTimerRef.current);
+    }
+
+    if (roomProgressTimerRef.current) {
+      clearTimeout(roomProgressTimerRef.current);
+    }
+
+    const start = Date.now();
+    roomProgressTimerRef.current = setInterval(() => {
+      const elapsed = Date.now() - start;
+      const percent = Math.min((elapsed / ROOM_EFFECT_DURATION) * 100, 100);
+      setRoomProgress(percent);
+    }, 50);
+
+    roomTimerRef.current = setTimeout(() => {
+      let nextRoomIndex = currentIndexRoomType + 1;
+
+      if (nextRoomIndex >= ROOM_TYPES.length) {
+        nextRoomIndex = 0;
+      }
+
+      setRoomType(ROOM_TYPES[nextRoomIndex].name);
+      setRoomProgress(0);
+    }, ROOM_EFFECT_DURATION);
+
+    return () => {
+      roomTimerRef.current && clearTimeout(roomTimerRef.current);
+    };
+  }, [roomType, currentIndexRoomType]);
 
   return (
     <YStack
@@ -36,12 +141,13 @@ export const HeroMedia = ({ componentWidth }: { componentWidth: number }) => {
         alignSelf: 'center',
       }}
     >
-      <Image
-        source={{ uri: imageSource }}
-        width={mediaComponentWidth}
-        height={mediaComponentHeight}
-        rounded="$6"
-        aspectRatio={imageRatio}
+      <img
+        src={imageSource}
+        style={{
+          maxWidth: '100%',
+          maxHeight: '100%',
+          borderRadius: getTokens().radius['$6'].val,
+        }}
       />
       <RoomsContainer>
         <DropDownSelect
@@ -49,6 +155,7 @@ export const HeroMedia = ({ componentWidth }: { componentWidth: number }) => {
           label="Стил Обзавеждане"
           value={furnitureType}
           onValueChange={value => setFurnitureType(value as FurnitureType)}
+          progress={furnitureProgress}
         />
       </RoomsContainer>
 
@@ -58,31 +165,12 @@ export const HeroMedia = ({ componentWidth }: { componentWidth: number }) => {
           label="Вид Стая"
           value={roomType}
           onValueChange={value => setRoomType(value as RoomType)}
+          progress={roomProgress}
         />
       </FurnituresContainer>
     </YStack>
   );
 };
-
-// More strongly typed room and furniture types
-const ROOM_TYPES: { name: RoomType; id: string }[] = [
-  { name: 'Спалня', id: 'bedroom.jpg' },
-  { name: 'Трапезария', id: 'diningRoom.jpg' },
-  { name: 'Хол', id: 'livingRoom.jpg' },
-  { name: 'Открито', id: 'outdoor.jpg' },
-];
-
-const FURNITURE_TYPES: { name: FurnitureType; id: string }[] = [
-  { name: 'Оригинален', id: 'original' },
-  { name: 'Модерен', id: 'modern' },
-  { name: 'Луксозен', id: 'luxury' },
-  { name: 'Индустриален', id: 'industrial' },
-  { name: 'Фармхаус', id: 'farmhouse' },
-  { name: 'Мид-сенчъри', id: 'mid-century' },
-  { name: 'Скандинавски', id: 'scandinavian' },
-  { name: 'Коастъл', id: 'coastal' },
-  { name: 'Стандартен', id: 'standard' },
-];
 
 const furnitureTypeToFolder: Record<FurnitureType, string> = {
   Коастъл: 'coastal',
@@ -110,7 +198,6 @@ const getImageUrl = (furnitureType: FurnitureType, roomType: RoomType) => {
   const { data } = supabase.storage
     .from('home-page')
     .getPublicUrl(`heroMedia/${styleFolder}/${roomFile}`);
-  console.log('public url', data.publicUrl);
 
   return data.publicUrl;
 };

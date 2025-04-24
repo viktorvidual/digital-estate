@@ -12,12 +12,12 @@ export const ROOM_TYPES = [
 export const FURNITURE_STYLES = [
   { value: 'modern', label: 'Модерен' },
   { value: 'scandinavian', label: 'Скандинавски' },
-  { value: 'industrial', label: 'Индустриален' },
-  { value: 'midcentury', label: 'Средата на века' },
+  { value: 'midcentury', label: 'Модерно средновековие' },
   { value: 'luxury', label: 'Луксозен' },
   { value: 'farmhouse', label: 'Селска къща' },
   { value: 'coastal', label: 'Крайбрежен' },
   { value: 'standard', label: 'Стандартен' },
+  { value: 'industrial', label: 'Индустриален' },
 ];
 
 // ✅ Extract string literal types from keys
