@@ -8,17 +8,23 @@ export default function UploadImageScreen() {
   const media = useMedia();
   return (
     <MyYStack>
-      {!media.lg ? (
-        <>
-          <ImageInput />
-          <ProcessImageButtons />
-        </>
-      ) : (
-        <XStack gap="$3">
-          <ImageInput />
-          <ProcessImageButtons />
-        </XStack>
-      )}
+      <div
+        style={{
+          minHeight: '79vh',
+        }}
+      >
+        {!media.lg ? (
+          <>
+            <ImageInput />
+            <ProcessImageButtons />
+          </>
+        ) : (
+          <XStack gap="$3">
+            <ImageInput />
+            <ProcessImageButtons />
+          </XStack>
+        )}
+      </div>
     </MyYStack>
   );
 }

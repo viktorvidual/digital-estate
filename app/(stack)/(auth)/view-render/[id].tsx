@@ -172,7 +172,12 @@ export default function ViewRenderScreen() {
 
   return (
     <MyYStack>
-      <>
+      <div
+        style={{
+          minHeight: '79vh',
+        }}
+      >
+        {' '}
         {loading || !render ? (
           <View flex={1} items={'center'} justify={'center'} height={'40vh'}>
             <Spinner size="large" />
@@ -206,7 +211,7 @@ export default function ViewRenderScreen() {
             )}
           </>
         )}
-      </>
+      </div>
     </MyYStack>
   );
 }

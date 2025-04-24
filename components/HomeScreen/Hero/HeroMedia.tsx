@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Image, YStack, styled, View, useMedia, getTokens } from 'tamagui';
+import { Image, YStack, styled, View, getTokens } from 'tamagui';
 import { DropDownSelect } from '@/components/shared';
 import { supabase } from '@/lib/supabase';
 
@@ -40,6 +40,8 @@ type FurnitureType =
   | 'Оригинален'
   | 'Скандинавски'
   | 'Стандартен';
+
+const ASPECT_RATIO = 2976 / 1676;
 
 export const HeroMedia = () => {
   const roomTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -141,33 +143,42 @@ export const HeroMedia = () => {
         alignSelf: 'center',
       }}
     >
-      <img
-        src={imageSource}
+      <div
         style={{
-          maxWidth: '100%',
-          maxHeight: '100%',
-          borderRadius: getTokens().radius['$6'].val,
+          width: '100%',
+          aspectRatio: ASPECT_RATIO,
+          minHeight: "30%",
         }}
-      />
-      <RoomsContainer>
-        <DropDownSelect
-          items={FURNITURE_TYPES}
-          label="Стил Обзавеждане"
-          value={furnitureType}
-          onValueChange={value => setFurnitureType(value as FurnitureType)}
-          progress={furnitureProgress}
+      >
+        <img
+          src={imageSource}
+          style={{
+            aspectRatio: ASPECT_RATIO,
+            maxWidth: '100%',
+            maxHeight: '100%',
+            borderRadius: getTokens().radius['$6'].val,
+          }}
         />
-      </RoomsContainer>
+        <RoomsContainer>
+          <DropDownSelect
+            items={FURNITURE_TYPES}
+            label="Стил Обзавеждане"
+            value={furnitureType}
+            onValueChange={value => setFurnitureType(value as FurnitureType)}
+            progress={furnitureProgress}
+          />
+        </RoomsContainer>
 
-      <FurnituresContainer>
-        <DropDownSelect
-          items={ROOM_TYPES}
-          label="Вид Стая"
-          value={roomType}
-          onValueChange={value => setRoomType(value as RoomType)}
-          progress={roomProgress}
-        />
-      </FurnituresContainer>
+        <FurnituresContainer>
+          <DropDownSelect
+            items={ROOM_TYPES}
+            label="Вид Стая"
+            value={roomType}
+            onValueChange={value => setRoomType(value as RoomType)}
+            progress={roomProgress}
+          />
+        </FurnituresContainer>
+      </div>
     </YStack>
   );
 };
@@ -197,7 +208,12 @@ const getImageUrl = (furnitureType: FurnitureType, roomType: RoomType) => {
   const roomFile = roomTypeToFilename[roomType];
   const { data } = supabase.storage
     .from('home-page')
-    .getPublicUrl(`heroMedia/${styleFolder}/${roomFile}`);
+    .getPublicUrl(`heroMedia/${styleFolder}/${roomFile}`, {
+      transform: {
+        width: 1539,
+        height: 896,
+      },
+    });
 
   return data.publicUrl;
 };

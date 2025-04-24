@@ -73,66 +73,74 @@ export default function LoginScreen() {
 
   return (
     <MyYStack justify="center" items="center">
-      <MyText type="title" fw="bold">
-        Вход
-      </MyText>
-
-      <InputContainer>
-        <MyText fw="bold">Email</MyText>
-        <Input value={email} onChangeText={setEmail} placeholder="Въведете email" />
-        <>
-          {emailError && (
-            <MyText fw="bold" color="$red10">
-              {emailError}
-            </MyText>
-          )}
-        </>
-      </InputContainer>
-
-      <InputContainer>
-        <MyText fw="bold">Парола</MyText>
-        <Input
-          value={password}
-          onChangeText={setPassword}
-          placeholder="Изберете парола"
-          secureTextEntry
-        />
-        <>
-          {passwordError && (
-            <MyText fw="bold" color="$red10">
-              {passwordError}
-            </MyText>
-          )}
-        </>
-      </InputContainer>
-
-      <XStack width={'100%'} $lg={{ width: 500 }} alignItems="center" gap="$2">
-        <Link href="/forgot-password">
-          <MyText color="$blue10">Забравена парола?</MyText>
-        </Link>
-      </XStack>
-
-      <Button width={'100%'} $lg={{ width: 500 }} bg="$blue10" onPress={onConfirm}>
-        <MyText color="white" fw="bold">
-          Вход
-        </MyText>
-        {isLoading && <Spinner color="white" />}
-      </Button>
-
-      <>
-        {error && (
-          <MyText fw="bold" color="$red10">
-            {error}
+      <div
+        style={{
+          minHeight: '79vh',
+        }}
+      >
+        <YStack gap="$4">
+          <MyText type="title" fw="bold">
+            Вход
           </MyText>
-        )}
-      </>
 
-      <XStack>
-        <MyText>Нямаш профил? </MyText>
-        <Link href="/register">
-          <MyText color="$blue10">Регистрирай се</MyText>
-        </Link>
-      </XStack>
+          <InputContainer>
+            <MyText fw="bold">Email</MyText>
+            <Input value={email} onChangeText={setEmail} placeholder="Въведете email" />
+            <>
+              {emailError && (
+                <MyText fw="bold" color="$red10">
+                  {emailError}
+                </MyText>
+              )}
+            </>
+          </InputContainer>
+
+          <InputContainer>
+            <MyText fw="bold">Парола</MyText>
+            <Input
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Изберете парола"
+              secureTextEntry
+            />
+            <>
+              {passwordError && (
+                <MyText fw="bold" color="$red10">
+                  {passwordError}
+                </MyText>
+              )}
+            </>
+          </InputContainer>
+
+          <XStack width={'100%'} $lg={{ width: 500 }} alignItems="center" gap="$2">
+            <Link href="/forgot-password">
+              <MyText color="$blue10">Забравена парола?</MyText>
+            </Link>
+          </XStack>
+
+          <Button width={'100%'} $lg={{ width: 500 }} bg="$blue10" onPress={onConfirm}>
+            <MyText color="white" fw="bold">
+              Вход
+            </MyText>
+            {isLoading && <Spinner color="white" />}
+          </Button>
+
+          <>
+            {error && (
+              <MyText fw="bold" color="$red10">
+                {error}
+              </MyText>
+            )}
+          </>
+
+          <XStack>
+            <MyText>Нямаш профил? </MyText>
+            <Link href="/register">
+              <MyText color="$blue10">Регистрирай се</MyText>
+            </Link>
+          </XStack>
+        </YStack>
+      </div>
     </MyYStack>
   );
 }

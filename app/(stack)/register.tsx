@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Input, Button, YStack, XStack } from 'tamagui';
+import { Input, Button, YStack, XStack, getTokens } from 'tamagui';
 import { MyText, MyYStack } from '@/components/shared';
 import { Link } from 'expo-router';
 import { supabase } from '@/lib/supabase';
@@ -111,89 +111,97 @@ export default function RegistrationScreen() {
 
   return (
     <MyYStack justify="center" items="center">
-      <MyText type="title" fw="bold">
-        Регистрация
-      </MyText>
-
-      <YStack width={'100%'} gap="$2" $lg={{ width: 500 }}>
-        <MyText fw="bold">Email</MyText>
-
-        <Input value={email} onChangeText={setEmail} placeholder="Въведете email" />
-        <>
-          {emailError && (
-            <MyText fw="bold" color="$red10">
-              {emailError}
-            </MyText>
-          )}
-        </>
-      </YStack>
-
-      <YStack width={'100%'} gap="$2" $lg={{ width: 500 }}>
-        <MyText fw="bold">Парола</MyText>
-        <Input
-          value={password}
-          onChangeText={setPassword}
-          placeholder="Изберете парола"
-          secureTextEntry
-        />
-        <>
-          {passwordError && (
-            <MyText fw="bold" color="$red10">
-              {passwordError}
-            </MyText>
-          )}
-        </>
-      </YStack>
-
-      <XStack
-        width={'100%'}
-        $lg={{ width: 500 }}
-        alignItems="center"
-        gap="$2"
-        onPress={() => setConfirmConditions(!confirmConditions)}
-        cursor="pointer"
+      <div
+        style={{
+          minHeight: '79vh',
+        }}
       >
-        {confirmConditions ? (
-          <SquareCheckBig size={16} color="$green10" />
-        ) : (
-          <Square size={16} color="black" />
-        )}
-        <MyText size="$4">Прочетох и съм съгласен с Общите условия</MyText>
-      </XStack>
-
-      <YStack width={'100%'} $lg={{ width: 500 }} my="$1">
-        <MyText fw="bold" size="$2" mb="$1">
-          Парола трябва да съдържа:
-        </MyText>
-        <PasswordRequirementsComponent passwordRequirements={passwordRequirements} />
-      </YStack>
-
-      <>
-        {error && (
-          <MyText fw="bold" color="$red10">
-            {error}
+        <YStack gap="$4">
+          <MyText type="title" fw="bold">
+            Регистрация
           </MyText>
-        )}
-      </>
 
-      <Button
-        width={'100%'}
-        $lg={{ width: 500 }}
-        bg={confirmConditions ? '$blue10' : '$blue6'}
-        onPress={onConfirm}
-        disabled={!confirmConditions}
-      >
-        <MyText color="white" fw="bold">
-          Регистрирай се
-        </MyText>
-      </Button>
+          <YStack width={'100%'} gap="$2" $lg={{ width: 500 }}>
+            <MyText fw="bold">Email</MyText>
 
-      <XStack>
-        <MyText>Вече имаш профил? </MyText>
-        <Link href="/login">
-          <MyText color="$blue10">Вход</MyText>
-        </Link>
-      </XStack>
+            <Input value={email} onChangeText={setEmail} placeholder="Въведете email" />
+            <>
+              {emailError && (
+                <MyText fw="bold" color="$red10">
+                  {emailError}
+                </MyText>
+              )}
+            </>
+          </YStack>
+
+          <YStack width={'100%'} gap="$2" $lg={{ width: 500 }}>
+            <MyText fw="bold">Парола</MyText>
+            <Input
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Изберете парола"
+              secureTextEntry
+            />
+            <>
+              {passwordError && (
+                <MyText fw="bold" color="$red10">
+                  {passwordError}
+                </MyText>
+              )}
+            </>
+          </YStack>
+
+          <XStack
+            width={'100%'}
+            $lg={{ width: 500 }}
+            alignItems="center"
+            gap="$2"
+            onPress={() => setConfirmConditions(!confirmConditions)}
+            cursor="pointer"
+          >
+            {confirmConditions ? (
+              <SquareCheckBig size={16} color="$green10" />
+            ) : (
+              <Square size={16} color="black" />
+            )}
+            <MyText size="$4">Прочетох и съм съгласен с Общите условия</MyText>
+          </XStack>
+
+          <YStack width={'100%'} $lg={{ width: 500 }} my="$1">
+            <MyText fw="bold" size="$2" mb="$1">
+              Парола трябва да съдържа:
+            </MyText>
+            <PasswordRequirementsComponent passwordRequirements={passwordRequirements} />
+          </YStack>
+
+          <>
+            {error && (
+              <MyText fw="bold" color="$red10">
+                {error}
+              </MyText>
+            )}
+          </>
+
+          <Button
+            width={'100%'}
+            $lg={{ width: 500 }}
+            bg={confirmConditions ? '$blue10' : '$blue6'}
+            onPress={onConfirm}
+            disabled={!confirmConditions}
+          >
+            <MyText color="white" fw="bold">
+              Регистрирай се
+            </MyText>
+          </Button>
+
+          <XStack>
+            <MyText>Вече имаш профил? </MyText>
+            <Link href="/login">
+              <MyText color="$blue10">Вход</MyText>
+            </Link>
+          </XStack>
+        </YStack>
+      </div>
     </MyYStack>
   );
 }

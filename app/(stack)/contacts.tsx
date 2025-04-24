@@ -8,23 +8,29 @@ export default function Contacts() {
 
   return (
     <MyYStack>
-      <YStack flex={1} items={'center'} content="center" justify={'center'}>
-        <XStack width={'100%'} items={'center'} justifyContent="center" mt="$4">
-          <MyText type="title" fw="bold">
-            Контакти
-          </MyText>
-        </XStack>
-
-        {media.lg ? (
-          <XStack width={'100%'} items={'center'} justifyContent="center" mt="$4" gap={'$5'}>
-            <ContactButtons />
+      <div
+        style={{
+          minHeight: '79vh',
+        }}
+      >
+        <YStack flex={1} items={'center'} content="center" justify={'center'}>
+          <XStack width={'100%'} items={'center'} justifyContent="center" mt="$4">
+            <MyText type="title" fw="bold">
+              Контакти
+            </MyText>
           </XStack>
-        ) : (
-          <YStack width={'100%'} items={'center'} justifyContent="center" mt="$4" gap={'$5'}>
-            <ContactButtons />
-          </YStack>
-        )}
-      </YStack>
+
+          {media.lg ? (
+            <XStack width={'100%'} items={'center'} justifyContent="center" mt="$4" gap={'$5'}>
+              <ContactButtons />
+            </XStack>
+          ) : (
+            <YStack width={'100%'} items={'center'} justifyContent="center" mt="$4" gap={'$5'}>
+              <ContactButtons />
+            </YStack>
+          )}
+        </YStack>
+      </div>
     </MyYStack>
   );
 }

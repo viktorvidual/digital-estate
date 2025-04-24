@@ -3,7 +3,6 @@ import { TamaguiProvider, useMedia } from 'tamagui';
 import { ToastViewport } from '@tamagui/toast';
 import { tamaguiConfig } from '../tamagui.config';
 import { ToastProvider } from '@tamagui/toast';
-import { Header } from '@/components/Header/Header';
 import { SideBar } from '@/components/SideBar/SideBar';
 import { useFonts } from 'expo-font';
 import { Stack, useSegments, router } from 'expo-router';
@@ -109,13 +108,11 @@ export default function RootLayout() {
     <TamaguiProvider config={tamaguiConfig}>
       <ToastProvider>
         <SideBar />
-
         <Div100vh
           style={{
-            overflowY: 'scroll',
+            overflow: 'scroll',
           }}
         >
-          <Header />
           <Stack
             screenOptions={{
               headerShown: false,
@@ -125,6 +122,7 @@ export default function RootLayout() {
             <Stack.Screen name="+not-found" />
           </Stack>
         </Div100vh>
+
         <MyToast />
         <ToastViewport
           top={'5%'}

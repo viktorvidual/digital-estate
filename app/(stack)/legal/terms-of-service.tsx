@@ -1,14 +1,14 @@
 import React from 'react';
 import { MyText, MyYStack } from '@/components/shared';
-import { PrivacyPolicy } from '@/constants';
+import { TermsOfService } from '@/constants';
 
-export default function PrivacyPolicyScreen() {
+export default function TermsOfServiceScreen() {
   return (
     <MyYStack>
       <MyText type="title" fw="bold">
-        Terms of Service
+        Условия за ползване
       </MyText>
-      <MyText>{PrivacyPolicy}</MyText>
+      <MyText>{TermsOfService}</MyText>
     </MyYStack>
   );
 }
