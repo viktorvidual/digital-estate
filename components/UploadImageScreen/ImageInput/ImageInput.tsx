@@ -80,7 +80,6 @@ export const ImageInput = () => {
         return console.log('Furniter will not be removed, no need to upload temporary image');
       }
 
-      console.log('generate mask effect running');
       setUploading(true);
       const { error, data: temporaryUrl } = await saveTemporaryImage(
         customer?.userId,
@@ -113,8 +112,6 @@ export const ImageInput = () => {
   useEffect(() => {
     if (!maskId || !removeFurniture) return;
 
-    console.log('mask listener effect running');
-
     const channel = supabase
       .channel('mask-updates')
       .on(
@@ -129,7 +126,6 @@ export const ImageInput = () => {
           const newMaskUrl = payload.new.url;
           if (newMaskUrl) {
             setMaskedImageUrl(newMaskUrl);
-            console.log('Mask updated! New URL:', newMaskUrl);
             setUploading(false);
           }
         }
@@ -158,7 +154,7 @@ export const ImageInput = () => {
         width = img.width;
         height = img.width / ratio;
       }
-      
+
       setImageWidthClient(width);
       setImageHeightClient(height);
     };

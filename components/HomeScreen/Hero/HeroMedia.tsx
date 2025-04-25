@@ -147,7 +147,7 @@ export const HeroMedia = () => {
         style={{
           width: '100%',
           aspectRatio: ASPECT_RATIO,
-          minHeight: "30%",
+          minHeight: '30%',
         }}
       >
         <img

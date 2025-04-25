@@ -108,14 +108,12 @@ export default function ViewRenderScreen() {
   useEffect(() => {
     const hasPending = variations.some(v => v.status === 'queued' || v.status === 'rendering');
     setHasPending(hasPending);
-    console.log('Has pending:', hasPending);
   }, [variations]);
 
   useEffect(() => {
     if (hasPending) {
       // Ensure an active subscription if not already present
       if (!channelRef.current) {
-        console.log('Creating new subscription');
         channelRef.current = supabase
           .channel(`variations-${renderId}`)
           .on(
@@ -153,7 +151,6 @@ export default function ViewRenderScreen() {
           .subscribe();
       }
     } else if (!hasPending && channelRef.current) {
-      console.log('Unsubscribing from channel');
       supabase.removeChannel(channelRef.current);
       channelRef.current = null;
     }

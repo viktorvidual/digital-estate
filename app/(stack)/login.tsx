@@ -4,6 +4,7 @@ import { YStack, Input, Button, XStack, styled, Spinner } from 'tamagui';
 import { Link } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { useShowToast } from '@/hooks';
+import { router } from 'expo-router';
 
 export default function LoginScreen() {
   const showToast = useShowToast();
@@ -45,6 +46,7 @@ export default function LoginScreen() {
         title: 'Успешно влязохте',
         type: 'success',
       });
+      router.replace('/');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Грешка при вход';
       setError(errorMessage);

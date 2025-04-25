@@ -75,8 +75,6 @@ const Element = ({
 
   const width = media['2xl'] ? '32%' : media.md ? '31%' : '100%';
 
-  console.log('el media', el.media);
-
   return (
     <ElementContainer width={width}>
       <XStack gap="$2" items="center" justify="space-between" width="100%">

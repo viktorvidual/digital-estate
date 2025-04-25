@@ -77,8 +77,6 @@ export const ProcessImageButtons = () => {
     }
 
     const publicUrl = supabase.storage.from('images').getPublicUrl(filePath).data.publicUrl;
-    console.log('image uploaded successfully');
-
     // Call The Create Render Endpoint
     const { error: createRenderError, data } = await createRender({
       userId: customer?.userId,

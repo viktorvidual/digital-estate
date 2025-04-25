@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Check, ChevronDown, ChevronUp, ChevronsUpDown } from '@tamagui/lucide-icons';
 
 import type { FontSizeTokens, SelectProps } from 'tamagui';
@@ -56,8 +56,17 @@ function DropDownSelectItem(
   const { items, label, value, progress, onValueChange } = props;
 
   return (
-    <Select value={value} onValueChange={onValueChange} disablePreventBodyScroll {...props}>
-      <Select.Trigger iconAfter={ChevronsUpDown} rounded={'$6'} bg="white" zIndex={10}>
+    <Select onValueChange={onValueChange} disablePreventBodyScroll {...props}>
+      <Select.Trigger
+        iconAfter={ChevronsUpDown}
+        rounded={'$6'}
+        bg="white"
+        zIndex={10}
+        width={'130px'}
+        $lg={{
+          width: '160px',
+        }}
+      >
         {progress && (
           <YStack
             position="absolute"
@@ -71,7 +80,14 @@ function DropDownSelectItem(
           />
         )}
 
-        <Select.Value size="$5" placeholder="pLaceholder" zIndex={10}>
+        <Select.Value
+          size="$2"
+          $lg={{
+            size: '$4',
+          }}
+          placeholder="pLaceholder"
+          zIndex={10}
+        >
           {value}
         </Select.Value>
       </Select.Trigger>
@@ -135,7 +151,7 @@ function DropDownSelectItem(
                       key={item.name}
                       value={item.name}
                     >
-                      <Select.ItemText size="$5">{item.name}</Select.ItemText>
+                      <Select.ItemText size="$4">{item.name}</Select.ItemText>
                       <Select.ItemIndicator marginLeft="auto">
                         <Check size={16} />
                       </Select.ItemIndicator>
