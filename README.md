@@ -1,10 +1,9 @@
-Thanks! Here’s the updated and detailed `README.md` for your project, now including Stripe for payments and subscriptions:
-
----
-
-# 🏡 digital-estate.bg - Virtual Staging AI Wrapper (React Native for Web)
+# 🏡 DIGITAL-ESTATE.BG - Virtual Staging AI Wrapper (React Native for Web)
 
 A unified web and mobile wrapper around the **Virtual Staging AI** platform, built using **React Native for Web**. This project is designed to scale seamlessly from web to mobile, leveraging powerful tools like **Expo Router**, **Supabase**, **Tamagui UI**, **Zustand**, and **Stripe** for a fast, modern developer experience.
+
+🌍 Live Demo
+👉 Visit the current production version: www.digital-estate.bg
 
 ---
 
