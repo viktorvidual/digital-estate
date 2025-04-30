@@ -1,50 +1,82 @@
-# Welcome to your Expo app 👋
+Thanks! Here’s the updated and detailed `README.md` for your project, now including Stripe for payments and subscriptions:
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+---
 
-## Get started
+# 🏡 digital-estate.bg - Virtual Staging AI Wrapper (React Native for Web)
 
-1. Install dependencies
+A unified web and mobile wrapper around the **Virtual Staging AI** platform, built using **React Native for Web**. This project is designed to scale seamlessly from web to mobile, leveraging powerful tools like **Expo Router**, **Supabase**, **Tamagui UI**, **Zustand**, and **Stripe** for a fast, modern developer experience.
 
-   ```bash
-   npm install
-   ```
+---
 
-2. Start the app
+## 🚀 Project Goals
 
-   ```bash
-    npx expo start
-   ```
+- **Web-first development** with React Native for Web
+- **Future-ready mobile app** using the same codebase
+- **Serverless architecture** powered by Supabase Edge Functions
+- **Clean, maintainable styling** using Tamagui for hybrid UI
+- **Simplified state management** with Zustand
+- **Stripe-powered billing** with secure webhook handling
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🧱 Tech Stack
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+| Layer      | Tech                                                                | Purpose                                                                |
+| ---------- | ------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Frontend   | [React Native for Web](https://necolas.github.io/react-native-web/) | Cross-platform development using a single codebase                     |
+| Navigation | [Expo Router](https://expo.github.io/router/)                       | File-based routing for universal navigation                            |
+| Styling    | [Tamagui](https://tamagui.dev/)                                     | Responsive and performant styling across web and mobile                |
+| State      | [Zustand](https://github.com/pmndrs/zustand)                        | Lightweight global state management                                    |
+| Backend    | [Supabase](https://supabase.com/)                                   | Authentication, file storage, serverless functions, and cron jobs      |
+| Payments   | [Stripe](https://stripe.com/)                                       | Subscription billing with webhook handling via Supabase edge functions |
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## 📂 Project Structure
 
-```bash
-npm run reset-project
+```
+/
+├── app/                     # Expo Router pages
+├── components/              # Reusable UI components
+├── lib/                     # Utility functions (API clients, helpers)
+├── stores/                  # Zustand stores
+├── supabase/
+│   └── functions/           # Edge functions (auth, webhook, etc.)
+├── tamagui.config.ts        # Tamagui theme and tokens
+└── README.md
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## 🧠 Key Features
 
-To learn more about developing your project with Expo, look at the following resources:
+### 🌐 React Native for Web
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Start with a web app and expand effortlessly into mobile platforms using a unified codebase.
 
-## Join the community
+### 🧭 Expo Router
 
-Join our community of developers creating universal apps.
+Simple, scalable navigation powered by file-based routing.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### 🎨 Tamagui UI
+
+Style once, run everywhere. Highly optimized hybrid UI system for web and native apps.
+
+### ⚡ Supabase Functions
+
+Server-side logic and API endpoints are managed with edge functions inside `supabase/functions`. Includes:
+
+- Auth handling
+- Image uploads and processing
+- Stripe webhooks for subscription events
+- Cron jobs (e.g., cleanup, reminders)
+
+### 💳 Stripe Integration
+
+Full subscription lifecycle (checkout, billing, cancellations, webhooks) is powered by Stripe, with events processed securely using Supabase edge functions.
+
+### 🧠 Zustand
+
+A minimal, scalable state management library with no boilerplate or context nesting.
+
+---
