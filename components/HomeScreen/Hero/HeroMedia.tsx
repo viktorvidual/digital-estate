@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Image, YStack, styled, View, getTokens } from 'tamagui';
 import { DropDownSelect } from '@/components/shared';
 import { supabase } from '@/lib/supabase';
+import { LazyLoadComponent } from 'react-lazy-load-image-component';
 
 //The types below are used to define the options for the dropdowns
 const ROOM_TYPES: { name: RoomType; id: string }[] = [
@@ -141,44 +142,41 @@ export const HeroMedia = () => {
     <YStack
       $lg={{
         alignSelf: 'center',
+        width: '100%',
       }}
+      height={'100%'}
+      width={'100%'}
+      aspectRatio={ASPECT_RATIO}
     >
-      <div
+      <img
+        src={imageSource}
         style={{
-          width: '100%',
           aspectRatio: ASPECT_RATIO,
-          minHeight: '30%',
+          maxWidth: '100%',
+          maxHeight: '100%',
+          borderRadius: getTokens().radius['$6'].val,
         }}
-      >
-        <img
-          src={imageSource}
-          style={{
-            aspectRatio: ASPECT_RATIO,
-            maxWidth: '100%',
-            maxHeight: '100%',
-            borderRadius: getTokens().radius['$6'].val,
-          }}
+        loading="lazy"
+      />
+      <RoomsContainer>
+        <DropDownSelect
+          items={FURNITURE_TYPES}
+          label="Стил Обзавеждане"
+          value={furnitureType}
+          onValueChange={value => setFurnitureType(value as FurnitureType)}
+          progress={furnitureProgress}
         />
-        <RoomsContainer>
-          <DropDownSelect
-            items={FURNITURE_TYPES}
-            label="Стил Обзавеждане"
-            value={furnitureType}
-            onValueChange={value => setFurnitureType(value as FurnitureType)}
-            progress={furnitureProgress}
-          />
-        </RoomsContainer>
+      </RoomsContainer>
 
-        <FurnituresContainer>
-          <DropDownSelect
-            items={ROOM_TYPES}
-            label="Вид Стая"
-            value={roomType}
-            onValueChange={value => setRoomType(value as RoomType)}
-            progress={roomProgress}
-          />
-        </FurnituresContainer>
-      </div>
+      <FurnituresContainer>
+        <DropDownSelect
+          items={ROOM_TYPES}
+          label="Вид Стая"
+          value={roomType}
+          onValueChange={value => setRoomType(value as RoomType)}
+          progress={roomProgress}
+        />
+      </FurnituresContainer>
     </YStack>
   );
 };

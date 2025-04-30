@@ -13,8 +13,11 @@ import { useAuthStore, useUploadImageStore } from '@/stores';
 import { supabase } from '@/lib/supabase';
 import { MaskOverlayCanvas } from '../MaskOverlayCanvas/MaskOverlayCanvas';
 import { useMedia } from 'tamagui';
+import { useShowToast } from '@/hooks';
 
 export const ImageInput = () => {
+  const showToast = useShowToast();
+
   const imageRef = useRef<HTMLImageElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const media = useMedia();
@@ -47,9 +50,19 @@ export const ImageInput = () => {
 
     const file = event.target.files?.[0];
 
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
-    if (file.name === selectedFile?.name) return;
+    if (file.name.includes('HEIC') || file.name.includes('HEIF')) {
+      inputRef.current!.value = '';
+
+      return showToast({
+        title: 'HEIC/HEIF файлове не се поддържат.',
+        description: 'Моля, качете JPEG или PNG файл.',
+        type: 'error',
+      });
+    }
 
     setSelectedFile(file);
 

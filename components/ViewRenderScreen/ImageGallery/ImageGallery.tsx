@@ -74,7 +74,7 @@ const renderItem = (item: Image, mediaLg: boolean, imageRatio: number | null) =>
           <MyText>Моля, опитайте отново.</MyText>
         </View>
       ) : item.variation.status === 'queued' ? (
-        <YStack width="100%" alignItems="center" justifyContent="center" gap={'$4'}>
+        <YStack width="100%" height={"100%"} alignItems="center" justifyContent="center" gap={'$4'}>
           <img
             src={item.renderUrl}
             alt=""

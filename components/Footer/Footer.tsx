@@ -19,7 +19,7 @@ export const Footer = () => {
           </View>
           <XStack gap="$4" ml={'$5'}>
             {ROUTES.map(route => (
-              <Link href={route.href}>
+              <Link href={route.href} key={route.name}>
                 <MyText color="white">{route.name}</MyText>
               </Link>
             ))}
@@ -42,7 +42,7 @@ export const Footer = () => {
 
           <YStack>
             {ROUTES.map(route => (
-              <Link href={route.href}>
+              <Link href={route.href} key={route.name}>
                 <MyText color="white">{route.name}</MyText>
               </Link>
             ))}
