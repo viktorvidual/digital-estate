@@ -162,7 +162,7 @@ type CreateVariationsParams = {
   style: string;
   roomType: string;
   addVirtuallyStagedWatermark: boolean;
-  baseVariationId: string;
+  baseVariationId?: string;
   renderId: string;
   userId: string;
 };

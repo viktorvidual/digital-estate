@@ -17,7 +17,7 @@ type requestBody = {
   style: string;
   roomType: string;
   addVirtuallyStagedWatermark: boolean;
-  baseVariationId: string;
+  baseVariationId?: string;
   renderId: string;
   userId: string;
 };
@@ -84,8 +84,7 @@ Deno.serve(async (req: Request) => {
       return new Response('Invalid JSON', { status: 400, headers: corsHeaders });
     }
 
-    const { userId, renderId, style, roomType, addVirtuallyStagedWatermark, baseVariationId } =
-      body;
+    const { userId, renderId, style, roomType, addVirtuallyStagedWatermark } = body;
 
     if (!userId) {
       return new Response('userId is required', { status: 400, headers: corsHeaders });
@@ -97,9 +96,6 @@ Deno.serve(async (req: Request) => {
 
     if (!roomType) {
       throw new Error('roomType is required');
-    }
-    if (!baseVariationId) {
-      throw new Error('baseVariationId is required');
     }
 
     if (!renderId) {
@@ -122,7 +118,6 @@ Deno.serve(async (req: Request) => {
 
   try {
     //check how many variations are generated so far
-
     const renderResponse = await fetch(
       `https://api.virtualstagingai.app/v2/renders/${body.renderId}`,
       {
@@ -133,7 +128,6 @@ Deno.serve(async (req: Request) => {
       }
     );
 
-    
     const renderData: RenderDetailsResponse = await renderResponse.json();
     console.log('Variation Renders', renderData.variations.total_count);
     const variationsToCreate =
@@ -144,6 +138,9 @@ Deno.serve(async (req: Request) => {
     if (variationsToCreate <= 0) {
       throw new Error('You have reached the maximum number of variations');
     }
+
+    //Create the variations
+    const hasBaseVariationId = !!body.baseVariationId;
 
     const response = await fetch(
       `https://api.virtualstagingai.app/v2/renders/${body.renderId}/variations`,
@@ -160,8 +157,13 @@ Deno.serve(async (req: Request) => {
             add_furniture: {
               style: body.style,
               room_type: body.roomType,
-              base_variation_id: body.baseVariationId,
+              ...(hasBaseVariationId && { base_variation_id: body.baseVariationId }),
             },
+            ...(!hasBaseVariationId && {
+              remove_furniture: {
+                mode: 'on',
+              },
+            }),
           },
           variation_count: variationsToCreate,
           wait_for_completion: false,

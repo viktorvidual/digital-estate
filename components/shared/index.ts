@@ -6,3 +6,4 @@ export * from './Accordion/Accordion';
 export * from './AlertButton/AlertButton';
 export * from './NewSelect/NewSelect';
 export * from './Checkbox/Checkbox';
+export * from './MinHeightWrapper/MinHeightWrapper';

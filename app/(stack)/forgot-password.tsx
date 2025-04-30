@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MyText, MyYStack } from '@/components/shared';
+import { MinHeightWrapper, MyText, MyYStack } from '@/components/shared';
 import { YStack, Input, Button, styled, Spinner } from 'tamagui';
 import { supabase } from '@/lib/supabase';
 import { useShowToast } from '@/hooks';
@@ -16,7 +16,7 @@ export default function ForgotPasswordScreen() {
     }
 
     setIsLoading(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: 'https://digital-estate.bg/create-new-password',
     });
 
@@ -41,30 +41,34 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <MyYStack justify="center" items="center">
-      <MyText type="title" fw="bold">
-        Забравена Парола
-      </MyText>
+    <MyYStack>
+      <MinHeightWrapper>
+        <YStack justify="center" items="center" gap="$4">
+          <MyText type="title" fw="bold">
+            Забравена Парола
+          </MyText>
 
-      <MyText>Ще получите инструкции като да създадете нова парола.</MyText>
-      <InputContainer>
-        <MyText fw="bold">Email</MyText>
-        <Input value={email} onChangeText={setEmail} placeholder="Въведете email" />
-        <>
-          {error && (
-            <MyText fw="bold" color="$red10">
-              {error}
+          <MyText>Ще получите инструкции като да създадете нова парола.</MyText>
+          <InputContainer>
+            <MyText fw="bold">Email</MyText>
+            <Input value={email} onChangeText={setEmail} placeholder="Въведете email" />
+            <>
+              {error && (
+                <MyText fw="bold" color="$red10">
+                  {error}
+                </MyText>
+              )}
+            </>
+          </InputContainer>
+
+          <Button width={'100%'} $lg={{ width: 500 }} bg="$blue10" onPress={onConfirm}>
+            <MyText color="white" fw="bold">
+              Изпрати
             </MyText>
-          )}
-        </>
-      </InputContainer>
-
-      <Button width={'100%'} $lg={{ width: 500 }} bg="$blue10" onPress={onConfirm}>
-        <MyText color="white" fw="bold">
-          Изпрати
-        </MyText>
-        {isLoading && <Spinner color="white" />}
-      </Button>
+            {isLoading && <Spinner color="white" />}
+          </Button>
+        </YStack>
+      </MinHeightWrapper>
     </MyYStack>
   );
 }

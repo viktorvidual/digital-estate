@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MyText, MyYStack } from '@/components/shared';
+import { MyText, MyYStack, MinHeightWrapper } from '@/components/shared';
 import { YStack, Input, Button, XStack, styled, Spinner } from 'tamagui';
 import { Link } from 'expo-router';
 import { supabase } from '@/lib/supabase';
@@ -75,11 +75,7 @@ export default function LoginScreen() {
 
   return (
     <MyYStack justify="center" items="center">
-      <div
-        style={{
-          minHeight: '79vh',
-        }}
-      >
+      <MinHeightWrapper>
         <YStack gap="$4">
           <MyText type="title" fw="bold">
             Вход
@@ -142,7 +138,7 @@ export default function LoginScreen() {
             </Link>
           </XStack>
         </YStack>
-      </div>
+      </MinHeightWrapper>
     </MyYStack>
   );
 }

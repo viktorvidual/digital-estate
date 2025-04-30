@@ -35,6 +35,8 @@ const PRICES = {
   },
 };
 
+console.log('Stripe Webhook function started');
+
 Deno.serve(async (request: Request) => {
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 

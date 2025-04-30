@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { styled, YStack, Input, Button, Spinner } from 'tamagui';
-import { MyYStack, MyText } from '@/components/shared';
+import { MyYStack, MyText, MinHeightWrapper } from '@/components/shared';
 import { useShowToast } from '@/hooks';
 import { supabase } from '@/lib/supabase';
 import { router } from 'expo-router';
@@ -107,57 +107,61 @@ export default function CreateNewPasswordScreen() {
   }, [password]);
 
   return (
-    <MyYStack justify="center" items="center">
-      <MyText type="title" fw="bold">
-        Създайте нова парола
-      </MyText>
-      <InputContainer>
-        <MyText fw="bold">Парола</MyText>
-        <Input
-          value={password}
-          onChangeText={setPassword}
-          placeholder="Въведете нова парола"
-          secureTextEntry
-        />
-        <>
-          {passwordError && (
-            <MyText fw="bold" color="$red10">
-              {passwordError}
+    <MyYStack>
+      <MinHeightWrapper>
+        <YStack justify="center" items="center" gap="$4">
+          <MyText type="title" fw="bold">
+            Създайте нова парола
+          </MyText>
+          <InputContainer>
+            <MyText fw="bold">Парола</MyText>
+            <Input
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Въведете нова парола"
+              secureTextEntry
+            />
+            <>
+              {passwordError && (
+                <MyText fw="bold" color="$red10">
+                  {passwordError}
+                </MyText>
+              )}
+            </>
+          </InputContainer>
+
+          <InputContainer>
+            <MyText fw="bold">Потвърдете Парола</MyText>
+            <Input
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              placeholder="Потвърдете нова парола"
+              secureTextEntry
+            />
+            <>
+              {confirmPasswordError && (
+                <MyText fw="bold" color="$red10">
+                  {confirmPasswordError}
+                </MyText>
+              )}
+            </>
+          </InputContainer>
+
+          <YStack width={'100%'} $lg={{ width: 500 }} my="$1">
+            <MyText fw="bold" size="$2" mb="$1">
+              Парола трябва да съдържа:
             </MyText>
-          )}
-        </>
-      </InputContainer>
+            <PasswordRequirementsComponent passwordRequirements={passwordRequirements} />
+          </YStack>
 
-      <InputContainer>
-        <MyText fw="bold">Потвърдете Парола</MyText>
-        <Input
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          placeholder="Потвърдете нова парола"
-          secureTextEntry
-        />
-        <>
-          {confirmPasswordError && (
-            <MyText fw="bold" color="$red10">
-              {confirmPasswordError}
+          <Button width={'100%'} $lg={{ width: 500 }} bg="$blue10" onPress={onConfirm}>
+            <MyText color="white" fw="bold">
+              Смени Парола
             </MyText>
-          )}
-        </>
-      </InputContainer>
-
-      <YStack width={'100%'} $lg={{ width: 500 }} my="$1">
-        <MyText fw="bold" size="$2" mb="$1">
-          Парола трябва да съдържа:
-        </MyText>
-        <PasswordRequirementsComponent passwordRequirements={passwordRequirements} />
-      </YStack>
-
-      <Button width={'100%'} $lg={{ width: 500 }} bg="$blue10" onPress={onConfirm}>
-        <MyText color="white" fw="bold">
-          Смени Парола
-        </MyText>
-        {isLoading && <Spinner color="white" />}
-      </Button>
+            {isLoading && <Spinner color="white" />}
+          </Button>
+        </YStack>
+      </MinHeightWrapper>
     </MyYStack>
   );
 }

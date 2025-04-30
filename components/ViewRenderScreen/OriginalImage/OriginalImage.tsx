@@ -32,6 +32,8 @@ export const OriginalImage = () => {
     setIsLoading(true);
     let baseVariationId;
 
+    console.log('variations', variations);
+
     for (const variation of variations) {
       if (variation.baseVariationId) {
         baseVariationId = variation.baseVariationId;
@@ -39,7 +41,7 @@ export const OriginalImage = () => {
       }
     }
 
-    if (!customer || !render || !baseVariationId) {
+    if (!customer || !render) {
       setIsLoading(false);
       return showToast({
         title: 'Грешка',
@@ -51,7 +53,7 @@ export const OriginalImage = () => {
       style: furnitureStyle.value,
       roomType: roomType.value,
       addVirtuallyStagedWatermark,
-      baseVariationId: baseVariationId,
+      ...(baseVariationId && { baseVariationId: baseVariationId }),
       renderId: render?.renderId,
       userId: customer?.userId,
     };
@@ -78,8 +80,7 @@ export const OriginalImage = () => {
       });
     }
 
-
-    if(!data) {
+    if (!data) {
       setIsLoading(false);
       return showToast({
         title: 'Грешка',
