@@ -75,7 +75,7 @@ const CATEGORIES_PROD = [
       },
       yearly: {
         amount: 25,
-        priceId: 'price_1RGapHG2OXqPrYSSrQ9kAmE0',
+        priceId: 'price_1RR9A6G2OXqPrYSSJeZlDT88'
       },
     },
   },
@@ -90,7 +90,7 @@ const CATEGORIES_PROD = [
       },
       yearly: {
         amount: 29,
-        priceId: 'price_1RGaxCG2OXqPrYSS2XjsxCBV',
+        priceId: 'price_1RR9BOG2OXqPrYSSO2SVi4f4',
       },
     },
   },
@@ -105,7 +105,7 @@ const CATEGORIES_PROD = [
       },
       yearly: {
         amount: 61,
-        priceId: 'price_1RGb3kG2OXqPrYSSwFrFCOcY',
+        priceId: 'price_1RR9CuG2OXqPrYSS87BpSPn9',
       },
     },
   },
