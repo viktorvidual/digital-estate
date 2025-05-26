@@ -50,7 +50,9 @@ export const getRenderVariations = async (
 
   const { error, data } = await supabase
     .from('variations')
-    .select('variation_id, render_id, url, file_path, status, room_type, style, base_variation_id')
+    .select(
+      'id, variation_id, render_id, url, file_path, status, room_type, style, base_variation_id'
+    )
     .eq('render_id', renderId)
     .order('created_at', { ascending: false });
 
@@ -76,8 +78,11 @@ export const getRenderVariations = async (
     };
   });
 
+  const variantions = camelize(variationsWithThumbnails);
+  console.log('variantions', variantions);
+
   return {
-    data: camelize(variationsWithThumbnails),
+    data: variantions,
   };
 };
 

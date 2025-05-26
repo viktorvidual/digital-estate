@@ -193,7 +193,10 @@ Deno.serve(async (req: Request) => {
       style: body.style,
     }));
 
-    const { error: variationsError } = await supabase.from('variations').insert(variations);
+    const { data: insertedVariations, error: variationsError } = await supabase
+      .from('variations')
+      .insert(variations)
+      .select('*');
 
     if (variationsError) {
       console.error('Error saving variations to DB: ', variationsError);
@@ -203,7 +206,8 @@ Deno.serve(async (req: Request) => {
 
     return new Response(
       JSON.stringify(
-        renderResponseBody.variations.map(variation => ({
+        insertedVariations.map(variation => ({
+          id: variation.id,
           render_id: body.renderId,
           variation_id: variation.id,
           status: variation.status,

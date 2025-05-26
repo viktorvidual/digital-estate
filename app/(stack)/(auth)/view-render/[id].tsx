@@ -84,6 +84,7 @@ export default function ViewRenderScreen() {
         const furnitureStyle = FURNITURE_STYLES.find(
           el => el.value === variationsData[0].style
         ) as { value: string; label: string };
+
         setRoomType(roomType);
         setFurnitureStyle(furnitureStyle);
         setVariations(variationsData);
@@ -113,6 +114,8 @@ export default function ViewRenderScreen() {
   useEffect(() => {
     if (hasPending) {
       // Ensure an active subscription if not already present
+      console.log('Setting up subscription for renderId:', renderId);
+
       if (!channelRef.current) {
         channelRef.current = supabase
           .channel(`variations-${renderId}`)
@@ -125,6 +128,8 @@ export default function ViewRenderScreen() {
               filter: `render_id=eq.${renderId}`,
             },
             payload => {
+              console.log('Received update for renderId:', renderId);
+              
               const updated = payload.new;
               console.log('Updated variation:', updated);
 
@@ -136,6 +141,7 @@ export default function ViewRenderScreen() {
               });
 
               updateVariation({
+                id: updated.id as string,
                 status: updated.status as VariationStatus,
                 url: updated.url as string,
                 filePath: updated.file_path as string,

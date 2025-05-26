@@ -1,6 +1,7 @@
 export type VariationStatus = 'done' | 'queued' | 'rendering' | 'error';
 
 export type Variation = {
+  id: string;
   renderId: string;
   variationId: string;
   status: VariationStatus;

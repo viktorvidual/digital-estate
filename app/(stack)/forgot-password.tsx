@@ -20,6 +20,9 @@ export default function ForgotPasswordScreen() {
       redirectTo: 'https://digital-estate.bg/create-new-password',
     });
 
+    console.log("reset password data", data);
+    
+
     if (error) {
       setIsLoading(false);
       setError(error.message);

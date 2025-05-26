@@ -38,7 +38,7 @@ export const useViewRenderStore = create<ViewRenderStore>((set, get) => ({
   updateVariation: variantion => {
     set(state => ({
       variations: state.variations.map(el =>
-        el.variationId === variantion.variationId ? variantion : { ...el }
+        el.id === variantion.id ? variantion : { ...el }
       ),
     }));
   },

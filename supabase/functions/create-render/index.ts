@@ -215,6 +215,7 @@ Deno.serve(async (req: Request) => {
           url: body.imageUrl, // The public URL of the file
           dimensions: body.dimensions, // If you want to store image dimensions
           file_path: body.filePath,
+          base_variation_status: 'pending',
         },
       ])
       .select()
@@ -235,9 +236,25 @@ Deno.serve(async (req: Request) => {
       base_variation_id: variation.base_variation_id,
       room_type: body.roomType,
       style: body.style,
+      is_base: false,
     }));
 
-    const { error: variationsError } = await supabase.from('variations').insert(variations);
+    //add placeholder variation for the base variation
+    variations.push({
+      render_id: variations[0].render_id,
+      variation_id: '',
+      status: 'queued',
+      user_id: body.userId,
+      base_variation_id: '',
+      room_type: body.roomType,
+      style: body.style,
+      is_base: true,
+    });
+
+    const { data: insertedVariations, error: variationsError } = await supabase
+      .from('variations')
+      .insert(variations)
+      .select('*');
 
     if (variationsError) {
       console.error('Error saving variations to DB: ', variationsError);
@@ -262,16 +279,18 @@ Deno.serve(async (req: Request) => {
       JSON.stringify({
         render_id: renderResponseBody.id,
         remaining_credits: user.image_count - 1,
-        variations: renderResponseBody.variations.items.map(variation => ({
-          render_id: renderResponseBody.id,
-          variation_id: variation.id,
-          status: variation.status,
-          base_variation_id: variation.base_variation_id,
-          file_path: '',
-          thumbnail: '',
-          url: '',
-          room_type: body.roomType,
-          style: body.style,
+        variations: insertedVariations.map(v => ({
+          id: v.id, // <-- newly created DB id
+          render_id: v.render_id,
+          variation_id: v.variation_id,
+          status: v.status,
+          base_variation_id: v.base_variation_id,
+          file_path: v.file_path || '', // or populate accordingly if exists
+          thumbnail: v.thumbnail || '',
+          url: v.url || '',
+          room_type: v.room_type,
+          style: v.style,
+          is_base: v.is_base,
         })),
       }),
       {
