@@ -147,8 +147,9 @@ Deno.serve(async (req: Request) => {
         (base_variation_status === 'pending' || base_variation_status === 'error') &&
         event.base_variation_id
       ) {
-        //fetch base variation details for virtual stagin
         try {
+          const baseFilePath = `${userId}/${event.base_variation_id}`;
+
           //set status to uploading
           const { error: updateRenderError } = await supabaseAdmin
             .from('renders')
@@ -161,29 +162,6 @@ Deno.serve(async (req: Request) => {
             );
           }
 
-          console.log('Render status updated to uploading for render_id:', event.render_id);
-
-          const baseVariationRes = await fetch(
-            `https://api.virtualstagingai.app/v2/renders/${event.render_id}/variations/${event.base_variation_id}`,
-            {
-              method: 'GET',
-              headers: {
-                Authorization: `Api-Key ${VIRTUAL_STAGING_API_KEY}`,
-                Accept: '*/*',
-              },
-            }
-          );
-
-          if (!baseVariationRes.ok) {
-            throw new Error('Failed to fetch base variation details');
-          }
-
-          const baseVariationData: VariationResponse = await baseVariationRes.json();
-          console.log('Base variation details fetched:', baseVariationData);
-
-          //upload base image to supabase
-          const baseFilePath = `${userId}/${baseVariationData.id}`;
-
           //check if base has been already uploaded
           const { error: checkError } = await supabaseAdmin.storage
             .from('images')
@@ -191,7 +169,29 @@ Deno.serve(async (req: Request) => {
 
           const fileAlreadyExists = checkError === null;
 
+          console.log('Render status updated to uploading for render_id:', event.render_id);
+
+          //upload base image to supabase if it doesn't already exist
           if (!fileAlreadyExists) {
+            //fetch base variation details for virtual stagin
+            const baseVariationRes = await fetch(
+              `https://api.virtualstagingai.app/v2/renders/${event.render_id}/variations/${event.base_variation_id}`,
+              {
+                method: 'GET',
+                headers: {
+                  Authorization: `Api-Key ${VIRTUAL_STAGING_API_KEY}`,
+                  Accept: '*/*',
+                },
+              }
+            );
+
+            if (!baseVariationRes.ok) {
+              throw new Error('Failed to fetch base variation details');
+            }
+
+            const baseVariationData: VariationResponse = await baseVariationRes.json();
+            console.log('Base variation details fetched:', baseVariationData);
+
             const { error: baseImageError } = await supabaseAdmin.storage
               .from('images')
               .upload(
@@ -216,7 +216,7 @@ Deno.serve(async (req: Request) => {
               status: 'done',
               url: basePublicUrl,
               file_path: baseFilePath,
-              base_variation_id: baseVariationData.id,
+              base_variation_id: event.base_variation_id,
             })
             .eq('render_id', event.render_id)
             .eq('is_base', true);
@@ -227,11 +227,11 @@ Deno.serve(async (req: Request) => {
             );
           }
 
-          //set status to done or error
+          //set render.base_variation_status to done or error
           const { error: updateRenderStatusError } = await supabaseAdmin
             .from('renders')
             .update({ base_variation_status: 'done' })
-            .eq('render_id', event.render_id)
+            .eq('render_id', event.render_id);
 
           if (updateRenderStatusError) {
             throw new Error(
@@ -240,7 +240,6 @@ Deno.serve(async (req: Request) => {
           }
           console.log('Render status updated to done for render_id:', event.render_id);
         } catch (error) {
-
           //set status to error
           const { error: updateRenderError } = await supabaseAdmin
             .from('renders')
@@ -262,7 +261,7 @@ Deno.serve(async (req: Request) => {
         );
       }
 
-      //uploadImage to supabase storage
+      //uploadImage complete variation to supabase storage
       const { error: imageError } = await supabaseAdmin.storage
         .from('images')
         .upload(filePath, await fetch(event.result.url).then(res => res.blob()));
