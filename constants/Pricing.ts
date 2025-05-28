@@ -1,69 +1,6 @@
 import { IsProduction } from '.';
 
-const CATEGORIES_DEV = [
-  {
-    name: 'Базов',
-    subtitle: 'За да опитате',
-    photos: 6,
-    price: {
-      monthly: {
-        amount: 39,
-        priceId: 'price_1R9PddG2OXqPrYSSIWElH4sb',
-      },
-      yearly: {
-        amount: 25,
-        priceId: 'price_1R9PeJG2OXqPrYSSNDZi3uzG',
-      },
-    },
-  },
-  {
-    name: 'Стандарт',
-    subtitle: 'За агенти',
-    photos: 20,
-    price: {
-      monthly: {
-        amount: 55,
-        priceId: 'price_1R9PiOG2OXqPrYSSelXUORjC',
-      },
-      yearly: {
-        amount: 29,
-        priceId: 'price_1R9PjfG2OXqPrYSSovzapmXb',
-      },
-    },
-  },
-  {
-    name: 'Про',
-    subtitle: 'За топ брокери',
-    photos: 60,
-    price: {
-      monthly: {
-        amount: 123,
-        priceId: 'price_1R9PkBG2OXqPrYSSKTyORJjy',
-      },
-      yearly: {
-        amount: 61,
-        priceId: 'price_1R9PkeG2OXqPrYSShcpB8H4T',
-      },
-    },
-  },
-  {
-    name: 'Бизнес',
-    subtitle: 'За екипи, брокерски къщи и фотографи',
-    photos: '60',
-    price: {
-      monthly: {
-        amount: 0,
-        priceId: '',
-      },
-      yearly: {
-        amount: 0,
-        priceId: '',
-      },
-    },
-  },
-];
-
-const CATEGORIES_PROD = [
+export const CATEGORIES = [
   {
     name: 'Базов',
     subtitle: 'За да опитате',
@@ -75,7 +12,7 @@ const CATEGORIES_PROD = [
       },
       yearly: {
         amount: 25,
-        priceId: 'price_1RR9A6G2OXqPrYSSJeZlDT88'
+        priceId: 'price_1RR9A6G2OXqPrYSSJeZlDT88',
       },
     },
   },
@@ -125,5 +62,3 @@ const CATEGORIES_PROD = [
     },
   },
 ];
-
-export const CATEGORIES = CATEGORIES_PROD;

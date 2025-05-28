@@ -54,6 +54,7 @@ Deno.serve(async (req: Request) => {
   const { imageUrl, maskId, userId } = body;
 
   try {
+    //The method below uploads the image to Virtual Staging AI and returns a mask ID, the response from the API is handled by a webhook
     fetch('https://api.virtualstagingai.app/v2/analyze', {
       method: 'POST',
       headers: {

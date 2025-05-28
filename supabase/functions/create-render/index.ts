@@ -240,16 +240,18 @@ Deno.serve(async (req: Request) => {
     }));
 
     //add placeholder variation for the base variation
-    variations.push({
-      render_id: variations[0].render_id,
-      variation_id: '',
-      status: 'queued',
-      user_id: body.userId,
-      base_variation_id: '',
-      room_type: body.roomType,
-      style: body.style,
-      is_base: true,
-    });
+    if (body.removeFurniture) {
+      variations.unshift({
+        render_id: variations[0].render_id,
+        variation_id: '',
+        status: 'queued',
+        user_id: body.userId,
+        base_variation_id: '',
+        room_type: body.roomType,
+        style: body.style,
+        is_base: true,
+      });
+    }
 
     const { data: insertedVariations, error: variationsError } = await supabase
       .from('variations')

@@ -6,6 +6,7 @@ import { useMedia } from 'tamagui';
 
 export default function UploadImageScreen() {
   const media = useMedia();
+  
   return (
     <MyYStack>
       <div

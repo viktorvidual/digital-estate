@@ -8,7 +8,6 @@ import {
   ImageLoadingContainer,
   DeleteImageContainer,
 } from './ImageInput.styles';
-import { saveTemporaryImage, generateMask } from '@/services';
 import { useAuthStore, useUploadImageStore } from '@/stores';
 import { supabase } from '@/lib/supabase';
 import { MaskOverlayCanvas } from '../MaskOverlayCanvas/MaskOverlayCanvas';
@@ -21,6 +20,7 @@ export const ImageInput = () => {
   const imageRef = useRef<HTMLImageElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const media = useMedia();
+  let maskListenderChannel: ReturnType<typeof supabase.channel> | null = null;
 
   const { customer } = useAuthStore();
 
@@ -30,127 +30,35 @@ export const ImageInput = () => {
   const {
     imageDimensions,
     localImage,
-    setLocalImage,
     maskedImageUrl,
     maskId,
-    setMaskId,
     removeFurniture,
-    setMaskedImageUrl,
     uploading,
     selectedFile,
-    setSelectedFile,
-    setImageDimensions,
-    setUploading,
+    pickImage,
+    deleteImage,
+    uploadImageForMask,
+    subscribeToMaskUpdates,
+    unsubscribeFromMaskUpdates,
   } = useUploadImageStore();
 
-  const pickImage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!customer) {
-      return console.error('No customer. Please log out and log in again');
-    }
-
-    const file = event.target.files?.[0];
-
-    if (!file) {
-      return;
-    }
-
-    if (file.name.includes('HEIC') || file.name.includes('HEIF')) {
-      inputRef.current!.value = '';
-
-      return showToast({
-        title: 'HEIC/HEIF файлове не се поддържат.',
-        description: 'Моля, качете JPEG или PNG файл.',
-        type: 'error',
-      });
-    }
-
-    setSelectedFile(file);
-
-    const previewUrl = URL.createObjectURL(file);
-    setLocalImage(previewUrl);
-
-    const img = new window.Image();
-    img.src = previewUrl;
-    img.onload = () => {
-      setImageDimensions({ width: img.width, height: img.height });
-    };
-  };
-
-  const onDelete = () => {
-    setLocalImage('');
-    setSelectedFile(null);
-    setMaskedImageUrl('');
-    setMaskId('');
-  };
-
+  /* The effect below generates masksID and creates mask row in the DB. After the mask is ready, a webhook hanlder updates the DB
+  and the effect below listens for that update */
   useEffect(() => {
-    (async () => {
-      if (!customer) {
-        return console.error('No customer object does not exist.');
-      } else if (!selectedFile) {
-        return console.log('No selected file');
-      } else if (!removeFurniture) {
-        return console.log('Furniter will not be removed, no need to upload temporary image');
-      }
-
-      setUploading(true);
-      const { error, data: temporaryUrl } = await saveTemporaryImage(
-        customer?.userId,
-        selectedFile
-      );
-
-      if (error || !temporaryUrl) {
-        setUploading(false);
-        return console.error(error || 'No temporary url response');
-      }
-
-      //Get The Masked Image
-      const { error: generateMaskError, data: maskId } = await generateMask(
-        temporaryUrl,
-        customer.userId
-      );
-
-      if (generateMaskError || !maskId) {
-        setUploading(false);
-        return console.error(
-          'generate mask error in image input',
-          generateMaskError || 'no mask id return'
-        );
-      }
-
-      setMaskId(maskId);
-    })();
+    uploadImageForMask(customer, showToast);
   }, [removeFurniture, selectedFile, customer?.userId]);
 
   useEffect(() => {
-    if (!maskId || !removeFurniture) return;
-
-    const channel = supabase
-      .channel('mask-updates')
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'masks',
-          filter: `mask_id=eq.${maskId}`,
-        },
-        payload => {
-          const newMaskUrl = payload.new.url;
-          if (newMaskUrl) {
-            setMaskedImageUrl(newMaskUrl);
-            setUploading(false);
-          }
-        }
-      )
-      .subscribe();
+    //This effect triggers when maskID is avaible, right after the effect above has generated a maskID,
+    // Here we listen to DB, when that mask table is updated with a URL of the mask image
+    subscribeToMaskUpdates(maskListenderChannel);
 
     return () => {
-      setUploading(false);
-      supabase.removeChannel(channel);
+      unsubscribeFromMaskUpdates(maskListenderChannel);
     };
   }, [maskId, removeFurniture]);
 
+  // Effect to handle image loading and resizing
   useEffect(() => {
     if (!localImage || !imageRef.current) return;
 
@@ -205,7 +113,7 @@ export const ImageInput = () => {
             ref={inputRef}
             type="file"
             accept="image/*"
-            onChange={pickImage}
+            onChange={event => pickImage(customer, event, showToast, inputRef)}
             style={{
               display: 'none',
             }}
@@ -221,7 +129,7 @@ export const ImageInput = () => {
               <MyText color="white">Обработка...</MyText>
             </ImageLoadingContainer>
           )}
-          <DeleteImageContainer onPress={onDelete}>
+          <DeleteImageContainer onPress={deleteImage}>
             <Trash color="white" size={20} />
           </DeleteImageContainer>
           <img

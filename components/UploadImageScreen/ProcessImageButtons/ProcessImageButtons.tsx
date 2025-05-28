@@ -51,9 +51,7 @@ export const ProcessImageButtons = () => {
       return console.error('No file selected');
     }
 
-    if (!customer) {
-      return console.error('No customer. Please log out and log in again');
-    }
+    if (!customer) return console.error('No customer. Please log out and log in again');
 
     if (customer.imageCount === 0) {
       return showToast({
@@ -119,6 +117,9 @@ export const ProcessImageButtons = () => {
 
     addRenderToPhotosList(render);
 
+    //The reset below, empties the view render store, so that the new render can be set
+    //To do, consider combining the two functions below, because technically eveyrtime you set a new render
+    //you reset the view render store
     resetViewRender();
     setRenderToViewRender(render);
 

@@ -5,6 +5,27 @@ import { getSupabaseError } from '@/utils/handleSupabaseFunctionError';
 import camelize from 'camelize';
 import { v7 as uuidv7 } from 'uuid';
 
+type CreateVariationsParams = {
+  style: string;
+  roomType: string;
+  addVirtuallyStagedWatermark: boolean;
+  baseVariationId?: string;
+  renderId: string;
+  userId: string;
+};
+
+export type CreateRenderParams = {
+  userId: string;
+  dimensions: string;
+  filePath: string;
+  addFurniture: boolean;
+  removeFurniture: boolean;
+  addVirtuallyStagedWatermark: boolean;
+  style?: string;
+  roomType: string;
+  imageUrl: string;
+};
+
 export const getAllRenders = async (
   userId: string
 ): Promise<{
@@ -106,6 +127,7 @@ export const saveTemporaryImage = async (userId: string, file: File) => {
   return { data: publicUrl };
 };
 
+//Genrate a mask uploads image to VIRTUAL STAGIN, and saves the mask ID to the database
 export const generateMask = async (imageUrl: string, userId: string) => {
   const maskId = uuidv7();
 
@@ -125,18 +147,6 @@ export const generateMask = async (imageUrl: string, userId: string) => {
   return {
     data: maskId,
   };
-};
-
-export type CreateRenderParams = {
-  userId: string;
-  dimensions: string;
-  filePath: string;
-  addFurniture: boolean;
-  removeFurniture: boolean;
-  addVirtuallyStagedWatermark: boolean;
-  style?: string;
-  roomType: string;
-  imageUrl: string;
 };
 
 export const createRender = async (
@@ -161,15 +171,6 @@ export const createRender = async (
   }
 
   return { data: camelize(data) };
-};
-
-type CreateVariationsParams = {
-  style: string;
-  roomType: string;
-  addVirtuallyStagedWatermark: boolean;
-  baseVariationId?: string;
-  renderId: string;
-  userId: string;
 };
 
 export const createVariations = async (
