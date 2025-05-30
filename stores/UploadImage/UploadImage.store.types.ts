@@ -16,6 +16,9 @@ export const initialState = {
   furnitureStyle: FURNITURE_STYLES[0],
   maskId: '',
   addVirtuallyStagedWatermark: false,
+  editMask: false,
+  paintMode: false,
+  eraseMode: false,
 };
 
 type UploadImageState = typeof initialState;
@@ -34,6 +37,9 @@ type UploadImageActions = {
   setRoomType: (roomType: RoomType) => void;
   setFurnitureStyle: (style: FurnitureStyle) => void;
   reset: () => void;
+  toggleEditMask: () => void;
+  togglePaintMode: () => void;
+  toggleEraseMode: () => void;
 
   pickImage: (
     customer: Customer | null,

@@ -1,17 +1,16 @@
 import React, { useRef, useEffect } from 'react';
-import { Spinner, YStack, View } from 'tamagui';
+import { Spinner, YStack, View, useMedia } from 'tamagui';
 import { MyText } from '@/components/shared';
-import { Trash } from '@tamagui/lucide-icons';
-import { Upload } from '@tamagui/lucide-icons';
+import { Upload, Trash, Pencil, Eraser, Paintbrush } from '@tamagui/lucide-icons';
 import {
   ImageInputContainer,
   ImageLoadingContainer,
-  DeleteImageContainer,
+  IconContainer,
+  EditMaskButtonsContainer,
 } from './ImageInput.styles';
 import { useAuthStore, useUploadImageStore } from '@/stores';
 import { supabase } from '@/lib/supabase';
 import { MaskOverlayCanvas } from '../MaskOverlayCanvas/MaskOverlayCanvas';
-import { useMedia } from 'tamagui';
 import { useShowToast } from '@/hooks';
 
 export const ImageInput = () => {
@@ -35,11 +34,17 @@ export const ImageInput = () => {
     removeFurniture,
     uploading,
     selectedFile,
+    editMask,
+    paintMode,
+    eraseMode,
     pickImage,
     deleteImage,
     uploadImageForMask,
     subscribeToMaskUpdates,
     unsubscribeFromMaskUpdates,
+    toggleEditMask,
+    togglePaintMode,
+    toggleEraseMode,
   } = useUploadImageStore();
 
   /* The effect below generates masksID and creates mask row in the DB. After the mask is ready, a webhook hanlder updates the DB
@@ -129,9 +134,32 @@ export const ImageInput = () => {
               <MyText color="white">Обработка...</MyText>
             </ImageLoadingContainer>
           )}
-          <DeleteImageContainer onPress={deleteImage}>
+          <IconContainer positionLeft={true} onPress={deleteImage}>
             <Trash color="white" size={20} />
-          </DeleteImageContainer>
+          </IconContainer>
+
+          {maskedImageUrl && removeFurniture && !editMask && (
+            <IconContainer positionRight={true} onPress={toggleEditMask}>
+              <Pencil color="white" size={20} />
+            </IconContainer>
+          )}
+
+          {editMask && (
+            <EditMaskButtonsContainer>
+              <View onPress={toggleEditMask}>
+                <MyText cursor="pointer" color="white" fw="bold">
+                  Готово
+                </MyText>
+              </View>
+              <View cursor="pointer">
+                <Paintbrush color={paintMode ? '$blue10' : 'white'} size={25} onPress={togglePaintMode} />
+              </View>
+              <View cursor="pointer">
+                <Eraser color={eraseMode ? '$blue10' : 'white'} size={25} onPress={toggleEraseMode} />
+              </View>
+            </EditMaskButtonsContainer>
+          )}
+
           <img
             ref={imageRef}
             src={localImage}
@@ -144,11 +172,14 @@ export const ImageInput = () => {
               objectFit: 'contain',
             }}
           />
+
           {maskedImageUrl && removeFurniture && (
             <MaskOverlayCanvas
               maskUrl={maskedImageUrl}
               width={imageWidthClient}
               height={imageHeightClient}
+              paintMode={paintMode}
+              eraseMode={eraseMode}
             />
           )}
         </YStack>

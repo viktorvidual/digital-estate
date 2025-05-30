@@ -19,6 +19,34 @@ export const useUploadImageStore = create<UploadImageStore>((set, get) => ({
   setRoomType: roomType => set({ roomType }),
   setFurnitureStyle: furnitureStyle => set({ furnitureStyle }),
   reset: () => set(initialState),
+  toggleEditMask: () => {
+    const { editMask } = get();
+
+    if (!editMask) {
+      return set({
+        editMask: true,
+        paintMode: true,
+      });
+    }
+
+    set({ editMask: !editMask, paintMode: false, eraseMode: false });
+  },
+
+  togglePaintMode: () => {
+    const { paintMode, eraseMode } = get();
+    if (eraseMode) {
+      set({ eraseMode: false });
+    }
+    set({ paintMode: !paintMode });
+  },
+
+  toggleEraseMode: () => {
+    const { paintMode, eraseMode } = get();
+    if (paintMode) {
+      set({ paintMode: false });
+    }
+    set({ eraseMode: !eraseMode });
+  },
 
   pickImage: (customer, event, showToast, inputRef) => {
     const { setSelectedFile, setLocalImage, setImageDimensions } = get();
