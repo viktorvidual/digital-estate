@@ -7,9 +7,17 @@ type Props = {
   height: number;
   paintMode?: boolean;
   eraseMode?: boolean;
+  setMaskIsInProgress: (maskIsInProgress: boolean) => void;
 };
 
-export const MaskOverlayCanvas = ({ maskUrl, width, height, paintMode, eraseMode }: Props) => {
+export const MaskOverlayCanvas = ({
+  maskUrl,
+  width,
+  height,
+  paintMode,
+  eraseMode,
+  setMaskIsInProgress,
+}: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const maskDataRef = useRef<ImageData | null>(null);
 
@@ -78,10 +86,13 @@ export const MaskOverlayCanvas = ({ maskUrl, width, height, paintMode, eraseMode
     if (eraseMode) {
       isErasing.current = true;
       eraseAt(e);
+      setMaskIsInProgress(true);
     }
+
     if (paintMode) {
       isPainting.current = true;
       paintAt(e);
+      setMaskIsInProgress(true);
     }
   };
 
@@ -95,9 +106,11 @@ export const MaskOverlayCanvas = ({ maskUrl, width, height, paintMode, eraseMode
   const handleMouseUp = () => {
     if (eraseMode) {
       isErasing.current = false;
+      setMaskIsInProgress(false);
     }
     if (paintMode) {
       isPainting.current = false;
+      setMaskIsInProgress(false);
     }
   };
 

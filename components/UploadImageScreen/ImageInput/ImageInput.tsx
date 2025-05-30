@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Spinner, YStack, View, useMedia } from 'tamagui';
 import { MyText } from '@/components/shared';
 import { Upload, Trash, Pencil, Eraser, Paintbrush } from '@tamagui/lucide-icons';
@@ -23,8 +23,10 @@ export const ImageInput = () => {
 
   const { customer } = useAuthStore();
 
-  const [imageWidthClient, setImageWidthClient] = React.useState(0);
-  const [imageHeightClient, setImageHeightClient] = React.useState(0);
+  const [imageWidthClient, setImageWidthClient] = useState(0);
+  const [imageHeightClient, setImageHeightClient] = useState(0);
+
+  const [maskIsInProgress, setMaskIsInProgress] = useState(false);
 
   const {
     imageDimensions,
@@ -134,17 +136,18 @@ export const ImageInput = () => {
               <MyText color="white">Обработка...</MyText>
             </ImageLoadingContainer>
           )}
-          <IconContainer positionLeft={true} onPress={deleteImage}>
-            <Trash color="white" size={20} />
-          </IconContainer>
-
+          {!maskIsInProgress && (
+            <IconContainer positionLeft={true} onPress={deleteImage}>
+              <Trash color="white" size={20} />
+            </IconContainer>
+          )}
           {maskedImageUrl && removeFurniture && !editMask && (
             <IconContainer positionRight={true} onPress={toggleEditMask}>
               <Pencil color="white" size={20} />
             </IconContainer>
           )}
 
-          {editMask && (
+          {editMask && !maskIsInProgress && (
             <EditMaskButtonsContainer>
               <View onPress={toggleEditMask}>
                 <MyText cursor="pointer" color="white" fw="bold">
@@ -152,10 +155,18 @@ export const ImageInput = () => {
                 </MyText>
               </View>
               <View cursor="pointer">
-                <Paintbrush color={paintMode ? '$blue10' : 'white'} size={25} onPress={togglePaintMode} />
+                <Paintbrush
+                  color={paintMode ? '$blue10' : 'white'}
+                  size={25}
+                  onPress={togglePaintMode}
+                />
               </View>
               <View cursor="pointer">
-                <Eraser color={eraseMode ? '$blue10' : 'white'} size={25} onPress={toggleEraseMode} />
+                <Eraser
+                  color={eraseMode ? '$blue10' : 'white'}
+                  size={25}
+                  onPress={toggleEraseMode}
+                />
               </View>
             </EditMaskButtonsContainer>
           )}
@@ -180,6 +191,7 @@ export const ImageInput = () => {
               height={imageHeightClient}
               paintMode={paintMode}
               eraseMode={eraseMode}
+              setMaskIsInProgress={setMaskIsInProgress}
             />
           )}
         </YStack>
