@@ -30,6 +30,7 @@ export const PhotosList = () => {
 
     (async () => {
       if (alreadyFetched) {
+        console.log('Already fetched renders, skipping fetch');
         return;
       }
 
@@ -64,8 +65,7 @@ export const PhotosList = () => {
 
   return (
     <>
-      {isLoading && <Spinner />}
-      {!isLoading && (
+      {!isLoading ? (
         <>
           {renders.length === 0 ? (
             <MyText>Все още нямате качени снимки</MyText>
@@ -95,6 +95,8 @@ export const PhotosList = () => {
             </>
           )}
         </>
+      ) : (
+        <Spinner />
       )}
     </>
   );
