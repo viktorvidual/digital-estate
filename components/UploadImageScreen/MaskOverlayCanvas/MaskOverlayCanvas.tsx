@@ -194,6 +194,7 @@ export const MaskOverlayCanvas = ({ width, height }: Props) => {
         alignSelf: 'center',
         cursor: paintMode || eraseMode ? 'pointer' : 'default',
         borderRadius: 10,
+        overflow: 'hidden',
       }}
     >
       <canvas
