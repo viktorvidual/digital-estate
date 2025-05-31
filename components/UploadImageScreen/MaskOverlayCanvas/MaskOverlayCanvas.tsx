@@ -5,12 +5,16 @@ import { View } from 'tamagui';
 type Props = {
   width: number;
   height: number;
-  setMaskIsInProgress: (maskIsInProgress: boolean) => void;
 };
-
-export const MaskOverlayCanvas = ({ width, height, setMaskIsInProgress }: Props) => {
-  const { canvasRef, paintMode, eraseMode, maskedImageUrl, setMaskHasBeenEdited } =
-    useUploadImageStore();
+export const MaskOverlayCanvas = ({ width, height }: Props) => {
+  const {
+    canvasRef,
+    paintMode,
+    eraseMode,
+    maskedImageUrl,
+    setMaskHasBeenEdited,
+    setMaskEditInProgress,
+  } = useUploadImageStore();
 
   const maskDataRef = useRef<ImageData | null>(null);
 
@@ -72,54 +76,72 @@ export const MaskOverlayCanvas = ({ width, height, setMaskIsInProgress }: Props)
     };
   }, [maskedImageUrl, width, height]);
 
-  //Eraser Methods
-  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (e.button !== 0) return; // Only respond to left-click
+  const getCanvasCoords = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
+  ) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+
+    if ('touches' in e) {
+      const touch = e.touches[0];
+      return {
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top,
+      };
+    }
+
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    };
+  };
+
+  const handlePointerDown = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
+  ) => {
+    e.preventDefault();
+    const { x, y } = getCanvasCoords(e);
 
     if (eraseMode || paintMode) {
       setMaskHasBeenEdited(true);
-      setMaskIsInProgress(true);
+      setMaskEditInProgress(true);
     }
 
     if (eraseMode) {
       isErasing.current = true;
-      eraseAt(e);
+      eraseAt(x, y);
     }
 
     if (paintMode) {
       isPainting.current = true;
-      paintAt(e);
+      paintAt(x, y);
     }
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!(e.buttons & 1)) return; // Only proceed if left button is held
+  const handlePointerMove = (
+    e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>
+  ) => {
+    e.preventDefault();
+    const { x, y } = getCanvasCoords(e);
 
-    if (isErasing.current) eraseAt(e);
-    if (isPainting.current) paintAt(e);
+    if (isErasing.current) eraseAt(x, y);
+    if (isPainting.current) paintAt(x, y);
   };
 
-  const handleMouseUp = () => {
-    if (eraseMode) {
-      isErasing.current = false;
-      setMaskIsInProgress(false);
-    }
-    if (paintMode) {
-      isPainting.current = false;
-      setMaskIsInProgress(false);
-    }
+  const handlePointerUp = () => {
+    isErasing.current = false;
+    isPainting.current = false;
+    setMaskEditInProgress(false);
   };
 
-  const eraseAt = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const paintAt = (x: number, y: number) => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
-    if (!canvas || !ctx || !maskDataRef.current) return;
+    const maskData = maskDataRef.current;
+    if (!canvas || !ctx || !maskData) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const radius = 10; // Eraser size
+    const radius = 10;
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const { data, width } = imageData;
 
@@ -128,31 +150,25 @@ export const MaskOverlayCanvas = ({ width, height, setMaskIsInProgress }: Props)
         const px = Math.floor(x + dx);
         const py = Math.floor(y + dy);
         if (px < 0 || py < 0 || px >= canvas.width || py >= canvas.height) continue;
-
-        const distance = dx * dx + dy * dy;
-        if (distance > radius * radius) continue;
+        if (dx * dx + dy * dy > radius * radius) continue;
 
         const i = (py * width + px) * 4;
-        data[i + 3] = 0; // Clear alpha (make pixel fully transparent)
+        data[i] = 254;
+        data[i + 1] = 0;
+        data[i + 2] = 50;
+        data[i + 3] = 120;
       }
     }
 
     ctx.putImageData(imageData, 0, 0);
   };
 
-  const paintAt = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    console.log('painting');
-
+  const eraseAt = (x: number, y: number) => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
-    const maskData = maskDataRef.current;
-    if (!canvas || !ctx || !maskData) return;
+    if (!canvas || !ctx || !maskDataRef.current) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-
-    const radius = 10; // Brush size
+    const radius = 10;
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const { data, width } = imageData;
 
@@ -161,16 +177,10 @@ export const MaskOverlayCanvas = ({ width, height, setMaskIsInProgress }: Props)
         const px = Math.floor(x + dx);
         const py = Math.floor(y + dy);
         if (px < 0 || py < 0 || px >= canvas.width || py >= canvas.height) continue;
-
-        const distance = dx * dx + dy * dy;
-        if (distance > radius * radius) continue;
+        if (dx * dx + dy * dy > radius * radius) continue;
 
         const i = (py * width + px) * 4;
-
-        data[i] = 254; // R
-        data[i + 1] = 0; // G
-        data[i + 2] = 50; // B
-        data[i + 3] = 120; // Alpha (semi-transparent)
+        data[i + 3] = 0;
       }
     }
 
@@ -183,16 +193,21 @@ export const MaskOverlayCanvas = ({ width, height, setMaskIsInProgress }: Props)
         position: 'absolute',
         alignSelf: 'center',
         cursor: paintMode || eraseMode ? 'pointer' : 'default',
+        borderRadius: 10,
       }}
     >
       <canvas
         ref={canvasRef}
         width={width}
         height={height}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        onMouseDown={handlePointerDown}
+        onMouseMove={handlePointerMove}
+        onMouseUp={handlePointerUp}
+        onMouseLeave={handlePointerUp}
+        onTouchStart={handlePointerDown}
+        onTouchMove={handlePointerMove}
+        onTouchEnd={handlePointerUp}
+        onTouchCancel={handlePointerUp}
       />
     </View>
   );

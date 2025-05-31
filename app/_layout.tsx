@@ -9,7 +9,7 @@ import { Stack, useSegments, router } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import 'react-native-reanimated';
 import { supabase } from '@/lib/supabase';
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useUploadImageStore } from '@/stores';
 import '@tamagui/core/reset.css';
 import { getCustomer } from '@/services';
 import { MyToast } from '@/components/shared/Toast/Toast';
@@ -26,6 +26,7 @@ export default function RootLayout() {
   const segments = useSegments();
   const [sessionLoading, setSessionLoading] = useState(false);
   const { setSession, session } = useAuthStore();
+  const { maskEditInProgress } = useUploadImageStore();
 
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -110,7 +111,7 @@ export default function RootLayout() {
         <SideBar />
         <Div100vh
           style={{
-            overflow: 'scroll',
+            overflow: maskEditInProgress ? "" : 'scroll',
           }}
         >
           <Stack

@@ -7,7 +7,6 @@ import { useLocalSearchParams } from 'expo-router';
 import { useShowToast } from '@/hooks';
 
 export default function MyPhotos() {
-  const showToast = useShowToast();
   const media = useMedia();
   const { customer } = useAuthStore();
 

@@ -19,6 +19,7 @@ export const useUploadImageStore = create<UploadImageStore>((set, get) => ({
   setMaskId: maskId => set({ maskId }),
   setRoomType: roomType => set({ roomType }),
   setFurnitureStyle: furnitureStyle => set({ furnitureStyle }),
+  setMaskEditInProgress: maskEditInProgress => set({ maskEditInProgress }),
   reset: () => set(initialState),
 
   pickImage: (customer, event, showToast, inputRef) => {

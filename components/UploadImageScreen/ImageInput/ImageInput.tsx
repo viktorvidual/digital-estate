@@ -26,7 +26,7 @@ export const ImageInput = () => {
   const [imageWidthClient, setImageWidthClient] = useState(0);
   const [imageHeightClient, setImageHeightClient] = useState(0);
 
-  const [maskIsInProgress, setMaskIsInProgress] = useState(false);
+
 
   const {
     imageDimensions,
@@ -39,6 +39,7 @@ export const ImageInput = () => {
     editMask,
     paintMode,
     eraseMode,
+    maskEditInProgress,
     pickImage,
     deleteImage,
     uploadImageForMask,
@@ -136,7 +137,7 @@ export const ImageInput = () => {
               <MyText color="white">Обработка...</MyText>
             </ImageLoadingContainer>
           )}
-          {!maskIsInProgress && (
+          {!maskEditInProgress && (
             <IconContainer positionLeft={true} onPress={deleteImage}>
               <Trash color="white" size={20} />
             </IconContainer>
@@ -147,7 +148,7 @@ export const ImageInput = () => {
             </IconContainer>
           )}
 
-          {editMask && !maskIsInProgress && (
+          {editMask && !maskEditInProgress && (
             <EditMaskButtonsContainer>
               <View onPress={toggleEditMask}>
                 <MyText cursor="pointer" color="white" fw="bold">
@@ -188,7 +189,6 @@ export const ImageInput = () => {
             <MaskOverlayCanvas
               width={imageWidthClient}
               height={imageHeightClient}
-              setMaskIsInProgress={setMaskIsInProgress}
             />
           )}
         </YStack>

@@ -22,6 +22,7 @@ export const initialState = {
   editMask: false,
   paintMode: false,
   eraseMode: false,
+  maskEditInProgress: false,
   maskHasBeenEdited: false,
 };
 
@@ -41,9 +42,11 @@ type UploadImageActions = {
   setRoomType: (roomType: RoomType) => void;
   setFurnitureStyle: (style: FurnitureStyle) => void;
   reset: () => void;
+
   toggleEditMask: () => void;
   togglePaintMode: () => void;
   toggleEraseMode: () => void;
+  setMaskEditInProgress: (maskEditInProgress: boolean) => void;
   setMaskHasBeenEdited: (maskHasBeenEdited: boolean) => void;
 
   pickImage: (

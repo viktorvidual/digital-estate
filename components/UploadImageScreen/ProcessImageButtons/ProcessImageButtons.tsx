@@ -188,7 +188,7 @@ export const ProcessImageButtons = () => {
       >
         <XStack gap="$2" items={'center'}>
           <CircleMinus size={20} color="$blue11" />
-          <MyText>Премахни Мебелите</MyText>
+          <MyText fw="medium">Премахни Мебелите</MyText>
         </XStack>
         {removeFurniture ? <CheckSquare2 size={20} color="$blue11" /> : <Square size={20} />}
       </ImageSettingsButton>
@@ -208,7 +208,7 @@ export const ProcessImageButtons = () => {
       >
         <XStack gap="$2" items={'center'}>
           <CirclePlus size={20} gap="$2" color="$blue11" />
-          <MyText>Добави Обзавеждане</MyText>
+          <MyText fw="medium">Добави Обзавеждане</MyText>
         </XStack>
         {addNewFurniture ? <CheckSquare2 size={20} color="$blue11" /> : <Square size={20} />}
       </ImageSettingsButton>

@@ -12,7 +12,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 type requestBody = {
   userId: string;
-  dimensions: string;
+  dimensions: string;4
   filePath: string;
   addFurniture: boolean;
   removeFurniture: boolean;
