@@ -33,6 +33,8 @@ export const ProcessImageButtons = () => {
     imageDimensions,
     roomType,
     furnitureStyle,
+    maskHasBeenEdited,
+    uploadNewMask: generateBinaryMask,
     setAddVirtuallyStagedWatermark,
     setAddNewFurniture,
     setRemoveFurniure,
@@ -62,7 +64,24 @@ export const ProcessImageButtons = () => {
       });
     }
 
+    console.log('mask has been edited:', maskHasBeenEdited);
+
+    //If mask has been edited, we need to upload the edited mask image
     setUploading(true);
+
+    let newMaskUrl = null;
+
+    if (maskHasBeenEdited) {
+      const { error: newMaskError, data: newMaskResult } = await generateBinaryMask(
+        customer.userId
+      );
+
+      if (newMaskError) {
+        console.error('Error uploading new mask:', newMaskError);
+      }
+
+      newMaskUrl = newMaskResult;
+    }
 
     const imageUid = uuidv7();
     const filePath = `${customer?.userId}/${imageUid}`;
@@ -86,6 +105,7 @@ export const ProcessImageButtons = () => {
       style: furnitureStyle.value,
       roomType: roomType.value,
       imageUrl: publicUrl,
+      ...(newMaskUrl ? { maskUrl: newMaskUrl } : {}),
     });
 
     if (createRenderError || !data) {
@@ -116,16 +136,14 @@ export const ProcessImageButtons = () => {
     };
 
     addRenderToPhotosList(render);
-
     //The reset below, empties the view render store, so that the new render can be set
     //To do, consider combining the two functions below, because technically eveyrtime you set a new render
     //you reset the view render store
     resetViewRender();
     setRenderToViewRender(render);
-
     setImageCount(data.remainingCredits);
-
     setUploading(false);
+
     showToast({
       title: 'Генерирането започна',
       description: 'Новите вариации ще бъдат готови след около 20 секунди. Моля, изчакайте.',
@@ -135,14 +153,15 @@ export const ProcessImageButtons = () => {
 
     router.replace(`/view-render/${render.renderId}`);
   }, [
+    setUploading,
     selectedFile,
     customer,
-    setUploading,
     imageDimensions,
     addNewFurniture,
     removeFurniture,
     furnitureStyle,
     roomType,
+    maskHasBeenEdited,
   ]);
 
   return (

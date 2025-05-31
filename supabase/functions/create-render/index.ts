@@ -20,6 +20,7 @@ type requestBody = {
   style?: string;
   roomType: string;
   imageUrl: string;
+  maskUrl?: string; // Optional, if you want to include a mask URL
 };
 
 type RenderResponse = {
@@ -175,6 +176,7 @@ Deno.serve(async (req: Request) => {
         }),
         remove_furniture: {
           mode: body.removeFurniture ? 'on' : 'off',
+          ...(body.maskUrl && { mask_url: body.maskUrl }), // Optional mask URL
         },
       },
       image_url: body.imageUrl,

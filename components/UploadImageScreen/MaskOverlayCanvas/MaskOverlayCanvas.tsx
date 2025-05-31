@@ -1,24 +1,17 @@
+import { useUploadImageStore } from '@/stores';
 import React, { useEffect, useRef } from 'react';
 import { View } from 'tamagui';
 
 type Props = {
-  maskUrl: string;
   width: number;
   height: number;
-  paintMode?: boolean;
-  eraseMode?: boolean;
   setMaskIsInProgress: (maskIsInProgress: boolean) => void;
 };
 
-export const MaskOverlayCanvas = ({
-  maskUrl,
-  width,
-  height,
-  paintMode,
-  eraseMode,
-  setMaskIsInProgress,
-}: Props) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+export const MaskOverlayCanvas = ({ width, height, setMaskIsInProgress }: Props) => {
+  const { canvasRef, paintMode, eraseMode, maskedImageUrl, setMaskHasBeenEdited } =
+    useUploadImageStore();
+
   const maskDataRef = useRef<ImageData | null>(null);
 
   const isErasing = useRef(false);
@@ -72,27 +65,30 @@ export const MaskOverlayCanvas = ({
       ctx.putImageData(overlay, 0, 0);
     };
 
-    mask.src = maskUrl;
+    mask.src = maskedImageUrl;
 
     return () => {
       cancelled = true;
     };
-  }, [maskUrl, width, height]);
+  }, [maskedImageUrl, width, height]);
 
   //Eraser Methods
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (e.button !== 0) return; // Only respond to left-click
 
+    if (eraseMode || paintMode) {
+      setMaskHasBeenEdited(true);
+      setMaskIsInProgress(true);
+    }
+
     if (eraseMode) {
       isErasing.current = true;
       eraseAt(e);
-      setMaskIsInProgress(true);
     }
 
     if (paintMode) {
       isPainting.current = true;
       paintAt(e);
-      setMaskIsInProgress(true);
     }
   };
 

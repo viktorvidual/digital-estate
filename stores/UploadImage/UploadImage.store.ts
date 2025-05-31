@@ -1,7 +1,8 @@
 import { create } from 'zustand';
-import { generateMask, saveTemporaryImage } from '@/services';
+import { generateMask, saveTemporaryFromBlob, saveTemporaryImage } from '@/services';
 import { supabase } from '@/lib/supabase';
 import { UploadImageStore, initialState } from './UploadImage.store.types';
+import { dataURLToBlob, generateBlackAndWhiteMaskBinary } from '@/utils';
 
 export const useUploadImageStore = create<UploadImageStore>((set, get) => ({
   ...initialState,
@@ -19,34 +20,6 @@ export const useUploadImageStore = create<UploadImageStore>((set, get) => ({
   setRoomType: roomType => set({ roomType }),
   setFurnitureStyle: furnitureStyle => set({ furnitureStyle }),
   reset: () => set(initialState),
-  toggleEditMask: () => {
-    const { editMask } = get();
-
-    if (!editMask) {
-      return set({
-        editMask: true,
-        paintMode: true,
-      });
-    }
-
-    set({ editMask: !editMask, paintMode: false, eraseMode: false });
-  },
-
-  togglePaintMode: () => {
-    const { paintMode, eraseMode } = get();
-    if (eraseMode) {
-      set({ eraseMode: false });
-    }
-    set({ paintMode: !paintMode });
-  },
-
-  toggleEraseMode: () => {
-    const { paintMode, eraseMode } = get();
-    if (paintMode) {
-      set({ paintMode: false });
-    }
-    set({ eraseMode: !eraseMode });
-  },
 
   pickImage: (customer, event, showToast, inputRef) => {
     const { setSelectedFile, setLocalImage, setImageDimensions } = get();
@@ -189,5 +162,63 @@ export const useUploadImageStore = create<UploadImageStore>((set, get) => ({
       currentChannel = null;
       set({ uploading: false });
     }
+  },
+
+  // Mask Canva Editing
+  toggleEditMask: () => {
+    const { editMask } = get();
+
+    if (!editMask) {
+      return set({
+        editMask: true,
+        paintMode: true,
+      });
+    }
+
+    set({ editMask: !editMask, paintMode: false, eraseMode: false });
+  },
+
+  togglePaintMode: () => {
+    const { paintMode, eraseMode } = get();
+    if (eraseMode) {
+      set({ eraseMode: false });
+    }
+    set({ paintMode: !paintMode });
+  },
+
+  toggleEraseMode: () => {
+    const { paintMode, eraseMode } = get();
+    if (paintMode) {
+      set({ paintMode: false });
+    }
+    set({ eraseMode: !eraseMode });
+  },
+
+  setMaskHasBeenEdited: maskHasBeenEdited => set({ maskHasBeenEdited }),
+
+  uploadNewMask: async userId => {
+    const maskCanvas = get().canvasRef.current;
+
+    if (!maskCanvas) {
+      console.error('No mask canvas found');
+      return {
+        error: 'No mask canvas found',
+      };
+    }
+
+    const blackAndWhiteBinary = generateBlackAndWhiteMaskBinary(maskCanvas);
+
+    if (!blackAndWhiteBinary) {
+      console.error('Failed to generate black and white binary mask');
+      return {
+        error: 'Failed to generate black and white binary mask',
+      };
+    }
+
+    const maskBlob = dataURLToBlob(blackAndWhiteBinary);
+
+    const response = await saveTemporaryFromBlob(userId, maskBlob);
+
+    return response;
   },
 }));

@@ -16,9 +16,13 @@ export const initialState = {
   furnitureStyle: FURNITURE_STYLES[0],
   maskId: '',
   addVirtuallyStagedWatermark: false,
+
+  //Handle Mask Editing
+  canvasRef: { current: null as HTMLCanvasElement | null },
   editMask: false,
   paintMode: false,
   eraseMode: false,
+  maskHasBeenEdited: false,
 };
 
 type UploadImageState = typeof initialState;
@@ -40,6 +44,7 @@ type UploadImageActions = {
   toggleEditMask: () => void;
   togglePaintMode: () => void;
   toggleEraseMode: () => void;
+  setMaskHasBeenEdited: (maskHasBeenEdited: boolean) => void;
 
   pickImage: (
     customer: Customer | null,
@@ -51,6 +56,16 @@ type UploadImageActions = {
   uploadImageForMask: (customer: Customer | null, showToast: ShowToast) => Promise<void>;
   subscribeToMaskUpdates: (channel: ReturnType<typeof supabase.channel> | null) => void;
   unsubscribeFromMaskUpdates: (channel: ReturnType<typeof supabase.channel> | null) => void;
+  uploadNewMask: (userId: string) => Promise<
+    | {
+        error: string;
+        data?: undefined;
+      }
+    | {
+        data: string;
+        error?: undefined;
+      }
+  >;
 };
 
 export type UploadImageStore = UploadImageState & UploadImageActions;

@@ -19,7 +19,7 @@ export const ImageInput = () => {
   const imageRef = useRef<HTMLImageElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const media = useMedia();
-  let maskListenderChannel: ReturnType<typeof supabase.channel> | null = null;
+  let maskListenerChannel: ReturnType<typeof supabase.channel> | null = null;
 
   const { customer } = useAuthStore();
 
@@ -58,10 +58,10 @@ export const ImageInput = () => {
   useEffect(() => {
     //This effect triggers when maskID is avaible, right after the effect above has generated a maskID,
     // Here we listen to DB, when that mask table is updated with a URL of the mask image
-    subscribeToMaskUpdates(maskListenderChannel);
+    subscribeToMaskUpdates(maskListenerChannel);
 
     return () => {
-      unsubscribeFromMaskUpdates(maskListenderChannel);
+      unsubscribeFromMaskUpdates(maskListenerChannel);
     };
   }, [maskId, removeFurniture]);
 
@@ -186,11 +186,8 @@ export const ImageInput = () => {
 
           {maskedImageUrl && removeFurniture && (
             <MaskOverlayCanvas
-              maskUrl={maskedImageUrl}
               width={imageWidthClient}
               height={imageHeightClient}
-              paintMode={paintMode}
-              eraseMode={eraseMode}
               setMaskIsInProgress={setMaskIsInProgress}
             />
           )}
