@@ -1,4 +1,4 @@
-import { styled, View, YStack, XStack } from 'tamagui';
+import { styled, View, YStack } from 'tamagui';
 
 export const ImageInputContainer = styled(YStack, {
   width: '100%',
@@ -21,19 +21,17 @@ export const ImageInputContainer = styled(YStack, {
   bg: 'white',
 });
 
-export const DeleteImageContainer = styled(View, {
+export const IconContainer = styled(View, {
   position: 'absolute',
   top: '3%',
-  right: '3%',
-  p: '$2',
+  p: '$3',
   bg: '$black3',
   rounded: '$6',
   justifyContent: 'center',
   alignItems: 'center',
-  gap: '$3',
   opacity: 0.8,
   hoverStyle: {
-    bg: '#f0f0f0',
+    bg: '$blue10',
     borderColor: '#999',
   },
   pressStyle: {
@@ -41,6 +39,35 @@ export const DeleteImageContainer = styled(View, {
     borderColor: '#666',
   },
   z: '$3',
+
+  variants: {
+    positionLeft: {
+      true: {
+        left: '3%',
+        right: 'auto',
+      },
+    },
+    positionRight: {
+      true: {
+        right: '3%',
+        left: 'auto',
+      },
+    },
+  } as const,
+});
+
+export const EditMaskButtonsContainer = styled(View, {
+  position: 'absolute',
+  top: '3%',
+  right: '3%',
+  p: '$3',
+  bg: '$black3',
+  rounded: '$6',
+  justifyContent: 'center',
+  alignItems: 'center',
+  opacity: 0.8,
+  z: '$3',
+  gap: '$3',
 });
 
 export const ImageLoadingContainer = styled(View, {

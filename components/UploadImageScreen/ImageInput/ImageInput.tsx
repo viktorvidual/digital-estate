@@ -1,17 +1,16 @@
-import React, { useRef, useEffect } from 'react';
-import { Spinner, YStack, View } from 'tamagui';
+import React, { useState, useRef, useEffect } from 'react';
+import { Spinner, YStack, View, useMedia } from 'tamagui';
 import { MyText } from '@/components/shared';
-import { Trash } from '@tamagui/lucide-icons';
-import { Upload } from '@tamagui/lucide-icons';
+import { Upload, Trash, Pencil, Eraser, Paintbrush } from '@tamagui/lucide-icons';
 import {
   ImageInputContainer,
   ImageLoadingContainer,
-  DeleteImageContainer,
+  IconContainer,
+  EditMaskButtonsContainer,
 } from './ImageInput.styles';
 import { useAuthStore, useUploadImageStore } from '@/stores';
 import { supabase } from '@/lib/supabase';
 import { MaskOverlayCanvas } from '../MaskOverlayCanvas/MaskOverlayCanvas';
-import { useMedia } from 'tamagui';
 import { useShowToast } from '@/hooks';
 
 export const ImageInput = () => {
@@ -20,12 +19,14 @@ export const ImageInput = () => {
   const imageRef = useRef<HTMLImageElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const media = useMedia();
-  let maskListenderChannel: ReturnType<typeof supabase.channel> | null = null;
+  let maskListenerChannel: ReturnType<typeof supabase.channel> | null = null;
 
   const { customer } = useAuthStore();
 
-  const [imageWidthClient, setImageWidthClient] = React.useState(0);
-  const [imageHeightClient, setImageHeightClient] = React.useState(0);
+  const [imageWidthClient, setImageWidthClient] = useState(0);
+  const [imageHeightClient, setImageHeightClient] = useState(0);
+
+
 
   const {
     imageDimensions,
@@ -35,11 +36,18 @@ export const ImageInput = () => {
     removeFurniture,
     uploading,
     selectedFile,
+    editMask,
+    paintMode,
+    eraseMode,
+    maskEditInProgress,
     pickImage,
     deleteImage,
     uploadImageForMask,
     subscribeToMaskUpdates,
     unsubscribeFromMaskUpdates,
+    toggleEditMask,
+    togglePaintMode,
+    toggleEraseMode,
   } = useUploadImageStore();
 
   /* The effect below generates masksID and creates mask row in the DB. After the mask is ready, a webhook hanlder updates the DB
@@ -51,10 +59,10 @@ export const ImageInput = () => {
   useEffect(() => {
     //This effect triggers when maskID is avaible, right after the effect above has generated a maskID,
     // Here we listen to DB, when that mask table is updated with a URL of the mask image
-    subscribeToMaskUpdates(maskListenderChannel);
+    subscribeToMaskUpdates(maskListenerChannel);
 
     return () => {
-      unsubscribeFromMaskUpdates(maskListenderChannel);
+      unsubscribeFromMaskUpdates(maskListenerChannel);
     };
   }, [maskId, removeFurniture]);
 
@@ -129,9 +137,41 @@ export const ImageInput = () => {
               <MyText color="white">Обработка...</MyText>
             </ImageLoadingContainer>
           )}
-          <DeleteImageContainer onPress={deleteImage}>
-            <Trash color="white" size={20} />
-          </DeleteImageContainer>
+          {!maskEditInProgress && (
+            <IconContainer positionLeft={true} onPress={deleteImage}>
+              <Trash color="white" size={20} />
+            </IconContainer>
+          )}
+          {maskedImageUrl && removeFurniture && !editMask && (
+            <IconContainer positionRight={true} onPress={toggleEditMask}>
+              <Pencil color="white" size={20} />
+            </IconContainer>
+          )}
+
+          {editMask && !maskEditInProgress && (
+            <EditMaskButtonsContainer>
+              <View onPress={toggleEditMask}>
+                <MyText cursor="pointer" color="white" fw="bold">
+                  Готово
+                </MyText>
+              </View>
+              <View cursor="pointer">
+                <Paintbrush
+                  color={paintMode ? '$blue10' : 'white'}
+                  size={25}
+                  onPress={togglePaintMode}
+                />
+              </View>
+              <View cursor="pointer">
+                <Eraser
+                  color={eraseMode ? '$blue10' : 'white'}
+                  size={25}
+                  onPress={toggleEraseMode}
+                />
+              </View>
+            </EditMaskButtonsContainer>
+          )}
+
           <img
             ref={imageRef}
             src={localImage}
@@ -144,9 +184,9 @@ export const ImageInput = () => {
               objectFit: 'contain',
             }}
           />
+
           {maskedImageUrl && removeFurniture && (
             <MaskOverlayCanvas
-              maskUrl={maskedImageUrl}
               width={imageWidthClient}
               height={imageHeightClient}
             />

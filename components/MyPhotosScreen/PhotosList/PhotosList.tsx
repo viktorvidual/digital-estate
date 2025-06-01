@@ -10,7 +10,7 @@ import { useViewRenderStore, usePhotosListStore } from '@/stores';
 
 export const PhotosList = () => {
   const { reset, setRender } = useViewRenderStore();
-  const { renders, setRenders } = usePhotosListStore();
+  const { renders, setRenders, alreadyFetched, setAlreadyFetched } = usePhotosListStore();
   const media = useMedia();
   const [isLoading, setIsLoading] = useState(false);
   const { customer } = useAuthStore();
@@ -26,7 +26,14 @@ export const PhotosList = () => {
       return console.error('No customer');
     }
 
+    console.log('Fetching renders for user:', customer.userId);
+
     (async () => {
+      if (alreadyFetched) {
+        console.log('Already fetched renders, skipping fetch');
+        return;
+      }
+
       setIsLoading(true);
       const { error, data } = await getAllRenders(customer.userId);
 
@@ -50,6 +57,7 @@ export const PhotosList = () => {
 
       if (thumbnailedRenders) {
         setRenders(thumbnailedRenders);
+        setAlreadyFetched(true);
       }
       setIsLoading(false);
     })();
@@ -57,8 +65,7 @@ export const PhotosList = () => {
 
   return (
     <>
-      {isLoading && <Spinner />}
-      {!isLoading && (
+      {!isLoading ? (
         <>
           {renders.length === 0 ? (
             <MyText>Все още нямате качени снимки</MyText>
@@ -88,6 +95,8 @@ export const PhotosList = () => {
             </>
           )}
         </>
+      ) : (
+        <Spinner />
       )}
     </>
   );

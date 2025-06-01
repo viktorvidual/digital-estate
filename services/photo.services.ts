@@ -24,6 +24,7 @@ export type CreateRenderParams = {
   style?: string;
   roomType: string;
   imageUrl: string;
+  maskUrl?: string;
 };
 
 export const getAllRenders = async (
@@ -120,6 +121,23 @@ export const saveTemporaryImage = async (userId: string, file: File) => {
       return { data: publicUrl };
     }
 
+    return { error: error.message };
+  }
+
+  const { publicUrl } = storage.getPublicUrl(filePath).data;
+  return { data: publicUrl };
+};
+
+export const saveTemporaryFromBlob = async (userId: string, blob: Blob) => {
+  const filePath = `${userId}/mask-${Date.now()}.png`;
+  const storage = supabase.storage.from('temporary');
+
+  const { error } = await storage.upload(filePath, blob, {
+    contentType: 'image/png',
+    upsert: true,
+  });
+
+  if (error) {
     return { error: error.message };
   }
 

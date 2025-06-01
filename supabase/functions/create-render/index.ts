@@ -12,7 +12,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
 type requestBody = {
   userId: string;
-  dimensions: string;
+  dimensions: string;4
   filePath: string;
   addFurniture: boolean;
   removeFurniture: boolean;
@@ -20,6 +20,7 @@ type requestBody = {
   style?: string;
   roomType: string;
   imageUrl: string;
+  maskUrl?: string; // Optional, if you want to include a mask URL
 };
 
 type RenderResponse = {
@@ -175,6 +176,7 @@ Deno.serve(async (req: Request) => {
         }),
         remove_furniture: {
           mode: body.removeFurniture ? 'on' : 'off',
+          ...(body.maskUrl && { mask_url: body.maskUrl }), // Optional mask URL
         },
       },
       image_url: body.imageUrl,
