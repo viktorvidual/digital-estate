@@ -11,7 +11,7 @@ export const CATEGORIES = [
         priceId: 'price_1RGanuG2OXqPrYSSMH9HnmgC',
       },
       yearly: {
-        amount: 25,
+        amount: 36,
         priceId: 'price_1RR9A6G2OXqPrYSSJeZlDT88',
       },
     },
@@ -22,11 +22,11 @@ export const CATEGORIES = [
     photos: 20,
     price: {
       monthly: {
-        amount: 55,
+        amount: 117,
         priceId: 'price_1RGaunG2OXqPrYSSwje4xmrt',
       },
       yearly: {
-        amount: 29,
+        amount: 107,
         priceId: 'price_1RR9BOG2OXqPrYSSO2SVi4f4',
       },
     },
@@ -37,11 +37,11 @@ export const CATEGORIES = [
     photos: 60,
     price: {
       monthly: {
-        amount: 123,
+        amount: 312,
         priceId: 'price_1RGb2DG2OXqPrYSSOaVVvfIN',
       },
       yearly: {
-        amount: 61,
+        amount: 259,
         priceId: 'price_1RR9CuG2OXqPrYSS87BpSPn9',
       },
     },
