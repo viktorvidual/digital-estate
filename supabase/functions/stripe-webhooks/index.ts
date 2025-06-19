@@ -33,6 +33,26 @@ const PRICES = {
     photos: 6,
     name: 'Monthly Basic',
   },
+  price_1Rbd6OG2OXqPrYSSqcxQewXx: {
+    photos: 60,
+    name: 'Yearly Pro',
+  },
+  price_1Rbd5wG2OXqPrYSSXVkqVNSi: {
+    photos: 60,
+    mame: 'Monthly Pro',
+  },
+  price_1Rbd5eG2OXqPrYSSzLHQTVWp: {
+    photos: 20,
+    name: 'Standard Yearly',
+  },
+  price_1Rbd55G2OXqPrYSSVS7lFwzd: {
+    photos: 20,
+    name: 'Standard Monthly',
+  },
+  price_1Rbd4bG2OXqPrYSSPjFXNr24: {
+    photos: 6,
+    name: 'Yearly Basic',
+  },
 };
 
 console.log('Stripe Webhook function started');
