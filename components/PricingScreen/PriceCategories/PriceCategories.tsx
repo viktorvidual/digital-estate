@@ -1,16 +1,51 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePricingStore } from '@/stores';
 import { MyText, MyXStack } from '@/components/shared';
 import { useMedia, YStack, XStack, Button } from 'tamagui';
 import { Check } from '@tamagui/lucide-icons';
-import { ENDPOINTS, CATEGORIES } from '@/constants';
+import { ENDPOINTS } from '@/constants';
 import { useAuthStore } from '@/stores';
 import { router } from 'expo-router';
 import { getStripePortalUrl } from '@/services';
 import { CategoryContainer, CategoryInnerContainer } from './PriceCategories.styles';
+import { supabase } from '@/lib/supabase';
+import { PriceCategory } from '@/types';
 
 export const PriceCategories = () => {
+  const [priceCategories, setPriceCategories] = useState<PriceCategory[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const { error, data } = await supabase.from('prices').select('*');
+
+      if (error) {
+        console.error('Error fetching prices:', error);
+      } else if (data) {
+        setPriceCategories(data);
+      }
+    })();
+  }, []);
+
+  return (
+    <MyXStack justify="space-between" flexWrap="wrap" gap="$3">
+      {priceCategories.map(category => (
+        <Category key={category.name} category={category} />
+      ))}
+    </MyXStack>
+  );
+};
+
+const Category = ({ category }: { category: PriceCategory }) => {
   const { session, customer } = useAuthStore();
+
+  const media = useMedia();
+
+  const { selectedPricing } = usePricingStore();
+
+  const priceBgn = selectedPricing === 'monthly' ? category.monthlyBgn : category.yearlyBgn;
+  const priceEur = selectedPricing === 'monthly' ? category.monthlyEur : category.yearlyEur;
+  const stripePriceId =
+    selectedPricing === 'monthly' ? category.stripeMonthlyPriceId : category.stripeYearlyPriceId;
 
   const onChangeSubscription = async () => {
     const accessToken = session?.access_token;
@@ -28,47 +63,6 @@ export const PriceCategories = () => {
       console.error('Stripe userid or access token not availabes');
     }
   };
-
-  return (
-    <MyXStack justify="space-between" flexWrap="wrap" gap="$3">
-      {CATEGORIES.map(category => (
-        <Category
-          key={category.name}
-          category={category}
-          onChangeSubscription={onChangeSubscription}
-        />
-      ))}
-    </MyXStack>
-  );
-};
-
-const Category = ({
-  category,
-  onChangeSubscription,
-}: {
-  category: {
-    name: string;
-    subtitle: string;
-    photos: number;
-    price: {
-      monthly: {
-        amount: number;
-        priceId: string;
-      };
-      yearly: {
-        amount: number;
-        priceId: string;
-      };
-    };
-  };
-  onChangeSubscription: () => Promise<void>;
-}) => {
-  const { session, customer } = useAuthStore();
-
-  const media = useMedia();
-
-  const { selectedPricing } = usePricingStore();
-  const price = selectedPricing === 'monthly' ? category.price.monthly : category.price.yearly;
 
   const onPress = async (stripePriceId: string) => {
     if (!session) {
@@ -109,7 +103,7 @@ const Category = ({
         <MyText size="$4">{category.subtitle}</MyText>
 
         <YStack>
-          {price.amount === 0 && (
+          {!priceBgn && (
             <MyText mt="$4" mb={-10} fw="bold">
               Повече от
             </MyText>
@@ -123,16 +117,16 @@ const Category = ({
         </YStack>
 
         <XStack width={'100%'} justify={'space-between'}>
-          {price.amount > 0 && (
+          {priceBgn && category.photos && (
             <YStack>
               <XStack mt="$3" gap="$2" alignItems="center">
                 <MyText fw="bold" size="$8">
-                  {price.amount}лв
+                  {priceBgn}лв / {priceEur}€
                 </MyText>
                 <MyText fw="medium">/ месец</MyText>
               </XStack>
               <XStack mt="$3" gap="$2" alignItems="center">
-                <MyText size="$4">{(price.amount / category.photos).toFixed(2)}лв</MyText>
+                <MyText size="$4">{(priceBgn / category.photos).toFixed(2)}лв</MyText>
                 <MyText size="$4">/ снимка</MyText>
               </XStack>
             </YStack>
@@ -143,7 +137,7 @@ const Category = ({
               <MyText size="$3" color="white">
                 Само{' '}
                 <MyText fw="bold" color="white">
-                  {category.price.yearly.amount}лв
+                  {category.yearlyBgn}лв / {category.yearlyEur}€
                 </MyText>{' '}
               </MyText>
               <MyText size="$3" color="white">
@@ -159,14 +153,14 @@ const Category = ({
             <MyText size="$3" color="white">
               Само{' '}
               <MyText fw="bold" color="white">
-                {category.price.yearly.amount}лв
+                {category.yearlyBgn}лв
               </MyText>{' '}
               (с год. план)
             </MyText>
           </XStack>
         )}
 
-        {price.amount === 0 ? (
+        {!priceBgn ? (
           <>
             <Button
               mt="$3"
@@ -206,7 +200,7 @@ const Category = ({
               borderRadius="$10"
               width={'100%'}
               rounded="$6"
-              onPress={() => onPress(price.priceId)}
+              onPress={() => onPress(stripePriceId as string)}
             >
               <MyText fw="bold" color="white">
                 Избери
