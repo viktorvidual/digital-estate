@@ -4,7 +4,6 @@ export * from './Endpoints';
 export * from './ImageSettings';
 export * from './TermsOfService';
 export * from './PrivacyPolicy';
-export * from './PasswordRequirements.ts';
-export * from './Pricing';
+export * from './PasswordRequirements';
 
 export const IsProduction = process.env.EXPO_PUBLIC_IS_PROD === 'true';

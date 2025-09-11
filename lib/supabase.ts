@@ -3,6 +3,7 @@ import 'react-native-url-polyfill/auto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient, SupportedStorage } from '@supabase/supabase-js';
 import { isWeb } from 'tamagui';
+import { Database } from '@/types/supabase';
 
 // Create a safe storage implementation that handles SSR
 const storage: SupportedStorage = {
@@ -66,7 +67,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: storage,
     autoRefreshToken: true,

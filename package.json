@@ -11,7 +11,8 @@
     "test": "jest --watchAll",
     "lint": "expo lint",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\""
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md},\"",
+    "codegen": "supabase gen types typescript --project-id skuuzyjqzwtnufyszhwo > types/supabase.ts"
   },
   "jest": {
     "preset": "jest-expo"
