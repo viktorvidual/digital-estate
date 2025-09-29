@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      "gallery-page": {
+        Row: {
+          callToAction: string | null
+          createdAt: string
+          hOne: string | null
+          hTwo: string | null
+          iconText: string | null
+          id: number
+          roomTypes: string | null
+        }
+        Insert: {
+          callToAction?: string | null
+          createdAt?: string
+          hOne?: string | null
+          hTwo?: string | null
+          iconText?: string | null
+          id?: number
+          roomTypes?: string | null
+        }
+        Update: {
+          callToAction?: string | null
+          createdAt?: string
+          hOne?: string | null
+          hTwo?: string | null
+          iconText?: string | null
+          id?: number
+          roomTypes?: string | null
+        }
+        Relationships: []
+      }
       masks: {
         Row: {
           created_at: string

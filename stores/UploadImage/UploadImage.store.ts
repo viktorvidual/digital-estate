@@ -97,6 +97,7 @@ export const useUploadImageStore = create<UploadImageStore>((set, get) => ({
 
     setUploading(true);
 
+    //TODO: add cron job to clean up old temporary images
     const { error, data: temporaryUrl } = await saveTemporaryImage(customer.userId, selectedFile);
 
     if (error || !temporaryUrl) {

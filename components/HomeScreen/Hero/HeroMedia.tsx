@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Image, YStack, styled, View, getTokens } from 'tamagui';
+import { YStack, styled, View, getTokens } from 'tamagui';
 import { DropDownSelect } from '@/components/shared';
 import { supabase } from '@/lib/supabase';
-import { LazyLoadComponent } from 'react-lazy-load-image-component';
 
 //The types below are used to define the options for the dropdowns
 const ROOM_TYPES: { name: RoomType; id: string }[] = [

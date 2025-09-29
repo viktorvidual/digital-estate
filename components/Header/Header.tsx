@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'expo-router';
-import { XStack, SizableText, useMedia, Button, Image, Spinner } from 'tamagui';
+import { XStack, SizableText, useMedia, Button, Image } from 'tamagui';
 import { MyXStack, MyText, AlertButton } from '@/components/shared';
 import { Menu } from '@tamagui/lucide-icons';
 import { router } from 'expo-router';
@@ -100,7 +100,7 @@ export const Header = () => {
         )}
 
         {!media.lg && (
-          <Menu color="white" siize={24} onPress={() => setIsSideBarOpen(!isSideBarOpen)} />
+          <Menu color="white" size={24} onPress={() => setIsSideBarOpen(!isSideBarOpen)} />
         )}
       </MyXStack>
     </>
