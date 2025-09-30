@@ -1,115 +1,195 @@
-import React, { useEffect, useState } from 'react';
-import { MyText } from '@/components/shared';
-import { YStack, styled, Button, XStack, Spinner, Text } from 'tamagui';
-import { Image } from '@tamagui/lucide-icons';
+import React, { useEffect, useState, forwardRef } from 'react';
+import { MyText, MyYStack } from '@/components/shared';
+import { YStack, XStack, Spinner, Button } from 'tamagui';
+import { Image, Upload } from '@tamagui/lucide-icons';
 import { supabase } from '@/lib/supabase';
 import { GalleryPageContet } from '@/types';
 import { useShowToast } from '@/hooks';
+import {
+  HeaderContainer,
+  RoomTypeButton,
+  RoomTypeButtonText,
+  ImageGalleryContainer,
+} from '@/components/GalleryScreen';
+import ReactImageGallery, { ReactImageGalleryProps } from 'react-image-gallery';
+
+const ImageGalleryComponent = forwardRef<HTMLDivElement, ReactImageGalleryProps>((props, ref) => {
+  return <ReactImageGallery ref={ref} {...props} />;
+});
+
+// Add interface for grouped images
+type GroupedImages = {
+  name: string;
+  url: string;
+  roomType: string;
+}[];
 
 export default function ImageGalleryScreen() {
   const showToast = useShowToast();
   const [isLoading, setIsLoading] = useState(false);
   const [pageContet, setPageContet] = useState<GalleryPageContet>();
-  const roomTypes = pageContet?.roomTypes?.split(',') || [];
+  const [selectedRoom, setSelectedRoom] = useState('living-room'); // Default selected room
+  const [allImages, setAllImages] = useState<GroupedImages>([]);
 
-  const [selectedPage, setSelectedPage] = useState(roomTypes.length ? roomTypes[0] : 'хол');
+  const roomTypes = pageContet?.roomTypes?.length
+    ? pageContet.roomTypes.split(',')?.map(room => {
+        const [label, id] = room.split(':');
+        return {
+          label,
+          id,
+        };
+      })
+    : [];
 
   useEffect(() => {
     (async () => {
-      setIsLoading(true);
-      const { error, data } = await supabase.from('gallery-page').select('*');
-      setIsLoading(false);
+      try {
+        // Fetch page content
+        const { error, data } = await supabase.from('gallery-page').select('*');
 
-      if (error) {
-        return showToast({
-          title: error.name,
-          description: error.message,
+        if (error) {
+          showToast({
+            title: error.name,
+            description: error.message,
+            type: 'error',
+          });
+          return;
+        }
+
+        const pageData = data[0];
+        setPageContet(pageData);
+
+        // Extract room IDs and fetch images
+        if (pageData?.roomTypes) {
+          const roomIds = pageData.roomTypes.split(',').map((room: string) => {
+            const [label, id] = room.split(':');
+            return id;
+          });
+
+          const images = await fetchAllImages(roomIds);
+          console.log('Fetched grouped images:', images);
+          setAllImages(images);
+        }
+      } catch (error) {
+        showToast({
+          title: 'Error',
+          description: 'Failed to fetch gallery data',
           type: 'error',
         });
+      } finally {
+        setIsLoading(false);
       }
-
-      setPageContet(data[0]);
     })();
   }, []);
 
   return (
-    <GalleryContainer>
+    <div>
       {isLoading ? (
         <>
           <Spinner />
         </>
       ) : (
         <>
-          <YStack justify={'center'} items={'center'}>
-            <Image color="$green6" />
-            <MyText color="white">{pageContet?.iconText}</MyText>
-          </YStack>
-          <MyText color="white" fw="bold" type="title">
-            {pageContet?.hOne}
-          </MyText>
-          <MyText color="white" type="subtitle" textAlign="center">
-            {pageContet?.hTwo}
-          </MyText>
+          <HeaderContainer>
+            <YStack justify={'center'} items={'center'}>
+              <Image color="$green6" />
+              <MyText color="white">{pageContet?.iconText}</MyText>
+            </YStack>
+            <MyText color="white" fw="bold" type="title">
+              {pageContet?.hOne}
+            </MyText>
+            <MyText color="white" type="subtitle" textAlign="center">
+              {pageContet?.hTwo}
+            </MyText>
 
-          <XStack>
-            {roomTypes.map(type => {
-              const isSelected = selectedPage === type;
-              return (
-                <RoomTypeButton isSelected={isSelected} onPress={() => setSelectedPage(type)}>
-                  <RoomTypeButtonText focusable={false} isSelected={isSelected}>
-                    {type}
-                  </RoomTypeButtonText>
-                </RoomTypeButton>
-              );
-            })}
-          </XStack>
+            <XStack>
+              {roomTypes.map(room => {
+                const isSelected = selectedRoom === room.id;
+                return (
+                  <RoomTypeButton
+                    key={room.id}
+                    isSelected={isSelected}
+                    onPress={() => setSelectedRoom(room.id)}
+                  >
+                    <RoomTypeButtonText isSelected={isSelected}>{room.label}</RoomTypeButtonText>
+                  </RoomTypeButton>
+                );
+              })}
+            </XStack>
+          </HeaderContainer>
+          <MyYStack justify="center" alignItems="center" mt={-150}>
+            <ImageGalleryContainer>
+              <ImageGalleryComponent
+                showPlayButton={false}
+                showFullscreenButton={false}
+                items={allImages.map(img => ({
+                  original: img.url,
+                  thumbnail: img.url,
+                }))}
+                onSlide={index => {
+                  console.log('Slide to index:', index);
+                }}
+              />
+            </ImageGalleryContainer>
+
+            <YStack display="block" m="$8">
+              <RoomTypeButton icon={<Upload size={26}/>} width={300}>
+                <RoomTypeButtonText>
+                  {pageContet?.callToAction || 'Свържи се с нас'}
+                </RoomTypeButtonText>
+              </RoomTypeButton>
+            </YStack>
+          </MyYStack>
         </>
       )}
-    </GalleryContainer>
+    </div>
   );
 }
 
-const GalleryContainer = styled(YStack, {
-  name: 'GalleryContainer',
-  gap: '$3',
-  content: 'center',
-  alignSelf: 'center',
-  items: 'center',
-  width: '100%',
-  bg: '$blue12',
-  py: '$5',
-  $lg: {
-    alignSelf: 'flex-start',
-  },
-});
+// Function to fetch images for all rooms
+const fetchAllImages = async (roomIds: string[]) => {
+  try {
+    const allImages: GroupedImages = [];
 
-const RoomTypeButton = styled(Button, {
-  name: 'RoomTypeButton',
-  size: '$2',
-  bg: '$blue10',
-  color: 'white',
-  borderRadius: '$4',
-  mr: '$2',
-  p: '$5',
+    // Fetch images for each room
+    for (const roomId of roomIds) {
+      const { data: files, error } = await supabase.storage.from('gallery').list(roomId, {
+        limit: 100,
+        offset: 0,
+      });
 
-  variants: {
-    isSelected: {
-      true: {
-        bg: 'white',
-      },
-    },
-  } as const,
-});
+      if (error) {
+        console.error(`Error fetching images for room ${roomId}:`, error);
+        continue;
+      }
 
-const RoomTypeButtonText = styled(Text, {
-  color: 'white',
-  fontWeight: 'bold',
+      if (files && files.length > 0) {
+        // Get public URLs for each file
+        const imagesData = files
+          .filter(file => file.name !== '.emptyFolderPlaceholder') // Filter out placeholder files
+          .map(file => {
+            const { data } = supabase.storage
+              .from('gallery')
+              .getPublicUrl(`${roomId}/${file.name}`);
 
-  variants: {
-    isSelected: {
-      true: {
-        color: '$blue12',
-      },
-    },
-  },
-} as const);
+            const imageName = file.name.split('.').slice(0, -1).join('.') || file.name;
+
+            return {
+              name: imageName,
+              url: data.publicUrl,
+              roomType: roomId,
+            };
+          });
+
+        allImages.push(...imagesData);
+      }
+    }
+
+    console.log('All grouped images:', allImages);
+
+    return allImages;
+  } catch (error) {
+    console.error('Error fetching images:', error);
+    throw error;
+  }
+};

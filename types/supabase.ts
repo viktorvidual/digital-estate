@@ -22,6 +22,7 @@ export type Database = {
           hTwo: string | null
           iconText: string | null
           id: number
+          initialSelectedRoom: string | null
           roomTypes: string | null
         }
         Insert: {
@@ -31,6 +32,7 @@ export type Database = {
           hTwo?: string | null
           iconText?: string | null
           id?: number
+          initialSelectedRoom?: string | null
           roomTypes?: string | null
         }
         Update: {
@@ -40,6 +42,7 @@ export type Database = {
           hTwo?: string | null
           iconText?: string | null
           id?: number
+          initialSelectedRoom?: string | null
           roomTypes?: string | null
         }
         Relationships: []
