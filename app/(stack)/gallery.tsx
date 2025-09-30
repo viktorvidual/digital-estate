@@ -1,6 +1,6 @@
-import React, { useEffect, useState, forwardRef } from 'react';
+import React, { useEffect, useState, forwardRef, useRef } from 'react';
 import { MyText, MyYStack } from '@/components/shared';
-import { YStack, XStack, Spinner, Button } from 'tamagui';
+import { YStack, XStack, Spinner } from 'tamagui';
 import { Image, Upload } from '@tamagui/lucide-icons';
 import { supabase } from '@/lib/supabase';
 import { GalleryPageContet } from '@/types';
@@ -13,9 +13,11 @@ import {
 } from '@/components/GalleryScreen';
 import ReactImageGallery, { ReactImageGalleryProps } from 'react-image-gallery';
 
-const ImageGalleryComponent = forwardRef<HTMLDivElement, ReactImageGalleryProps>((props, ref) => {
-  return <ReactImageGallery ref={ref} {...props} />;
-});
+const ImageGalleryComponent = forwardRef<ReactImageGallery, ReactImageGalleryProps>(
+  (props, ref) => {
+    return <ReactImageGallery ref={ref} {...props} />;
+  }
+);
 
 // Add interface for grouped images
 type GroupedImages = {
@@ -25,6 +27,8 @@ type GroupedImages = {
 }[];
 
 export default function ImageGalleryScreen() {
+  const galleryRef = useRef<ReactImageGallery>(null);
+
   const showToast = useShowToast();
   const [isLoading, setIsLoading] = useState(false);
   const [pageContet, setPageContet] = useState<GalleryPageContet>();
@@ -109,7 +113,13 @@ export default function ImageGalleryScreen() {
                   <RoomTypeButton
                     key={room.id}
                     isSelected={isSelected}
-                    onPress={() => setSelectedRoom(room.id)}
+                    onPress={() => {
+                      setSelectedRoom(room.id);
+                      const firstImageIndex = allImages.findIndex(img => img.roomType === room.id);
+                      if (firstImageIndex !== -1 && galleryRef.current) {
+                        galleryRef.current.slideToIndex(firstImageIndex);
+                      }
+                    }}
                   >
                     <RoomTypeButtonText isSelected={isSelected}>{room.label}</RoomTypeButtonText>
                   </RoomTypeButton>
@@ -120,6 +130,7 @@ export default function ImageGalleryScreen() {
           <MyYStack justify="center" alignItems="center" mt={-150}>
             <ImageGalleryContainer>
               <ImageGalleryComponent
+                ref={galleryRef}
                 showPlayButton={false}
                 showFullscreenButton={false}
                 items={allImages.map(img => ({
@@ -127,13 +138,16 @@ export default function ImageGalleryScreen() {
                   thumbnail: img.url,
                 }))}
                 onSlide={index => {
-                  console.log('Slide to index:', index);
+                  const selectedImageRoomType = allImages[index]?.roomType;
+                  if (selectedImageRoomType && selectedImageRoomType !== selectedRoom) {
+                    setSelectedRoom(selectedImageRoomType);
+                  }
                 }}
               />
             </ImageGalleryContainer>
 
             <YStack display="block" m="$8">
-              <RoomTypeButton icon={<Upload size={26}/>} width={300}>
+              <RoomTypeButton icon={<Upload size={26} />} width={300}>
                 <RoomTypeButtonText>
                   {pageContet?.callToAction || 'Свържи се с нас'}
                 </RoomTypeButtonText>
