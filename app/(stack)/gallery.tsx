@@ -1,9 +1,12 @@
+'use-server';
+
 import React, { useEffect, useState, forwardRef, useRef } from 'react';
-import { MyText, MyYStack } from '@/components/shared';
+import { MyText, MyYStack, Button } from '@/components/shared';
 import { YStack, XStack, Spinner } from 'tamagui';
 import { Image, Upload } from '@tamagui/lucide-icons';
 import { supabase } from '@/lib/supabase';
 import { GalleryPageContet } from '@/types';
+import ReactImageGallery, { ReactImageGalleryProps } from 'react-image-gallery';
 import { useShowToast } from '@/hooks';
 import {
   HeaderContainer,
@@ -11,7 +14,6 @@ import {
   RoomTypeButtonText,
   ImageGalleryContainer,
 } from '@/components/GalleryScreen';
-import ReactImageGallery, { ReactImageGalleryProps } from 'react-image-gallery';
 
 const ImageGalleryComponent = forwardRef<ReactImageGallery, ReactImageGalleryProps>(
   (props, ref) => {
@@ -147,11 +149,11 @@ export default function ImageGalleryScreen() {
             </ImageGalleryContainer>
 
             <YStack display="block" m="$8">
-              <RoomTypeButton icon={<Upload size={26} />} width={300}>
+              <Button icon={<Upload size={26} color="white" />} width={300}>
                 <RoomTypeButtonText>
                   {pageContet?.callToAction || 'Свържи се с нас'}
                 </RoomTypeButtonText>
-              </RoomTypeButton>
+              </Button>
             </YStack>
           </MyYStack>
         </>

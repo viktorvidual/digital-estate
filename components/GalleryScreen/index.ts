@@ -1,4 +1,5 @@
-import { styled, YStack, Button, Text } from 'tamagui';
+import { styled, YStack, Text } from 'tamagui';
+import { Button } from '../shared';
 
 export const HeaderContainer = styled(YStack, {
   name: 'GalleryContainer',
@@ -7,7 +8,7 @@ export const HeaderContainer = styled(YStack, {
   alignSelf: 'center',
   items: 'center',
   width: '100%',
-  bg: '$blue12',
+  bg: '$blue13',
   py: '$7',
   px: '$3',
   pb: 200,
@@ -19,7 +20,7 @@ export const HeaderContainer = styled(YStack, {
 export const RoomTypeButton = styled(Button, {
   name: 'RoomTypeButton',
   size: '$2',
-  bg: '$blue10',
+  bg: '$blue12',
   color: 'white',
   borderRadius: '$4',
   mr: '$2',

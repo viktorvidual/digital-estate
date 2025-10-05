@@ -13,7 +13,7 @@ export const Hero = () => {
   const viewPortWidth = useWindowDimensions().width;
 
   return (
-    <MyYStack bg="$blue12" py="$5">
+    <MyYStack bg="$blue13" py="$5">
       <XStack>
         {media.lg && <CallToAction />}
         <View
