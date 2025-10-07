@@ -160,7 +160,6 @@ export default function ImageGalleryScreen() {
                   showPlayButton={false}
                   showFullscreenButton={false}
                   lazyLoad={true}
-                  showBullets={true}
                   showThumbnails={true}
                   additionalClass="custom-gallery"
                   items={allImages.map(img => ({
