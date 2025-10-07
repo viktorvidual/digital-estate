@@ -50,11 +50,15 @@ export const RoomTypeButtonText = styled(Text, {
 
 export const ImageGalleryContainer = styled(YStack, {
   name: 'ImageGalleryContainer',
-  maxWidth: 1000,
-  minHeight: 400,
   alignSelf: 'center',
+  height: 'auto',
+  width: '100%',
+  maxWidth: '100%',
   borderRadius: '$4',
   overflow: 'hidden',
+
+  $lg: {
+    maxWidth: 1000,
+    height: 'auto',
+  },
 });
-
-

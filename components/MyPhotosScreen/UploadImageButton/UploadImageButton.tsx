@@ -9,16 +9,12 @@ import { Upload } from '@tamagui/lucide-icons';
 export const UploadImageButton = () => {
   const { reset } = useUploadImageStore();
 
-  const onUplaodImage = () => {
+  const handleUploadImage = () => {
     reset();
     router.navigate('/upload-image');
   };
 
-  const onSubscribe = () => router.navigate('/pricing');
-
-  const onUpgradePlan = async () => {
-    router.navigate('/pricing');
-  };
+  const handleSubscribe = () => router.navigate('/pricing');
 
   const { customer } = useAuthStore();
 
@@ -29,7 +25,7 @@ export const UploadImageButton = () => {
           bg="$blue10"
           $lg={{ width: 200 }}
           width={'100%'}
-          onPress={onUplaodImage}
+          onPress={handleUploadImage}
           iconAfter={<Upload color="white" size={16} />}
         >
           <MyText fontWeight="bold" color="white">
@@ -44,7 +40,7 @@ export const UploadImageButton = () => {
           title="Нямате кредити"
           description="За да качите снимка е нужно повишите абонамента си"
           onConfirmText="Повиши Абонамента"
-          onConfirm={onUpgradePlan}
+          onConfirm={handleSubscribe}
         />
       )}
 
@@ -54,7 +50,7 @@ export const UploadImageButton = () => {
           title="Нужен Абонамент"
           description="За да качите снимка е нужно да се абонирате"
           onConfirmText="Абонирай се"
-          onConfirm={onSubscribe}
+          onConfirm={handleSubscribe}
         />
       )}
     </>

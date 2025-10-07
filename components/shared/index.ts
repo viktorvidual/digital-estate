@@ -8,3 +8,4 @@ export * from './NewSelect/NewSelect';
 export * from './Checkbox/Checkbox';
 export * from './MinHeightWrapper/MinHeightWrapper';
 export * from "./Button/Button"
+export * from './FullScreenLoader/FullScreenLoader';
