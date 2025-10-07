@@ -11,7 +11,7 @@ export const Footer = () => {
   return (
     <>
       {media.lg ? (
-        <MyXStack bg="$blue12" items="center">
+        <MyXStack bg="$blue13" items="center">
           <View>
             <MyText color="white" fw="bold" size="$6">
               Digital Estate

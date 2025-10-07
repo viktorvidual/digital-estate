@@ -26,8 +26,6 @@ export const ImageInput = () => {
   const [imageWidthClient, setImageWidthClient] = useState(0);
   const [imageHeightClient, setImageHeightClient] = useState(0);
 
-
-
   const {
     imageDimensions,
     localImage,
@@ -186,10 +184,7 @@ export const ImageInput = () => {
           />
 
           {maskedImageUrl && removeFurniture && (
-            <MaskOverlayCanvas
-              width={imageWidthClient}
-              height={imageHeightClient}
-            />
+            <MaskOverlayCanvas width={imageWidthClient} height={imageHeightClient} />
           )}
         </YStack>
       )}

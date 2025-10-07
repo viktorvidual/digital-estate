@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { usePricingStore } from '@/stores';
 import { MyText, MyXStack } from '@/components/shared';
-import { useMedia, YStack, XStack, Button } from 'tamagui';
+import { useMedia, YStack, XStack, Button, Spinner } from 'tamagui';
 import { Check } from '@tamagui/lucide-icons';
 import { ENDPOINTS } from '@/constants';
 import { useAuthStore } from '@/stores';
@@ -13,18 +13,34 @@ import { PriceCategory } from '@/types';
 
 export const PriceCategories = () => {
   const [priceCategories, setPriceCategories] = useState<PriceCategory[]>([]);
+  const [pricingLoading, setPricingLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
-      const { error, data } = await supabase.from('prices').select('*');
+      try {
+        setPricingLoading(true);
+        const { error, data } = await supabase.from('prices').select('*');
 
-      if (error) {
-        console.error('Error fetching prices:', error);
-      } else if (data) {
-        setPriceCategories(data);
+        if (error) {
+          console.error('Error fetching prices:', error);
+        } else if (data) {
+          setPriceCategories(data);
+        }
+      } catch (e) {
+        console.error('Error fetching prices:', e);
+      } finally {
+        setPricingLoading(false);
       }
     })();
   }, []);
+
+  if (pricingLoading) {
+    return (
+      <MyXStack justify="center" alignItems="center" minHeight={500}>
+        <Spinner size="large" color="$blue10" />
+      </MyXStack>
+    );
+  }
 
   return (
     <MyXStack justify="space-between" flexWrap="wrap" gap="$3">
@@ -44,6 +60,7 @@ const Category = ({ category }: { category: PriceCategory }) => {
 
   const priceBgn = selectedPricing === 'monthly' ? category.monthlyBgn : category.yearlyBgn;
   const priceEur = selectedPricing === 'monthly' ? category.monthlyEur : category.yearlyEur;
+
   const stripePriceId =
     selectedPricing === 'monthly' ? category.stripeMonthlyPriceId : category.stripeYearlyPriceId;
 
@@ -70,8 +87,6 @@ const Category = ({ category }: { category: PriceCategory }) => {
     }
 
     try {
-      console.log(stripePriceId, 'stripe price id');
-
       const response = await fetch(ENDPOINTS.CREATE_CHECKOUT, {
         method: 'POST',
         headers: {

@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { MyYStack, MyText } from '@/components/shared';
 import { XStack, YStack, useMedia } from 'tamagui';
 import { UploadImageButton, PhotosList } from '@/components/MyPhotosScreen';
 import { useAuthStore } from '@/stores';
 import { useLocalSearchParams } from 'expo-router';
-import { useShowToast } from '@/hooks';
 
 export default function MyPhotos() {
   const media = useMedia();
@@ -12,6 +11,7 @@ export default function MyPhotos() {
 
   const { subscriptionCreated } = useLocalSearchParams();
 
+  //TODO: use grid here, instead of flexbox
   return (
     <MyYStack>
       <div

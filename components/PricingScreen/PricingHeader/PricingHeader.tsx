@@ -11,7 +11,7 @@ export const PricingHeader = () => {
 
   const { selectedPricing, setSelectedPricing } = usePricingStore();
   return (
-    <MyYStack zIndex={'$2'} pt="$6" bg="$blue12">
+    <MyYStack zIndex={'$2'} pt="$6" bg="$blue13">
       <XStack
         gap="$3"
         content="center"
